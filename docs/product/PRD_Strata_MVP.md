@@ -292,7 +292,7 @@ The numbers are **proposals** and must be confirmed with real load data.
 | Database | PostgreSQL (RLS, JSONB, full-text) | Core data, events |
 | Object storage | S3-compatible | Original JUnit files, logs |
 | Queue | Job table in PostgreSQL (initially) | Webhook ingest, polling, gate |
-| Worker | Separate ASP.NET 9 host in the same solution | Webhook handling, JUnit parsing, gate evaluation |
+| Worker | Hosted background services in the same ASP.NET 9 process (no separate deployment) | Webhook handling, JUnit parsing, gate evaluation |
 | Authentication | OIDC (GitHub, Google) | Sign-in |
 | Integration | GitHub App | Webhook + reconciliation polling |
 
@@ -319,7 +319,7 @@ The stack is decided in section 9.3 (ADR-03). The detailed C4 diagrams are in [R
 
 **Status:** Decided (2026-11-03). Resolves PQ-05.
 
-- **Backend:** ASP.NET 9+ (C#). One solution containing the API host and the worker host.
+- **Backend:** ASP.NET 9+ (C#). One solution and one entry point (`Strata.Api`, `Program.cs`), running as one process. Background jobs run as hosted services in it.
 - **Frontend:** Angular 19+ with standalone components, and no NgModules.
 - **Architecture:** modular monolith. Each module is organized as a vertical slice (one folder per use case) inside Clean Architecture layers (Domain, Application, Infrastructure, Api). Infrastructure constraints (database, message queue, email, logging) are defined as ports and implemented in adapters. A shared kernel (DDD style) holds only generic building blocks.
 - **Module boundaries:** modules communicate only through their public contracts or through integration events delivered via the outbox. Boundaries are enforced by architecture tests in CI.

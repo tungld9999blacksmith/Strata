@@ -35,6 +35,12 @@ HTTP request
   → Outbox: integration event for other modules                     [Platform, asynchronous]
 ```
 
+## Hosting and API style
+
+- **One process, one entry point.** The backend runs as a single ASP.NET process, started from `Host/Strata.Api/Program.cs`, which is the only entry point. Modules are class libraries referenced by the host. The MVP runs one instance. This is a modular monolith, not microservices.
+- **Background jobs in the same process.** The outbox dispatcher, pollers and job runners are hosted services registered in `Program.cs`. There is no separate worker deployment.
+- **Minimal API only.** Each module exposes its HTTP endpoints through one `Map<Module>Endpoints()` extension in its `Api` project. The backend does not use MVC controllers.
+
 ## Rationale
 
 - **Modules** keep the monolith's boundaries enforceable, so it can be split into services later (see [PLAN](../product/PLAN_Strata.md), extension points) without a rewrite.
@@ -46,6 +52,9 @@ HTTP request
 - Every module needs five projects, so the solution has more projects to maintain. Scaffolding should generate them consistently.
 - Architecture tests in CI are required to keep module boundaries and slice isolation from eroding.
 - Some code is duplicated across slices by design. Shared logic moves to the Domain or behind a port only when at least two slices need the same rule.
+
+- Background jobs share resources with the API process. Long-running work must be bounded so that it does not slow requests.
+- Running more than one instance later would require job claiming with `SELECT … FOR UPDATE SKIP LOCKED`. This is out of scope for the MVP.
 
 ## Open questions
 

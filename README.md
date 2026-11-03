@@ -757,7 +757,7 @@ flowchart TB
     end
     subgraph APP["Application"]
         API["API<br/>modular monolith"]
-        WRK["Worker<br/>ingest, gate, polling"]
+        WRK["Background jobs<br/>hosted in the API process"]
     end
     subgraph SEC["Security"]
         OIDC["OIDC provider"]
@@ -810,7 +810,7 @@ flowchart TB
     WG --> TRC
 ```
 
-#### 5.3.2. Worker
+#### 5.3.2. Background jobs (hosted services in the API process)
 
 ```mermaid
 flowchart LR
@@ -999,8 +999,7 @@ The backend is a hybrid of a modular monolith, clean architecture, vertical slic
 src/backend/
 ├── Strata.sln
 ├── Host/
-│   ├── Strata.Api/                  # [planned] composition root: ASP.NET host, DI wiring, auth, middleware, module registration
-│   └── Strata.Worker/               # [planned] background host: ingest, poller, gate evaluator, notifier
+│   └── Strata.Api/                  # [executable] the only entry point (Program.cs): references every library and owns all process dependencies, module registration, auth, middleware, hosted background services
 ├── Shared/
 │   ├── Strata.SharedKernel/         # [planned] DDD shared kernel: TenantId, Result, Entity/AggregateRoot base types, DomainEvent, Clock
 │   └── Strata.Platform.Abstractions/# [planned] ports for infrastructure constraints: IEmailSender, IMessageQueue, IOutbox, IClock, IFileStorage
@@ -1011,7 +1010,7 @@ src/backend/
 │   │   ├── Strata.IdentityTenancy.Domain/
 │   │   ├── Strata.IdentityTenancy.Application/   # Features/<UseCase>/ slices: command, handler, validator, response
 │   │   ├── Strata.IdentityTenancy.Infrastructure/# EF Core mappings, repositories, port implementations
-│   │   ├── Strata.IdentityTenancy.Api/           # endpoint definitions for this module's slices
+│   │   ├── Strata.IdentityTenancy.Api/           # Minimal API route mappings for this module's slices (no controllers)
 │   │   └── Strata.IdentityTenancy.Contracts/     # public interfaces and integration events used by other modules
 │   ├── Access/                      # [planned] RBAC, policy decision point
 │   ├── WorkGraph/                   # [planned] project, item, link, sprint, comment
@@ -1039,6 +1038,10 @@ Rules:
 - Infrastructure constraints (database, message queue, email, logging) are defined as ports in `Platform.Abstractions` and implemented in `Platform.Infrastructure`. Application code depends on the ports, never on the adapters.
 - Each feature is a folder under `Application/Features/`, so one use case can be read, changed and tested on its own (vertical slice).
 - Every data access goes through an authorized service in the Application layer, with no shortcut to the database (preparing for the agent phase).
+- **Libraries and one executable:** every project in the tree is a class library, except `Host/Strata.Api`, which is the only executable. `Strata.Api` references the libraries it needs and owns all process-level dependencies (ASP.NET, authentication, database provider, logging). Each library declares only its own dependencies.
+- **One process, one entry point:** `Host/Strata.Api/Program.cs` is the only entry point. Modules are libraries referenced by the host. No module has its own host, `Program.cs`, port or deployment. The backend is a modular monolith, not microservices.
+- **Minimal API only:** each module exposes HTTP endpoints as Minimal API route mappings in its `Api` project. The backend does not use MVC controllers.
+- **Background jobs in the same process:** the outbox dispatcher, pollers and job runners are hosted services registered in `Program.cs`. They are not a separate deployment, and there is no `Strata.Worker` project.
 
 ### 7.2.1. Anatomy of a vertical slice (example: WorkGraph, "Create item")
 
@@ -1069,7 +1072,7 @@ src/backend/Modules/WorkGraph/
 │   │   └── ItemRepository.cs                    # implements IItemRepository
 │   └── Sequences/ProjectSequence.cs             # implements IProjectSequence with an atomic UPDATE … RETURNING
 ├── Strata.WorkGraph.Api/
-│   └── Endpoints/CreateItemEndpoint.cs          # POST /projects/{projectKey}/items: maps HTTP to the command, returns 201
+│   └── Endpoints/CreateItemEndpoint.cs          # Minimal API: MapPost /projects/{projectKey}/items, maps HTTP to the command, returns 201
 └── Strata.WorkGraph.Contracts/                  # what other modules may see
     └── Events/ItemCreatedIntegrationEvent.cs    # published through the outbox to Dossier and Notifications
 
@@ -1087,6 +1090,54 @@ Rules for a slice:
 - **Permission and tenant checks run in the handler** through `IPermissionChecker`, so the same rule applies to every entry point (HTTP, worker, agent tool).
 - **Side effects go through the outbox.** The handler saves the aggregate and the integration event in one transaction; a background dispatcher delivers the event to other modules (AD04).
 - **Each slice has its own tests.** Unit tests cover the handler, integration tests cover the endpoint and database, and architecture tests keep slices isolated.
+
+### 7.2.2. Anatomy of a module and the single entry point
+
+The backend is a **modular monolith**, not microservices. It is one ASP.NET process with one entry point. Modules are class libraries that the host references. No module has its own host, `Program.cs`, port or deployment.
+
+**Entry point.** `Host/Strata.Api/Program.cs` is the only entry point. It builds one process, registers the platform adapters and every module, starts the background jobs as hosted services, and maps every module's endpoints. The MVP runs one instance of this process.
+
+```csharp
+// Host/Strata.Api/Program.cs (illustrative)
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddPlatform(builder.Configuration);   // ports and adapters: database, queue, email, logging
+builder.Services.AddIdentityTenancyModule();           // each module registers its own services
+builder.Services.AddWorkGraphModule();
+// ... other modules
+
+builder.Services.AddHostedService<OutboxDispatcher>(); // background jobs run inside this same process
+
+var app = builder.Build();
+
+app.MapWorkGraphEndpoints();                           // each module maps its own Minimal API routes
+// ... other modules
+
+app.Run();
+```
+
+**Module files.** `WorkGraph` is the example. Each module follows the same layout:
+
+```text
+src/backend/Modules/WorkGraph/
+├── Strata.WorkGraph.Domain/                       # class library, no references to other projects
+│   ├── Item.cs                                    # aggregate root: state, lifecycle rules
+│   └── Events/ItemCreated.cs                      # domain event
+├── Strata.WorkGraph.Application/                  # class library, references Domain and Platform.Abstractions
+│   ├── Ports/                                     # interfaces this module needs from outside
+│   └── Features/CreateItem/                       # one folder per use case (see 7.2.1)
+├── Strata.WorkGraph.Infrastructure/               # class library, implements the ports
+│   ├── Persistence/                               # EF Core mappings and repositories
+│   └── WorkGraphModuleRegistration.cs             # AddWorkGraphModule(): registers the module's services
+├── Strata.WorkGraph.Api/                          # class library, HTTP surface, Minimal API only
+│   ├── Endpoints/CreateItemEndpoint.cs            # MapPost("/projects/{projectKey}/items") → handler
+│   └── WorkGraphEndpoints.cs                      # MapWorkGraphEndpoints(): maps the module's routes
+└── Strata.WorkGraph.Contracts/                    # class library, the only public surface for other modules
+    ├── IWorkGraphQueries.cs                       # interface other modules may call
+    └── Events/ItemCreatedIntegrationEvent.cs      # integration event delivered through the outbox
+```
+
+Each module therefore exposes exactly two entry points to the host: `Add<Module>Module()` for dependency injection and `Map<Module>Endpoints()` for HTTP routes. The host calls them from `Program.cs`, and nothing else starts or configures a module.
 
 ### 7.3. Frontend (Angular 19+, standalone components)
 
@@ -1267,7 +1318,7 @@ sequenceDiagram
     autonumber
     participant GH as GitHub
     participant API as API
-    participant W as Worker
+    participant W as Background jobs
     participant DB as PostgreSQL
     GH->>API: POST /webhooks/github (HMAC)
     API->>API: Verify signature

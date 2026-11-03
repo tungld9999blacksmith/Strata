@@ -37,7 +37,7 @@ Edge: API gateway / BFF · OIDC auth · tenant resolver (subdomain→tenant) · 
 │  search/retrieval (permission-aware) · agent tool gateway (MCP)      │
 └─────────────┬────────────────────────────────────────────────────────┘
               │ outbox → job queue
-Workers: connector ingest · gate evaluator · projection builders ·
+Background jobs (hosted services in the API process): connector ingest · gate evaluator · projection builders ·
          schedulers · agent runners (sandbox)
               │
 Data: PostgreSQL (RLS, JSONB, FTS, pgvector) · object storage (artifacts/logs)
