@@ -323,7 +323,7 @@ The stack is decided in section 9.3 (ADR-03). The detailed C4 diagrams are in [R
 - **Frontend:** Angular 19+ with standalone components, and no NgModules.
 - **Architecture:** modular monolith. Each module is organized as a vertical slice (one folder per use case) inside Clean Architecture layers (Domain, Application, Infrastructure, Api). Infrastructure constraints (database, message queue, email, logging) are defined as ports and implemented in adapters. A shared kernel (DDD style) holds only generic building blocks.
 - **Module boundaries:** modules communicate only through their public contracts or through integration events delivered via the outbox. Boundaries are enforced by architecture tests in CI.
-- **Frontend structure:** `shared/` (reusable UI, directives, guards, interceptors, pipes, validators, services), `layout/` (header, footer, navbar, sidebar, shell) and `features/` (one lazy-loaded folder per feature slice).
+- **Frontend structure:** `shared/` (reusable UI, directives, guards, interceptors, pipes, validators, services), `layout/` (header, footer, navbar, sidebar, shell) and `modules/` (one lazy-loaded folder per business module). Each module holds `models/`, `api/` and `services/` shared by its features, plus `features/` with one folder per feature, and `page.component.ts` at its root.
 
 **Why:** the team's skills (ASP.NET and Angular) and a strict module structure that keeps the modular monolith extractable later. The detailed structure is in [README.md](../../README.md#7-planned-repository-structure).
 

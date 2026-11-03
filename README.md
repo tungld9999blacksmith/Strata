@@ -1090,52 +1090,69 @@ Rules for a slice:
 
 ### 7.3. Frontend (Angular 19+, standalone components)
 
+The frontend mirrors the backend. Application code is grouped into **modules**, one per cohesive business capability (for example `work`, `dossier`). A module owns the shared parts used by its features, and **features** sit inside it. App-wide code (`shared/`, `layout/`, `config/`) lives outside modules.
+
 ```text
-src/frontend/
-├── angular.json
-├── package.json
-└── src/
-    ├── main.ts                      # bootstrapApplication
-    ├── styles/                      # design tokens as CSS variables (UI/UX guidelines section 2.3), global styles
-    ├── environments/            # environment.ts and environment.prod.ts (build-time values)
-    └── app/
-        ├── app.config.ts            # providers: router, HTTP client with interceptors, i18n
-        ├── app.routes.ts            # root routes, lazy-loaded feature routes
-        ├── config/                  # app-wide configuration; maps environment values into typed constants
-        │   ├── api.config.ts        # API base URL and endpoint paths
-        │   ├── i18n.config.ts       # supported languages (en, vi) and default language
-        │   ├── feature-flags.config.ts # toggles for features under rollout
-        │   ├── roles.config.ts      # role-to-navigation mapping, mirrors README section 4.2
-        │   └── status.config.ts     # status-to-label and icon mapping, mirrors UI guidelines section 2.4
-        ├── shared/                  # reusable, module-agnostic building blocks (no feature imports)
-        │   ├── components/          # UI components (status chip, KEY-n badge, drawer, toast, empty state)
-        │   ├── directives/          # e.g. focus trap, click outside, tabular-nums helper
-        │   ├── guards/              # functional route guards (auth, role-based access)
-        │   ├── interceptors/        # functional HTTP interceptors (auth, tenant header, error mapping)
-        │   ├── pipes/               # formatting pipes (dates, item keys, relative time)
-        │   ├── validators/          # reusable form validators (project key, item key, severity)
-        │   └── services/            # stateless or app-wide services (API client, i18n, notifications)
-        ├── layout/                  # application shell
-        │   ├── header/              # top bar: search by code, notifications, account
-        │   ├── footer/
-        │   ├── navbar/              # primary navigation
-        │   ├── sidebar/             # navigation filtered by role
-        │   └── shell/               # composes header, sidebar, breadcrumb and content outlet
-        └── features/                # one folder per feature slice, lazy-loaded
-            ├── home/                # role-based home page (P02)
-            ├── work/                # backlog, board, sprint, item drawer (P04–P08)
-            ├── dossier/             # feature profile and timeline (P09, P10)
-            ├── quality/             # test results, AC matrix, gate rules, gate queue (P11–P14)
-            ├── integrations/        # GitHub connection, CI tokens (P15, P16)
-            └── admin/               # members, activity log (P17, P18)
+src/
+├── main.ts                                  # bootstrapApplication
+├── environments/                            # environment.ts and environment.prod.ts (build-time values)
+├── styles/                                  # design tokens as CSS variables (UI/UX guidelines section 2.3), global styles
+└── app/
+    ├── app.config.ts                        # providers: router, HTTP client with interceptors, i18n
+    ├── app.routes.ts                        # root routes; each module is lazy-loaded
+    ├── config/                              # app-wide configuration; maps environment values into typed constants
+    │   ├── api.config.ts                    # API base URL and endpoint paths
+    │   ├── i18n.config.ts                   # supported languages (en, vi) and default language
+    │   ├── feature-flags.config.ts          # toggles for features under rollout
+    │   ├── roles.config.ts                  # role-to-navigation mapping, mirrors README section 4.2
+    │   └── status.config.ts                 # status-to-label and icon mapping, mirrors UI guidelines section 2.4
+    ├── shared/                              # reusable, module-agnostic building blocks (no module or feature imports)
+    │   ├── components/                      # UI components (status chip, KEY-n badge, drawer, toast, empty state)
+    │   ├── directives/                      # e.g. focus trap, click outside, tabular-nums helper
+    │   ├── guards/                          # functional route guards (auth, role-based access)
+    │   ├── interceptors/                    # functional HTTP interceptors (auth, tenant header, error mapping)
+    │   ├── pipes/                           # formatting pipes (dates, item keys, relative time)
+    │   ├── validators/                      # reusable form validators (project key, item key, severity)
+    │   ├── services/                        # stateless or app-wide services (API client base, i18n, notifications)
+    │   ├── api/                             # base HTTP client, error and pagination handling, endpoints used by several modules
+    │   └── models/                          # models used by several modules: error, paged result, shared enums (ItemState, Role)
+    ├── layout/                              # application shell
+    │   ├── header/                          # top bar: search by code, notifications, account
+    │   ├── footer/
+    │   ├── navbar/                          # primary navigation
+    │   ├── sidebar/                         # navigation filtered by role
+    │   └── shell/                           # composes header, sidebar, breadcrumb and content outlet
+    └── modules/                             # business modules, mirror the backend Modules/ folder
+        └── work/                            # module: work management (mirrors Modules/WorkGraph)
+            ├── page.component.ts            # module entry page, used as the lazy-loaded route target (if needed)
+            ├── models/                      # data shapes only, no logic
+            │   ├── work-item.api.model.ts   # API contract: exact shape of the API response (from OpenAPI)
+            │   ├── create-item.api.model.ts # API contract: request body for POST /projects/{key}/items
+            │   └── work-item.dto.model.ts   # DTO: shape the UI uses, mapped from the API contract
+            ├── api/                         # HTTP calls shared by the module's features, one file per resource
+            │   └── work-items.api.ts        # calls to /projects/{key}/items and /items/{id}
+            ├── services/                    # module-wide state and logic shared by the module's features
+            │   └── work-items.service.ts
+            └── features/                    # features of the module, flat, one folder per feature
+                ├── board/
+                │   ├── presentation/        # components of this feature (for example board.component.ts)
+                │   ├── directives/          # only if the feature needs its own directives
+                │   └── services/            # only if the feature needs its own services
+                └── backlog/
+                    ├── presentation/        # backlog.component.ts, backlog-row.component.ts
+                    └── pipes/               # example: a pipe used only by backlog (grouped by kind when several)
 ```
 
 Rules:
 
-- `features/*` may import from `shared/` and `layout/`, but never from another feature. Cross-feature navigation uses routes, not imports.
-- `shared/` never imports from `features/` or `layout/`.
+- **Module:** `models/`, `api/` and `services/` are shared by all features of the module. `page.component.ts` sits at the module root.
+- **Feature:** `presentation/` holds the components. `directives/`, `services/`, `pipes/`, `interceptors/` and similar folders appear only when the feature needs them. When a feature has several items of the same kind, they are grouped in a folder named after the kind.
+- **Models:** `*.api.model.ts` holds API contract models, which mirror the OpenAPI schemas. `*.dto.model.ts` holds DTOs that the UI uses, mapped from the contract. Models contain no logic.
+- **Features do not import other features.** A feature may import its module's `models/`, `api/` and `services/`, and the app-wide `shared/` and `layout/`.
+- **`shared/` never imports from `modules/` or `layout/`.**
+- **Shared API and models:** `shared/api/` and `shared/models/` hold only code used by several modules. A model used by one module stays in that module's `models/`.
+- **Modules do not import each other's internals.** Cross-module use goes through the module's public entry.
 - Guards and interceptors are written as functions (Angular 19 functional style), not classes.
-- `app/config/` holds configuration values that differ by environment or change per release. Environment values (for example the API base URL) are read once from `src/environments/`, and `config/` exposes them as typed constants. No component reads environment files directly.
 - Colors, fonts and spacing come only from the tokens in `styles/`, which follow the UI/UX guidelines. Components do not hard-code colors.
 
 ## 8. Detailed class and sequence design
