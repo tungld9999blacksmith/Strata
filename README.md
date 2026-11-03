@@ -188,32 +188,7 @@ flowchart TB
 
 ### 2.1. Product Mind Map
 
-```mermaid
-mindmap
-  root((Strata MVP))
-    Nền tảng
-      Workspace và tenancy
-      Đăng nhập OIDC
-      Vai trò nhiều-nhiều
-      Event store
-    Công việc
-      Project và item
-      Link, sprint, bug
-      Board và backlog
-      Bình luận, mention
-    Bằng chứng
-      GitHub
-      JUnit
-      Snapshot bất biến
-    Chức năng
-      Hồ sơ chức năng
-      Timeline
-      Quyết định
-    Chất lượng
-      Gate cơ bản
-      Truy vết AC
-      View theo vai trò
-```
+![Product Mind Map – Strata MVP](./assets/product-mind-map.svg)
 
 | Nhóm nghiệp vụ | Mô tả |
 |---|---|
@@ -471,34 +446,7 @@ MVP gồm 5 khu vực: Hệ thống chung, Công việc, Chức năng, Chất l�
 
 ### 3.1. Cây phân cấp Page (Sitemap)
 
-```mermaid
-flowchart TB
-    ROOT["Strata"]
-    ROOT --> SYS["Hệ thống chung"]
-    ROOT --> WRK["Công việc"]
-    ROOT --> FEA["Chức năng"]
-    ROOT --> QUA["Chất lượng"]
-    ROOT --> INT["Tích hợp"]
-    ROOT --> ADM["Quản trị"]
-    SYS --> P01["P01 Đăng nhập"]
-    SYS --> P02["P02 Trang chủ theo vai trò"]
-    SYS --> P03["P03 Hồ sơ và thông báo của tôi"]
-    WRK --> P04["P04 Danh sách dự án"]
-    WRK --> P05["P05 Backlog"]
-    WRK --> P06["P06 Board Kanban"]
-    WRK --> P07["P07 Sprint"]
-    WRK --> P08["P08 Chi tiết item"]
-    FEA --> P09["P09 Danh sách chức năng"]
-    FEA --> P10["P10 Hồ sơ chức năng"]
-    QUA --> P11["P11 Kết quả test"]
-    QUA --> P12["P12 Ma trận truy vết AC"]
-    QUA --> P13["P13 Luật gate"]
-    QUA --> P14["P14 Hàng chờ duyệt gate"]
-    INT --> P15["P15 Kết nối GitHub"]
-    INT --> P16["P16 Token CI và upload"]
-    ADM --> P17["P17 Thành viên và vai trò"]
-    ADM --> P18["P18 Nhật ký hoạt động"]
-```
+![Sitemap – Cây phân cấp Page Strata MVP](./assets/strata_sitemap.svg)
 
 ### 3.2. Phân cấp thông tin trong Page (Page → Section → Thành phần)
 
@@ -671,25 +619,7 @@ CI upload JUnit → P11 Kết quả test → P12 Ma trận AC
 
 ### 4.3. Mindmap tương tác Front-end theo khu vực
 
-```mermaid
-mindmap
-  root((Tương tác FE))
-    Công việc
-      Kéo-thả backlog
-      Kéo thẻ board
-      Phím tắt tạo item
-    Chức năng
-      Tab hồ sơ
-      Lọc timeline
-      Đánh dấu Quyết định
-    Chất lượng
-      Ma trận AC
-      Xem trước gate
-      Hàng chờ duyệt
-    Tích hợp
-      Cài GitHub App
-      Liên kết thủ công
-```
+![Mindmap tương tác Front-end theo khu vực – Strata MVP](./assets/frontend-interaction-mindmap.svg)
 
 ### 4.4. Danh mục mẫu tương tác (Interaction Patterns)
 
@@ -781,13 +711,16 @@ flowchart TD
 
 ### 4.8. Ngôn ngữ thị giác
 
+Nguồn chuẩn: [Strata_UI_UX_Guidelines.md](docs/design/Strata_UI_UX_Guidelines.md) (bảng token, tương phản, thành phần). Bảng dưới là tóm tắt.
+
 | Thành phần | Quy ước |
 |---|---|
-| Màu chính | Nền tối `#1C2024`, nền sáng `#F5F1E8`, nhấn cam đất `#A94B2B`, xanh lục chỉ trạng thái đạt `#2D7A75` |
-| Phông | Tiêu đề EB Garamond, nội dung IBM Plex Sans |
-| Ý nghĩa màu trạng thái | Xanh: pass/đã kiểm chứng; cam: needs_review/stale; đỏ: fail; xám: chưa phủ |
-| Ngôn ngữ | Tiếng Việt và tiếng Anh |
+| Màu | Bảng màu đất và trung tính theo tầng địa chất: đá gốc `#3E444B`, đất nâu `#7A4E2D`, đất sét nung `#A3482A`, đất phong hóa `#F0AC54`, khoáng xanh `#3F7A67`; nền sáng `#F9F9F7`, nền tối `#0B0B0B` |
+| Phông | Tiêu đề EB Garamond, nội dung IBM Plex Sans, mã và số liệu IBM Plex Mono |
+| Ý nghĩa màu trạng thái | Khoáng xanh: đã kiểm chứng; đất phong hóa: cần duyệt/stale; đỏ đá: không đạt; xám: chưa phủ. Luôn kèm icon và nhãn chữ |
+| Ngôn ngữ | Tiếng Anh mặc định, có chuyển sang tiếng Việt |
 | Chế độ | Sáng và tối |
+| Mobile | Chỉ đọc và xem; thao tác trên desktop |
 
 ---
 
