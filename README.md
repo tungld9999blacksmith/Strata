@@ -993,7 +993,7 @@ strata/
 
 ### 7.2. Backend (ASP.NET 9)
 
-The backend is a hybrid of a modular monolith, clean architecture, vertical slices and a shared kernel. The rationale, the request flow and the consequences are in [ADR-04](docs/adr/ADR-04-backend-architecture.md). The project tree below shows where each style is applied. Each business module is split into five projects, and dependencies point inward.
+The backend is a hybrid of a modular monolith, clean architecture, vertical slices and a shared kernel. The rationale, the request flow and the consequences are in [ADR-04](docs/adr/ADR-04-backend-architecture.md). The project tree below shows where each style is applied. Each business module is **one class library** with five folders (`Domain`, `Interfaces`, `Common`, `Infrastructure`, `Features`), and dependencies point inward.
 
 ```text
 src/backend/
@@ -1006,12 +1006,14 @@ src/backend/
 ├── Platform/
 │   └── Strata.Platform.Infrastructure/ # [planned] adapters: PostgreSQL (EF Core + RLS), job queue, SMTP, object storage, logging (Serilog)
 ├── Modules/
-│   ├── IdentityTenancy/             # [planned] tenant, user, membership, OIDC
-│   │   ├── Strata.IdentityTenancy.Domain/
-│   │   ├── Strata.IdentityTenancy.Application/   # Features/<UseCase>/ slices: command, handler, validator, response
-│   │   ├── Strata.IdentityTenancy.Infrastructure/# EF Core mappings, repositories, port implementations
-│   │   ├── Strata.IdentityTenancy.Api/           # Minimal API route mappings for this module's slices (no controllers)
-│   │   └── Strata.IdentityTenancy.Contracts/     # public interfaces and integration events used by other modules
+│   ├── IdentityTenancy/             # [planned] tenant, user, membership, OIDC; one class library: Strata.IdentityTenancy
+│   │   ├── Strata.IdentityTenancy.csproj
+│   │   ├── Domain/                  # entities, value objects, domain events; depends on nothing
+│   │   ├── Interfaces/              # API interfaces: the module's public contract and the ports it needs
+│   │   ├── Common/                  # services and classes reused across the module's features
+│   │   ├── Infrastructure/          # EF Core mappings, repositories, port implementations
+│   │   ├── Features/<UseCase>/      # one slice per use case: command or query, validator, handler, response, endpoint file
+│   │   └── IdentityTenancyModule.cs # AddIdentityTenancyModule() and MapIdentityTenancyEndpoints()
 │   ├── Access/                      # [planned] RBAC, policy decision point
 │   ├── WorkGraph/                   # [planned] project, item, link, sprint, comment
 │   ├── Integrations/                # [planned] github/, ci/ adapters
@@ -1026,67 +1028,87 @@ src/backend/
 │   ├── Research/                    # [later] research kind
 │   └── Ml/                          # [later] AI kind
 └── Tests/
-    ├── Strata.UnitTests/            # [planned] domain and application tests
+    ├── Strata.UnitTests/            # [planned] domain and handler tests
     ├── Strata.IntegrationTests/     # [planned] API and database tests, including RLS tenant isolation
-    └── Strata.ArchitectureTests/    # [planned] enforces module, layer and dependency rules (e.g. NetArchTest)
+    └── Strata.ArchitectureTests/    # [planned] enforces module, folder and dependency rules (e.g. NetArchTest)
 ```
+
+Folder dependencies inside a module (each module follows the same layout):
+
+| Folder | May depend on |
+|---|---|
+| `Domain` | `Strata.SharedKernel` only |
+| `Interfaces` | `Domain`, `Strata.SharedKernel`, `Strata.Platform.Abstractions` |
+| `Common` | `Domain`, `Interfaces` |
+| `Infrastructure` | `Domain`, `Interfaces`, `Common`, `Strata.Platform.Abstractions` |
+| `Features` | `Domain`, `Interfaces`, `Common` (never `Infrastructure`; adapters arrive through dependency injection) |
+| Other modules | `Interfaces` of this module only |
 
 Rules:
 
-- Modules communicate only through their `Contracts` project or through integration events delivered via the outbox (AD04). A module never references another module's Domain, Application or Infrastructure project.
+- **Visibility:** a module is one assembly, so folder rules are conventions that the compiler does not enforce by itself. Types in `Domain`, `Common`, `Infrastructure` and `Features` are `internal`; only the types in `Interfaces` are `public`. Architecture tests in CI enforce the dependency table above.
+- Modules communicate only through their `Interfaces` or through integration events delivered via the outbox (AD04). A module never uses another module's `Domain`, `Common`, `Infrastructure` or `Features`.
 - `Strata.SharedKernel` holds only generic building blocks. Business logic does not go into the shared kernel.
-- Infrastructure constraints (database, message queue, email, logging) are defined as ports in `Platform.Abstractions` and implemented in `Platform.Infrastructure`. Application code depends on the ports, never on the adapters.
-- Each feature is a folder under `Application/Features/`, so one use case can be read, changed and tested on its own (vertical slice).
-- Every data access goes through an authorized service in the Application layer, with no shortcut to the database (preparing for the agent phase).
+- Infrastructure constraints (database, message queue, email, logging) are defined as ports in `Platform.Abstractions` and implemented in `Platform.Infrastructure`. Module-specific persistence ports (for example `IItemRepository`) live in the module's `Interfaces` and are implemented in its `Infrastructure`. Handlers depend on these interfaces, never on adapters, `DbContext` or other infrastructure types.
+- Each feature is a folder under `Features/`, so one use case can be read, changed and tested on its own (vertical slice).
+- Every data access goes through a feature handler that runs the permission check, with no shortcut to the database (preparing for the agent phase).
 - **Libraries and one executable:** every project in the tree is a class library, except `Host/Strata.Api`, which is the only executable. `Strata.Api` references the libraries it needs and owns all process-level dependencies (ASP.NET, authentication, database provider, logging). Each library declares only its own dependencies.
 - **One process, one entry point:** `Host/Strata.Api/Program.cs` is the only entry point. Modules are libraries referenced by the host. No module has its own host, `Program.cs`, port or deployment. The backend is a modular monolith, not microservices.
-- **Minimal API only:** each module exposes HTTP endpoints as Minimal API route mappings in its `Api` project. The backend does not use MVC controllers.
+- **Minimal API only:** each feature has one endpoint file that registers its Minimal API route. The backend does not use MVC controllers.
 - **Background jobs in the same process:** the outbox dispatcher, pollers and job runners are hosted services registered in `Program.cs`. They are not a separate deployment, and there is no `Strata.Worker` project.
 
 ### 7.2.1. Anatomy of a vertical slice (example: WorkGraph, "Create item")
 
-A vertical slice is one use case, and it contains every file that use case needs, from the HTTP endpoint down to the persistence call. Slices share only the ports defined in `Platform.Abstractions` and the public `Contracts` of other modules. The example below extends the `WorkGraph` module with the slice that creates an item (US05, AC-F3-01, AC-F3-03).
+A vertical slice is one use case, and it contains every file that use case needs, from the HTTP endpoint down to the handler. Slices share only the module's `Common` and `Interfaces`, the ports defined in `Platform.Abstractions`, and the public `Interfaces` of other modules. The example below extends the `WorkGraph` module with the slice that creates an item (US05, AC-F3-01, AC-F3-03) and a query slice that reads one.
 
 ```text
-src/backend/Modules/WorkGraph/
-├── Strata.WorkGraph.Domain/                     # no dependencies on other layers
-│   ├── Item.cs                                  # aggregate root: state, lifecycle rules, Item.Create factory
-│   ├── ItemKey.cs                               # value object KEY-n, built from project key and sequence
-│   ├── ItemType.cs                              # enum: epic, story, task, bug, feature
-│   ├── Severity.cs                              # enum: S1–S4
-│   └── Events/ItemCreated.cs                    # domain event raised by Item.Create
-├── Strata.WorkGraph.Application/
-│   ├── Ports/                                   # interfaces this module needs from outside
-│   │   ├── IItemRepository.cs                   # persistence, implemented in Infrastructure
-│   │   ├── IProjectSequence.cs                  # atomic KEY-n sequence (BR02)
-│   │   └── IPermissionChecker.cs                # implemented by the Access module through its Contracts
-│   └── Features/
-│       └── CreateItem/                          # ONE slice = one use case
-│           ├── CreateItemCommand.cs             # input: project key, type, title, severity, feature id
-│           ├── CreateItemValidator.cs           # rules: title length, severity required when type is bug
-│           ├── CreateItemHandler.cs             # use case: check permission, create aggregate, save, write outbox event
-│           └── CreateItemResponse.cs            # output returned to the caller: item id and KEY-n
-├── Strata.WorkGraph.Infrastructure/             # adapters for the ports above
+src/backend/Modules/WorkGraph/                       # one class library: Strata.WorkGraph
+├── Domain/                                          # no dependencies on other folders
+│   ├── Item.cs                                      # aggregate root: state, lifecycle rules, Item.Create factory
+│   ├── ItemKey.cs                                   # value object KEY-n, built from project key and sequence
+│   ├── ItemType.cs                                  # enum: epic, story, task, bug, feature
+│   ├── Severity.cs                                  # enum: S1–S4
+│   └── Events/ItemCreated.cs                        # domain event raised by Item.Create
+├── Interfaces/                                      # API interfaces; the only public folder
+│   ├── Ports/                                       # interfaces this module needs from outside
+│   │   ├── IItemRepository.cs                       # persistence, implemented in Infrastructure
+│   │   ├── IProjectSequence.cs                      # atomic KEY-n sequence (BR02)
+│   │   └── IPermissionChecker.cs                    # implemented by the Access module through its Interfaces
+│   ├── IWorkGraphQueries.cs                         # API interface other modules may call
+│   └── Events/ItemCreatedIntegrationEvent.cs        # published through the outbox to Dossier and Notifications
+├── Common/                                          # reused by several features (illustrative)
+│   ├── Results/ErrorMapping.cs                      # maps handler errors to HTTP status codes for endpoints
+│   └── Permissions/ProjectPermissions.cs            # shared permission names and helpers
+├── Infrastructure/                                  # adapters for the ports above
 │   ├── Persistence/
-│   │   ├── ItemConfiguration.cs                 # EF Core mapping for Item (tenant_id + RLS column)
-│   │   └── ItemRepository.cs                    # implements IItemRepository
-│   └── Sequences/ProjectSequence.cs             # implements IProjectSequence with an atomic UPDATE … RETURNING
-├── Strata.WorkGraph.Api/
-│   └── Endpoints/CreateItemEndpoint.cs          # Minimal API: MapPost /projects/{projectKey}/items, maps HTTP to the command, returns 201
-└── Strata.WorkGraph.Contracts/                  # what other modules may see
-    └── Events/ItemCreatedIntegrationEvent.cs    # published through the outbox to Dossier and Notifications
+│   │   ├── ItemConfiguration.cs                     # EF Core mapping for Item (tenant_id + RLS column)
+│   │   └── ItemRepository.cs                        # implements IItemRepository
+│   └── Sequences/ProjectSequence.cs                 # implements IProjectSequence with an atomic UPDATE … RETURNING
+├── Features/
+│   ├── CreateItem/                                  # ONE slice = one use case (command)
+│   │   ├── CreateItemCommand.cs                     # input: project key, type, title, severity, feature id
+│   │   ├── CreateItemValidator.cs                   # rules: title length, severity required when type is bug
+│   │   ├── CreateItemHandler.cs                     # use case: check permission, create aggregate, save, write outbox event
+│   │   ├── CreateItemResponse.cs                    # output returned to the caller: item id and KEY-n
+│   │   └── CreateItemEndpoint.cs                    # one C# file: Minimal API MapPost /projects/{projectKey}/items, returns 201
+│   └── GetItem/                                     # a query slice
+│       ├── GetItemQuery.cs                          # input: item key
+│       ├── GetItemHandler.cs                        # check permission, read through a port, return the item
+│       ├── GetItemResponse.cs                       # output returned to the caller
+│       └── GetItemEndpoint.cs                       # one C# file: Minimal API MapGet /items/{key}
+└── WorkGraphModule.cs                               # AddWorkGraphModule() and MapWorkGraphEndpoints()
 
 src/backend/Tests/
 ├── Strata.UnitTests/WorkGraph/CreateItemHandlerTests.cs            # handler logic with fake ports
 ├── Strata.IntegrationTests/WorkGraph/CreateItemEndpointTests.cs    # HTTP, database, RLS; Viewer gets 403 (AC-F2-02)
-└── Strata.ArchitectureTests/WorkGraph/SliceRulesTests.cs           # slice files do not reference other slices
+└── Strata.ArchitectureTests/WorkGraph/SliceRulesTests.cs           # slice files do not reference other slices or Infrastructure
 ```
 
 Rules for a slice:
 
-- **One command, one handler, one validator, one response.** A slice never calls another slice's handler; if two use cases need the same logic, it moves into the Domain or behind a Port.
-- **The endpoint contains no business logic.** It maps HTTP to the command and maps the response to an HTTP status code.
-- **The handler depends only on ports and the Domain.** It never references EF Core, HTTP types or another module's Infrastructure.
+- **One command or query, one handler, one response and one endpoint file.** A command also has one validator; a query has one only when its parameters need rules. A slice never calls another slice's handler; if two use cases need the same logic, it moves into the Domain, into `Common`, or behind a port in `Interfaces`.
+- **The endpoint contains no business logic.** It maps HTTP to the command or query and maps the response to an HTTP status code.
+- **The handler depends only on `Domain`, `Interfaces` and `Common`.** It never references EF Core, `DbContext`, HTTP types or `Infrastructure`.
 - **Permission and tenant checks run in the handler** through `IPermissionChecker`, so the same rule applies to every entry point (HTTP, worker, agent tool).
 - **Side effects go through the outbox.** The handler saves the aggregate and the integration event in one transaction; a background dispatcher delivers the event to other modules (AD04).
 - **Each slice has its own tests.** Unit tests cover the handler, integration tests cover the endpoint and database, and architecture tests keep slices isolated.
@@ -1116,28 +1138,19 @@ app.MapWorkGraphEndpoints();                           // each module maps its o
 app.Run();
 ```
 
-**Module files.** `WorkGraph` is the example. Each module follows the same layout:
+**Module files.** `WorkGraph` is the example. Each module is one class library with the same layout:
 
 ```text
-src/backend/Modules/WorkGraph/
-├── Strata.WorkGraph.Domain/                       # class library, no references to other projects
-│   ├── Item.cs                                    # aggregate root: state, lifecycle rules
-│   └── Events/ItemCreated.cs                      # domain event
-├── Strata.WorkGraph.Application/                  # class library, references Domain and Platform.Abstractions
-│   ├── Ports/                                     # interfaces this module needs from outside
-│   └── Features/CreateItem/                       # one folder per use case (see 7.2.1)
-├── Strata.WorkGraph.Infrastructure/               # class library, implements the ports
-│   ├── Persistence/                               # EF Core mappings and repositories
-│   └── WorkGraphModuleRegistration.cs             # AddWorkGraphModule(): registers the module's services
-├── Strata.WorkGraph.Api/                          # class library, HTTP surface, Minimal API only
-│   ├── Endpoints/CreateItemEndpoint.cs            # MapPost("/projects/{projectKey}/items") → handler
-│   └── WorkGraphEndpoints.cs                      # MapWorkGraphEndpoints(): maps the module's routes
-└── Strata.WorkGraph.Contracts/                    # class library, the only public surface for other modules
-    ├── IWorkGraphQueries.cs                       # interface other modules may call
-    └── Events/ItemCreatedIntegrationEvent.cs      # integration event delivered through the outbox
+src/backend/Modules/WorkGraph/                  # class library Strata.WorkGraph
+├── Domain/                                     # aggregates, value objects, domain events; depends on nothing
+├── Interfaces/                                 # the only public folder: ports, API interfaces, integration events
+├── Common/                                     # services and classes reused across features
+├── Infrastructure/                             # implements the ports: EF Core mappings and repositories
+├── Features/                                   # one folder per use case (see 7.2.1), each with its endpoint file
+└── WorkGraphModule.cs                          # AddWorkGraphModule() registers services; MapWorkGraphEndpoints() maps routes
 ```
 
-Each module therefore exposes exactly two entry points to the host: `Add<Module>Module()` for dependency injection and `Map<Module>Endpoints()` for HTTP routes. The host calls them from `Program.cs`, and nothing else starts or configures a module.
+Each module therefore exposes exactly two entry points to the host: `Add<Module>Module()` for dependency injection and `Map<Module>Endpoints()` for HTTP routes. Both live in `<Module>Module.cs` at the root of the module project, which is the only place that may reference all five folders. The host calls them from `Program.cs`, and nothing else starts or configures a module.
 
 ### 7.3. Frontend (Angular 19+, standalone components)
 
