@@ -277,7 +277,8 @@ Rules:
 
 ## Related documents
 
-- [README](../../README.md) section 4 (initial UI/UX principles, sitemap, wireframes)
+- [README](../../README.md) section 4 (initial UI/UX principles, sitemap, key screens, current UI prototype)
+- [Strata_UI_Prototype.md](Strata_UI_Prototype.md) (screens exported from the Figma file, with notes)
 - [PRD](../product/PRD_Strata_MVP.md) section 4 (personas), section 6 (feature requirements)
 - [CLAUDE.md](../../CLAUDE.md) (instructions for the AI assistant in the repo)
 - Skill: `.claude/skills/strata-ui-design/SKILL.md`

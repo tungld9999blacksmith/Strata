@@ -15,7 +15,7 @@
 7. [Planned repository structure](#7-planned-repository-structure)
 8. [Detailed class and sequence design](#8-detailed-class-and-sequence-design)
 
-See also: [Documents](#documents) · [Project progress](#project-progress)
+See also: [Current UI prototype](#49-current-ui-prototype) · [Documents](#documents) · [Project progress](#project-progress)
 
 ---
 
@@ -593,20 +593,9 @@ CI uploads JUnit → P11 test results → P12 AC matrix
 
 ### 4.2. Application shell (App Shell)
 
-```text
-┌──────────────────────────────────────────────────────────────┐
-│ Strata ▾ Workspace   [ Search by code KEY-n…  ]    🔔  Account │
-├───────────────┬──────────────────────────────────────────────┤
-│ Sidebar       │ Breadcrumb: Project KEY › Feature › KEY-5    │
-│  Home         ├──────────────────────────────────────────────┤
-│  Work         │                                              │
-│  Features     │              Content area                    │
-│  Quality      │                                              │
-│  Integrations │                                   ┌────────┐ │
-│  Admin        │                                   │ Drawer │ │
-│               │                                   └────────┘ │
-└───────────────┴──────────────────────────────────────────────┘
-```
+The shell has a top bar (brand, workspace switcher, search by item key, language EN · VI, notifications, account) and a sidebar that shows only the groups allowed for the role. Example: P02 Home for the QA role.
+
+![App shell shown on P02 Home for the QA role](docs/design/prototype/p02-home-qa.png)
 
 | Sidebar group | Admin | PO | PM | BA | QA | Dev |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -632,39 +621,17 @@ CI uploads JUnit → P11 test results → P12 AC matrix
 | **Inline evidence** | P10, P12 | Selecting a test result or AC opens the source snapshot |
 | **Explainable gate** | P10, P14 | Expand to see each condition, measured value, threshold, result |
 
-### 4.5. Wireframes of key screens
+### 4.5. Key screens (Figma design)
+
+Screens from the [current UI prototype](#49-current-ui-prototype). They replace the earlier text wireframes.
 
 **P10 – Feature profile**
 
-```text
-┌───────────────────────────────────────────────────────────────┐
-│ KEY-5  Sign in with GitHub            [review]  Gate: ◐ needs review │
-├───────────────────────────────────────────────────────────────┤
-│ [Summary] [AC] [Work] [PR/CI] [Tests] [Decisions] [Timeline] │
-├───────────────────────────────────────────────────────────────┤
-│ AC (coverage 2/3)                                             │
-│  AC-1 Successful sign-in creates a session   ✓ verified (snap #41) │
-│  AC-2 Locked account is rejected             ✓ verified (snap #41) │
-│  AC-3 Session expires after 8 hours          ○ uncovered            │
-├───────────────────────────────────────────────────────────────┤
-│ PR #212  "KEY-5 login"   open   CI: passed    @linh             │
-│ Latest tests (snap #41): 118 pass · 0 fail · 3 skip             │
-├───────────────────────────────────────────────────────────────┤
-│ Decision: "Only OIDC is supported in the MVP" — BA, 12/11       │
-└───────────────────────────────────────────────────────────────┘
-```
+![P10 Feature profile for KEY-5](docs/design/prototype/p10-feature-profile.png)
 
 **P12 – AC traceability matrix**
 
-```text
-┌────────┬───────────────────────────┬──────────┬────────────┐
-│ AC     │ Mapped test               │ Result   │ Link       │
-├────────┼───────────────────────────┼──────────┼────────────┤
-│ AC-1   │ LoginTest.success         │ pass     │ active     │
-│ AC-2   │ LoginTest.lockedAccount   │ pass     │ active     │
-│ AC-3   │ —                         │ uncovered│ —          │
-└────────┴───────────────────────────┴──────────┴────────────┘
-```
+![P12 AC traceability matrix](docs/design/prototype/p12-ac-traceability.png)
 
 ### 4.6. Detailed front-end interaction flows
 
@@ -722,6 +689,37 @@ Canonical source: [Strata_UI_UX_Guidelines.md](docs/design/Strata_UI_UX_Guidelin
 | Modes | Light and dark |
 | Mobile | Read-only viewing; actions on desktop |
 
+### 4.9. Current UI prototype
+
+The screens below are exported from the Figma file **[Strata](https://www.figma.com/design/C7cT7HCgPXUpKqZZC5yYPC/Strata)** and show what the main MVP screens look like with the [UI/UX guidelines](docs/design/Strata_UI_UX_Guidelines.md). Sample data uses project `KEY`; desktop screens are shown for the **QA** role. Notes for each screen are in [Strata_UI_Prototype.md](docs/design/Strata_UI_Prototype.md).
+
+| Screen | What it shows |
+|---|---|
+| P02 Home (QA) | Gates waiting for review first, recent activity, project-level evidence health |
+| P10 Feature profile | AC with evidence links, explainable gate, PR/CI metadata, tests, decisions (see [4.5](#45-key-screens-figma-design)) |
+| P06 Board | Fixed lifecycle columns with item cards, linked PR and CI status |
+| P12 AC traceability | Coverage tiles and the AC × test × result matrix (see [4.5](#45-key-screens-figma-design)) |
+| P14 Gate reviews | Review queue with condition summary, rule version and immutable snapshot |
+| Mobile (read-only) | Home and Feature profile at 375 px, view only |
+
+**P02 – Role-based Home (QA)**
+
+![P02 Home for the QA role](docs/design/prototype/p02-home-qa.png)
+
+**P06 – Board**
+
+![P06 Board for Sprint 14](docs/design/prototype/p06-board.png)
+
+**P14 – Gate reviews**
+
+![P14 Gate review queue](docs/design/prototype/p14-gate-reviews.png)
+
+**Mobile – read-only**
+
+| Home (QA) | Feature profile (KEY-5) |
+|---|---|
+| ![Mobile Home, read-only](docs/design/prototype/mobile-p02-home.png) | ![Mobile Feature profile, read-only](docs/design/prototype/mobile-p10-feature-profile.png) |
+
 ---
 
 ## 5. C4 architecture
@@ -755,11 +753,11 @@ flowchart LR
 ```mermaid
 flowchart TB
     subgraph PRES["Presentation"]
-        WEB["Web App<br/>TypeScript SPA"]
+        WEB["Web App<br/>Angular 19+ SPA"]
     end
     subgraph APP["Application"]
         API["API<br/>modular monolith"]
-        WRK["Worker<br/>ingest, gate, polling"]
+        WRK["Background jobs<br/>hosted in the API process"]
     end
     subgraph SEC["Security"]
         OIDC["OIDC provider"]
@@ -812,7 +810,7 @@ flowchart TB
     WG --> TRC
 ```
 
-#### 5.3.2. Worker
+#### 5.3.2. Background jobs (hosted services in the API process)
 
 ```mermaid
 flowchart LR
@@ -839,7 +837,7 @@ flowchart LR
 | AD07 | **Gate rules are versioned data** | Auditable, does not run arbitrary code | Less expressive than code |
 | AD08 | **RBAC first, ABAC later** | Simple for the MVP; leaves room for a policy decision point | No artifact-level permissions yet |
 | AD09 | **No source code storage** | Lower risk and fewer permissions to request | No diff viewing in Strata |
-| AD10 | **TypeScript by default** | One language for web and API | Final choice depends on team skills (PQ-05) |
+| AD10 | **ASP.NET 9+ backend, Angular 19+ frontend** | Strong module boundaries; matches team skills (PRD ADR-03) | Two languages (C# and TypeScript); API contracts shared through OpenAPI |
 
 ---
 
@@ -975,61 +973,238 @@ The tree below is **planned**; no source code exists yet. `[planned]` = to be cr
 ```text
 strata/
 ├── README.md
+├── CLAUDE.md
+├── LICENSE
+├── .gitignore
+├── assets/                          # SVG diagrams (exist)
 ├── docs/
-│   ├── product/              # PRD_Strata_MVP.md, PLAN_Strata.md (exist)
-│   ├── background/           # brainstorm, architecture, research report (exist)
-│   └── api/openapi.yaml      # [planned]
-├── apps/
-│   ├── web/                  # [planned] TypeScript SPA
-│   └── api/                  # [planned] modular monolith + worker
-├── packages/
-│   └── shared/               # [planned] shared types, schemas
-├── src/database/             # [planned] migrations, RLS schema
-├── compose.yaml              # [planned] local PostgreSQL, object storage
-└── scripts/                  # [planned] seeds, utilities
+│   ├── product/                     # PRD_Strata_MVP.md, PLAN_Strata.md (exist)
+│   ├── design/                      # Strata_UI_UX_Guidelines.md (exist)
+│   ├── background/                  # brainstorm, architecture, research report (exist)
+│   ├── api/openapi.yaml             # draft (exists)
+│   └── adr/                         # [planned] architecture decision records
+├── src/
+│   ├── backend/                     # [planned] ASP.NET 9 solution (see 7.2)
+│   ├── frontend/                    # [planned] Angular 19 workspace, standalone (see 7.3)
+│   └── database/                    # [planned] migrations, RLS policies
+├── compose.yaml                     # [planned] local PostgreSQL, object storage, mail catcher
+└── scripts/                         # [planned] seed data, utilities
 ```
 
-### 7.2. Web App
+### 7.2. Backend (ASP.NET 9)
+
+The backend is a hybrid of a modular monolith, clean architecture, vertical slices and a shared kernel. The rationale, the request flow and the consequences are in [ADR-04](docs/adr/ADR-04-backend-architecture.md). The project tree below shows where each style is applied. Each business module is split into five projects, and dependencies point inward.
 
 ```text
-apps/web/src/
-├── app/                      # shell, routing, theme
-├── features/
-│   ├── work/                 # backlog, board, sprint, item
-│   ├── dossier/              # feature profile, timeline
-│   ├── quality/              # tests, AC matrix, gate
-│   ├── integrations/         # GitHub, CI tokens
-│   └── admin/                # members, audit
-├── shared/                   # components, hooks, API client
-└── i18n/                     # vi, en
+src/backend/
+├── Strata.sln
+├── Host/
+│   └── Strata.Api/                  # [executable] the only entry point (Program.cs): references every library and owns all process dependencies, module registration, auth, middleware, hosted background services
+├── Shared/
+│   ├── Strata.SharedKernel/         # [planned] DDD shared kernel: TenantId, Result, Entity/AggregateRoot base types, DomainEvent, Clock
+│   └── Strata.Platform.Abstractions/# [planned] ports for infrastructure constraints: IEmailSender, IMessageQueue, IOutbox, IClock, IFileStorage
+├── Platform/
+│   └── Strata.Platform.Infrastructure/ # [planned] adapters: PostgreSQL (EF Core + RLS), job queue, SMTP, object storage, logging (Serilog)
+├── Modules/
+│   ├── IdentityTenancy/             # [planned] tenant, user, membership, OIDC
+│   │   ├── Strata.IdentityTenancy.Domain/
+│   │   ├── Strata.IdentityTenancy.Application/   # Features/<UseCase>/ slices: command, handler, validator, response
+│   │   ├── Strata.IdentityTenancy.Infrastructure/# EF Core mappings, repositories, port implementations
+│   │   ├── Strata.IdentityTenancy.Api/           # Minimal API route mappings for this module's slices (no controllers)
+│   │   └── Strata.IdentityTenancy.Contracts/     # public interfaces and integration events used by other modules
+│   ├── Access/                      # [planned] RBAC, policy decision point
+│   ├── WorkGraph/                   # [planned] project, item, link, sprint, comment
+│   ├── Integrations/                # [planned] github/, ci/ adapters
+│   ├── Evidence/                    # [planned] artifact, snapshot, test result
+│   ├── Dossier/                     # [planned] feature profile, timeline
+│   ├── Gates/                       # [planned] gate rules, gate_run, review queue
+│   ├── Traceability/                # [planned] AC ↔ test links, matrix
+│   ├── Notifications/               # [planned] in-app notifications, email digests
+│   ├── Events/                      # [planned] event store, outbox
+│   ├── Workflow/                    # [later] workflow engine
+│   ├── Agents/                      # [later] tool gateway, agent_run
+│   ├── Research/                    # [later] research kind
+│   └── Ml/                          # [later] AI kind
+└── Tests/
+    ├── Strata.UnitTests/            # [planned] domain and application tests
+    ├── Strata.IntegrationTests/     # [planned] API and database tests, including RLS tenant isolation
+    └── Strata.ArchitectureTests/    # [planned] enforces module, layer and dependency rules (e.g. NetArchTest)
 ```
 
-### 7.3. API and Worker
+Rules:
+
+- Modules communicate only through their `Contracts` project or through integration events delivered via the outbox (AD04). A module never references another module's Domain, Application or Infrastructure project.
+- `Strata.SharedKernel` holds only generic building blocks. Business logic does not go into the shared kernel.
+- Infrastructure constraints (database, message queue, email, logging) are defined as ports in `Platform.Abstractions` and implemented in `Platform.Infrastructure`. Application code depends on the ports, never on the adapters.
+- Each feature is a folder under `Application/Features/`, so one use case can be read, changed and tested on its own (vertical slice).
+- Every data access goes through an authorized service in the Application layer, with no shortcut to the database (preparing for the agent phase).
+- **Libraries and one executable:** every project in the tree is a class library, except `Host/Strata.Api`, which is the only executable. `Strata.Api` references the libraries it needs and owns all process-level dependencies (ASP.NET, authentication, database provider, logging). Each library declares only its own dependencies.
+- **One process, one entry point:** `Host/Strata.Api/Program.cs` is the only entry point. Modules are libraries referenced by the host. No module has its own host, `Program.cs`, port or deployment. The backend is a modular monolith, not microservices.
+- **Minimal API only:** each module exposes HTTP endpoints as Minimal API route mappings in its `Api` project. The backend does not use MVC controllers.
+- **Background jobs in the same process:** the outbox dispatcher, pollers and job runners are hosted services registered in `Program.cs`. They are not a separate deployment, and there is no `Strata.Worker` project.
+
+### 7.2.1. Anatomy of a vertical slice (example: WorkGraph, "Create item")
+
+A vertical slice is one use case, and it contains every file that use case needs, from the HTTP endpoint down to the persistence call. Slices share only the ports defined in `Platform.Abstractions` and the public `Contracts` of other modules. The example below extends the `WorkGraph` module with the slice that creates an item (US05, AC-F3-01, AC-F3-03).
 
 ```text
-apps/api/src/
-├── modules/
-│   ├── identity-tenancy/
-│   ├── access/               # RBAC, policy decision point
-│   ├── work-graph/
-│   ├── integrations/         # github/, ci/ (adapters)
-│   ├── evidence/             # artifact, snapshot, test
-│   ├── dossier/
-│   ├── gates/
-│   ├── traceability/
-│   ├── notifications/
-│   ├── events/               # outbox
-│   ├── workflow/             # [later] workflow engine
-│   ├── agents/               # [later] tool gateway, agent_run
-│   ├── research/             # [later] research kind
-│   └── ml/                   # [later] AI kind
-├── worker/                   # ingest, poller, gate evaluator, notifier
-└── platform/                 # config, logging, db, queue
+src/backend/Modules/WorkGraph/
+├── Strata.WorkGraph.Domain/                     # no dependencies on other layers
+│   ├── Item.cs                                  # aggregate root: state, lifecycle rules, Item.Create factory
+│   ├── ItemKey.cs                               # value object KEY-n, built from project key and sequence
+│   ├── ItemType.cs                              # enum: epic, story, task, bug, feature
+│   ├── Severity.cs                              # enum: S1–S4
+│   └── Events/ItemCreated.cs                    # domain event raised by Item.Create
+├── Strata.WorkGraph.Application/
+│   ├── Ports/                                   # interfaces this module needs from outside
+│   │   ├── IItemRepository.cs                   # persistence, implemented in Infrastructure
+│   │   ├── IProjectSequence.cs                  # atomic KEY-n sequence (BR02)
+│   │   └── IPermissionChecker.cs                # implemented by the Access module through its Contracts
+│   └── Features/
+│       └── CreateItem/                          # ONE slice = one use case
+│           ├── CreateItemCommand.cs             # input: project key, type, title, severity, feature id
+│           ├── CreateItemValidator.cs           # rules: title length, severity required when type is bug
+│           ├── CreateItemHandler.cs             # use case: check permission, create aggregate, save, write outbox event
+│           └── CreateItemResponse.cs            # output returned to the caller: item id and KEY-n
+├── Strata.WorkGraph.Infrastructure/             # adapters for the ports above
+│   ├── Persistence/
+│   │   ├── ItemConfiguration.cs                 # EF Core mapping for Item (tenant_id + RLS column)
+│   │   └── ItemRepository.cs                    # implements IItemRepository
+│   └── Sequences/ProjectSequence.cs             # implements IProjectSequence with an atomic UPDATE … RETURNING
+├── Strata.WorkGraph.Api/
+│   └── Endpoints/CreateItemEndpoint.cs          # Minimal API: MapPost /projects/{projectKey}/items, maps HTTP to the command, returns 201
+└── Strata.WorkGraph.Contracts/                  # what other modules may see
+    └── Events/ItemCreatedIntegrationEvent.cs    # published through the outbox to Dossier and Notifications
+
+src/backend/Tests/
+├── Strata.UnitTests/WorkGraph/CreateItemHandlerTests.cs            # handler logic with fake ports
+├── Strata.IntegrationTests/WorkGraph/CreateItemEndpointTests.cs    # HTTP, database, RLS; Viewer gets 403 (AC-F2-02)
+└── Strata.ArchitectureTests/WorkGraph/SliceRulesTests.cs           # slice files do not reference other slices
 ```
 
-Dependency rule: `api → services → repositories → PostgreSQL`; a module calls other modules only through their public interfaces; all data access goes through the authorized service layer, with no shortcut to the database (so the agent phase can reuse it).
+Rules for a slice:
 
----
+- **One command, one handler, one validator, one response.** A slice never calls another slice's handler; if two use cases need the same logic, it moves into the Domain or behind a Port.
+- **The endpoint contains no business logic.** It maps HTTP to the command and maps the response to an HTTP status code.
+- **The handler depends only on ports and the Domain.** It never references EF Core, HTTP types or another module's Infrastructure.
+- **Permission and tenant checks run in the handler** through `IPermissionChecker`, so the same rule applies to every entry point (HTTP, worker, agent tool).
+- **Side effects go through the outbox.** The handler saves the aggregate and the integration event in one transaction; a background dispatcher delivers the event to other modules (AD04).
+- **Each slice has its own tests.** Unit tests cover the handler, integration tests cover the endpoint and database, and architecture tests keep slices isolated.
+
+### 7.2.2. Anatomy of a module and the single entry point
+
+The backend is a **modular monolith**, not microservices. It is one ASP.NET process with one entry point. Modules are class libraries that the host references. No module has its own host, `Program.cs`, port or deployment.
+
+**Entry point.** `Host/Strata.Api/Program.cs` is the only entry point. It builds one process, registers the platform adapters and every module, starts the background jobs as hosted services, and maps every module's endpoints. The MVP runs one instance of this process.
+
+```csharp
+// Host/Strata.Api/Program.cs (illustrative)
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddPlatform(builder.Configuration);   // ports and adapters: database, queue, email, logging
+builder.Services.AddIdentityTenancyModule();           // each module registers its own services
+builder.Services.AddWorkGraphModule();
+// ... other modules
+
+builder.Services.AddHostedService<OutboxDispatcher>(); // background jobs run inside this same process
+
+var app = builder.Build();
+
+app.MapWorkGraphEndpoints();                           // each module maps its own Minimal API routes
+// ... other modules
+
+app.Run();
+```
+
+**Module files.** `WorkGraph` is the example. Each module follows the same layout:
+
+```text
+src/backend/Modules/WorkGraph/
+├── Strata.WorkGraph.Domain/                       # class library, no references to other projects
+│   ├── Item.cs                                    # aggregate root: state, lifecycle rules
+│   └── Events/ItemCreated.cs                      # domain event
+├── Strata.WorkGraph.Application/                  # class library, references Domain and Platform.Abstractions
+│   ├── Ports/                                     # interfaces this module needs from outside
+│   └── Features/CreateItem/                       # one folder per use case (see 7.2.1)
+├── Strata.WorkGraph.Infrastructure/               # class library, implements the ports
+│   ├── Persistence/                               # EF Core mappings and repositories
+│   └── WorkGraphModuleRegistration.cs             # AddWorkGraphModule(): registers the module's services
+├── Strata.WorkGraph.Api/                          # class library, HTTP surface, Minimal API only
+│   ├── Endpoints/CreateItemEndpoint.cs            # MapPost("/projects/{projectKey}/items") → handler
+│   └── WorkGraphEndpoints.cs                      # MapWorkGraphEndpoints(): maps the module's routes
+└── Strata.WorkGraph.Contracts/                    # class library, the only public surface for other modules
+    ├── IWorkGraphQueries.cs                       # interface other modules may call
+    └── Events/ItemCreatedIntegrationEvent.cs      # integration event delivered through the outbox
+```
+
+Each module therefore exposes exactly two entry points to the host: `Add<Module>Module()` for dependency injection and `Map<Module>Endpoints()` for HTTP routes. The host calls them from `Program.cs`, and nothing else starts or configures a module.
+
+### 7.3. Frontend (Angular 19+, standalone components)
+
+The frontend mirrors the backend. Application code is grouped into **modules**, one per cohesive business capability (for example `work`, `dossier`). A module owns the shared parts used by its features, and **features** sit inside it. App-wide code (`shared/`, `layout/`, `config/`) lives outside modules.
+
+```text
+src/
+├── main.ts                                  # bootstrapApplication
+├── environments/                            # environment.ts and environment.prod.ts (build-time values)
+├── styles/                                  # design tokens as CSS variables (UI/UX guidelines section 2.3), global styles
+└── app/
+    ├── app.config.ts                        # providers: router, HTTP client with interceptors, i18n
+    ├── app.routes.ts                        # root routes; each module is lazy-loaded
+    ├── config/                              # app-wide configuration; maps environment values into typed constants
+    │   ├── api.config.ts                    # API base URL and endpoint paths
+    │   ├── i18n.config.ts                   # supported languages (en, vi) and default language
+    │   ├── feature-flags.config.ts          # toggles for features under rollout
+    │   ├── roles.config.ts                  # role-to-navigation mapping, mirrors README section 4.2
+    │   └── status.config.ts                 # status-to-label and icon mapping, mirrors UI guidelines section 2.4
+    ├── shared/                              # reusable, module-agnostic building blocks (no module or feature imports)
+    │   ├── components/                      # UI components (status chip, KEY-n badge, drawer, toast, empty state)
+    │   ├── directives/                      # e.g. focus trap, click outside, tabular-nums helper
+    │   ├── guards/                          # functional route guards (auth, role-based access)
+    │   ├── interceptors/                    # functional HTTP interceptors (auth, tenant header, error mapping)
+    │   ├── pipes/                           # formatting pipes (dates, item keys, relative time)
+    │   ├── validators/                      # reusable form validators (project key, item key, severity)
+    │   ├── services/                        # stateless or app-wide services (API client base, i18n, notifications)
+    │   ├── api/                             # base HTTP client, error and pagination handling, endpoints used by several modules
+    │   └── models/                          # models used by several modules: error, paged result, shared enums (ItemState, Role)
+    ├── layout/                              # application shell
+    │   ├── header/                          # top bar: search by code, notifications, account
+    │   ├── footer/
+    │   ├── navbar/                          # primary navigation
+    │   ├── sidebar/                         # navigation filtered by role
+    │   └── shell/                           # composes header, sidebar, breadcrumb and content outlet
+    └── modules/                             # business modules, mirror the backend Modules/ folder
+        └── work/                            # module: work management (mirrors Modules/WorkGraph)
+            ├── page.component.ts            # module entry page, used as the lazy-loaded route target (if needed)
+            ├── models/                      # data shapes only, no logic
+            │   ├── work-item.api.model.ts   # API contract: exact shape of the API response (from OpenAPI)
+            │   ├── create-item.api.model.ts # API contract: request body for POST /projects/{key}/items
+            │   └── work-item.dto.model.ts   # DTO: shape the UI uses, mapped from the API contract
+            ├── api/                         # HTTP calls shared by the module's features, one file per resource
+            │   └── work-items.api.ts        # calls to /projects/{key}/items and /items/{id}
+            ├── services/                    # module-wide state and logic shared by the module's features
+            │   └── work-items.service.ts
+            └── features/                    # features of the module, flat, one folder per feature
+                ├── board/
+                │   ├── presentation/        # components of this feature (for example board.component.ts)
+                │   ├── directives/          # only if the feature needs its own directives
+                │   └── services/            # only if the feature needs its own services
+                └── backlog/
+                    ├── presentation/        # backlog.component.ts, backlog-row.component.ts
+                    └── pipes/               # example: a pipe used only by backlog (grouped by kind when several)
+```
+
+Rules:
+
+- **Module:** `models/`, `api/` and `services/` are shared by all features of the module. `page.component.ts` sits at the module root.
+- **Feature:** `presentation/` holds the components. `directives/`, `services/`, `pipes/`, `interceptors/` and similar folders appear only when the feature needs them. When a feature has several items of the same kind, they are grouped in a folder named after the kind.
+- **Models:** `*.api.model.ts` holds API contract models, which mirror the OpenAPI schemas. `*.dto.model.ts` holds DTOs that the UI uses, mapped from the contract. Models contain no logic.
+- **Features do not import other features.** A feature may import its module's `models/`, `api/` and `services/`, and the app-wide `shared/` and `layout/`.
+- **`shared/` never imports from `modules/` or `layout/`.**
+- **Shared API and models:** `shared/api/` and `shared/models/` hold only code used by several modules. A model used by one module stays in that module's `models/`.
+- **Modules do not import each other's internals.** Cross-module use goes through the module's public entry.
+- Guards and interceptors are written as functions (Angular 19 functional style), not classes.
+- Colors, fonts and spacing come only from the tokens in `styles/`, which follow the UI/UX guidelines. Components do not hard-code colors.
 
 ## 8. Detailed class and sequence design
 
@@ -1143,7 +1318,7 @@ sequenceDiagram
     autonumber
     participant GH as GitHub
     participant API as API
-    participant W as Worker
+    participant W as Background jobs
     participant DB as PostgreSQL
     GH->>API: POST /webhooks/github (HMAC)
     API->>API: Verify signature
@@ -1198,6 +1373,9 @@ sequenceDiagram
 - **Product**
   - [PRD – Strata MVP](docs/product/PRD_Strata_MVP.md): requirements, acceptance criteria, MVP release plan.
   - [Plan – Strata](docs/product/PLAN_Strata.md): phases after the MVP (workflow, agents, research, AI/ML…), entry/exit criteria, decisions to be made.
+- **Design**
+  - [UI/UX guidelines](docs/design/Strata_UI_UX_Guidelines.md): colors, typography, components, states, locked UX decisions.
+  - [Current UI prototype](docs/design/Strata_UI_Prototype.md): screens exported from Figma with notes.
 - **Foundations and research**
   - [Brainstorm summary](docs/background/brainstorm-summary.md): vision, pain points, core model, complete feature list.
   - [System architecture proposal](docs/background/system-architecture.md): modular monolith, tenancy, security, validation spikes.
@@ -1215,7 +1393,7 @@ sequenceDiagram
 - [x] MVP scope narrowed to software projects
 - [x] Draft PRD, Plan, README (this document)
 - [ ] User interviews to confirm pain points (P0)
-- [ ] Confirm team size, stack, first pilot team (D-01, D-02, D-03)
+- [ ] Confirm team size and first pilot team (D-01, D-02)
 - [ ] Spikes: RLS, idempotent webhooks, reproducible gates (S-01 to S-03)
 - [ ] Specify `docs/api/openapi.yaml` and the `src/database/` schema
 - [ ] M1 – Core, tenancy, roles, events

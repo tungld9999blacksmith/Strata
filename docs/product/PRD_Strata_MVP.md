@@ -287,16 +287,16 @@ The numbers are **proposals** and must be confirmed with real load data.
 
 | Component | Choice | Role |
 |---|---|---|
-| Web app | TypeScript SPA | Board, feature profile, timeline |
-| API | TypeScript modular monolith | Business logic, permission checks |
+| Web app | Angular 19+ SPA, standalone components | Board, feature profile, timeline |
+| API | ASP.NET 9 modular monolith (vertical slices, clean architecture) | Business logic, permission checks |
 | Database | PostgreSQL (RLS, JSONB, full-text) | Core data, events |
 | Object storage | S3-compatible | Original JUnit files, logs |
 | Queue | Job table in PostgreSQL (initially) | Webhook ingest, polling, gate |
-| Worker | Separate process in the same codebase | Webhook handling, JUnit parsing, gate evaluation |
+| Worker | Hosted background services in the same ASP.NET 9 process (no separate deployment) | Webhook handling, JUnit parsing, gate evaluation |
 | Authentication | OIDC (GitHub, Google) | Sign-in |
 | Integration | GitHub App | Webhook + reconciliation polling |
 
-The stack is the default proposal, to be confirmed based on team skills (PQ-05). The detailed C4 diagrams are in [README.md](../../README.md#5-c4-architecture).
+The stack is decided in section 9.3 (ADR-03). The detailed C4 diagrams are in [README.md](../../README.md#5-c4-architecture).
 
 ### 9.1 Decision: item data model (ADR-01)
 
@@ -314,6 +314,18 @@ The stack is the default proposal, to be confirmed based on team skills (PQ-05).
 ### 9.2 Decision: tenant isolation (ADR-02)
 
 **Status:** Proposed. Pooled with `tenant_id` + RLS for the MVP; a `tenant` table acts as the routing layer (tenant → data location), so large customers can later move to a dedicated DB without changing application code. Domain names are used for routing only, not as a security mechanism.
+
+### 9.3 Decision: technology stack (ADR-03)
+
+**Status:** Decided (2026-11-03). Resolves PQ-05.
+
+- **Backend:** ASP.NET 9+ (C#). One solution and one entry point (`Strata.Api`, `Program.cs`), running as one process. Background jobs run as hosted services in it.
+- **Frontend:** Angular 19+ with standalone components, and no NgModules.
+- **Architecture:** modular monolith. Each module is organized as a vertical slice (one folder per use case) inside Clean Architecture layers (Domain, Application, Infrastructure, Api). Infrastructure constraints (database, message queue, email, logging) are defined as ports and implemented in adapters. A shared kernel (DDD style) holds only generic building blocks.
+- **Module boundaries:** modules communicate only through their public contracts or through integration events delivered via the outbox. Boundaries are enforced by architecture tests in CI.
+- **Frontend structure:** `shared/` (reusable UI, directives, guards, interceptors, pipes, validators, services), `layout/` (header, footer, navbar, sidebar, shell) and `modules/` (one lazy-loaded folder per business module). Each module holds `models/`, `api/` and `services/` shared by its features, plus `features/` with one folder per feature, and `page.component.ts` at its root.
+
+**Why:** the team's skills (ASP.NET and Angular) and a strict module structure that keeps the modular monolith extractable later. The detailed structure is in [README.md](../../README.md#7-planned-repository-structure).
 
 ---
 
@@ -366,7 +378,7 @@ Timing is counted in weeks from T0. The week counts assume a build team of 3–4
 
 ## 13. Dependencies and assumptions
 
-**Dependencies:** the GitHub App and webhooks work reliably; pilot teams use GitHub and have CI that generates JUnit XML; there is full-stack TypeScript and PostgreSQL staff; container infrastructure and object storage are available.
+**Dependencies:** the GitHub App and webhooks work reliably; pilot teams use GitHub and have CI that generates JUnit XML; there is ASP.NET (C#) and Angular staff, and PostgreSQL experience; container infrastructure and object storage are available.
 
 **Assumptions:** the target group is 3–10 people who use GitHub; the item-code convention in commits/PRs is acceptable; JUnit XML is common enough for the early stage (pytest, Go test and Jest can all export it); the build team is 3–4 people; there is no baseline data yet on the time spent compiling information.
 
@@ -380,7 +392,7 @@ Timing is counted in weeks from T0. The week counts assume a build team of 3–4
 | PQ-02 | First user group: small product team, outsourcing, or student classes/projects? | Pick a group that already has CI + JUnit and 1 BA/QA |
 | PQ-03 | GitHub only, or add GitLab in the MVP? | GitHub only; GitLab in phase 2 |
 | PQ-04 | Build from scratch or on top of Plane/OpenProject? | Build a thin custom core; re-evaluate after M0 |
-| PQ-05 | Technology stack (TypeScript or Python)? | TypeScript by default; confirm based on skills |
+| PQ-05 | Technology stack? | Resolved: ASP.NET 9+ and Angular 19+ (section 9.3) |
 | PQ-06 | SaaS or self-hosted? | SaaS first; self-host when a customer requests it |
 | PQ-07 | Business model (commercial, internal, academic)? | Not decided; affects the silo/self-host decision |
 | PQ-08 | Is an iteration a sprint or a cycle through the gate? | MVP uses sprints; gate cycles considered in phase 2 |

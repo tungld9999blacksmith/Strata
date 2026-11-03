@@ -37,7 +37,7 @@ Edge: API gateway / BFF · OIDC auth · tenant resolver (subdomain→tenant) · 
 │  search/retrieval (permission-aware) · agent tool gateway (MCP)      │
 └─────────────┬────────────────────────────────────────────────────────┘
               │ outbox → job queue
-Workers: connector ingest · gate evaluator · projection builders ·
+Background jobs (hosted services in the API process): connector ingest · gate evaluator · projection builders ·
          schedulers · agent runners (sandbox)
               │
 Data: PostgreSQL (RLS, JSONB, FTS, pgvector) · object storage (artifacts/logs)
@@ -91,7 +91,7 @@ Data: PostgreSQL (RLS, JSONB, FTS, pgvector) · object storage (artifacts/logs)
 | Database | A single PostgreSQL at the start (JSONB, FTS, pgvector, RLS) | Fewer operational components |
 | Workflow execution | A simple in-house engine + durable queue; consider Temporal when needed | Avoid heavy dependencies in the MVP |
 | Agent tooling | Internal MCP server; external agents connect through the same interface | A single access path |
-| Stack | TypeScript (backend + web) by default; Python if the team is strong in ML/agents | Decided by team skills |
+| Stack | ASP.NET 9+ backend, Angular 19+ frontend (standalone components) | Matches team skills; see PRD section 9.3 | Two languages to maintain (C# and TypeScript) |
 | Build or base on open source | Build a thin custom core | The gate/evidence/agent model differs from existing PM platforms |
 
 ## Build roadmap by slice
@@ -116,7 +116,7 @@ Data: PostgreSQL (RLS, JSONB, FTS, pgvector) · object storage (artifacts/logs)
 1. The first user group and kind (affects the slice order).
 2. Whether agents are provided by the application or external; self-hosted models or an external service.
 3. Whether "public" means within the organization or outside it.
-4. Technology stack, based on team skills.
+4. Technology stack: decided (ASP.NET 9+ and Angular 19+, see PRD section 9.3).
 
 ## Note on pending work
 

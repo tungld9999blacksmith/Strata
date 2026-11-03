@@ -16,6 +16,7 @@ The repo currently contains documentation only (no application code yet).
 | Product requirements (PRD) | [docs/product/PRD_Strata_MVP.md](docs/product/PRD_Strata_MVP.md) |
 | Plan and phases | [docs/product/PLAN_Strata.md](docs/product/PLAN_Strata.md) |
 | UI/UX principles, colors, fonts | [docs/design/Strata_UI_UX_Guidelines.md](docs/design/Strata_UI_UX_Guidelines.md) |
+| Current UI prototype (Figma exports) | [docs/design/Strata_UI_Prototype.md](docs/design/Strata_UI_Prototype.md), images in `docs/design/prototype/`, source: [Figma file](https://www.figma.com/design/C7cT7HCgPXUpKqZZC5yYPC/Strata) |
 | System architecture | [docs/background/system-architecture.md](docs/background/system-architecture.md) |
 
 When sources conflict, the priority order is: PRD, then the UI/UX guidelines, then the README.
