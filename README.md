@@ -15,7 +15,7 @@
 7. [Planned repository structure](#7-planned-repository-structure)
 8. [Detailed class and sequence design](#8-detailed-class-and-sequence-design)
 
-See also: [Documents](#documents) · [Project progress](#project-progress)
+See also: [Current UI prototype](#49-current-ui-prototype) · [Documents](#documents) · [Project progress](#project-progress)
 
 ---
 
@@ -593,20 +593,9 @@ CI uploads JUnit → P11 test results → P12 AC matrix
 
 ### 4.2. Application shell (App Shell)
 
-```text
-┌──────────────────────────────────────────────────────────────┐
-│ Strata ▾ Workspace   [ Search by code KEY-n…  ]    🔔  Account │
-├───────────────┬──────────────────────────────────────────────┤
-│ Sidebar       │ Breadcrumb: Project KEY › Feature › KEY-5    │
-│  Home         ├──────────────────────────────────────────────┤
-│  Work         │                                              │
-│  Features     │              Content area                    │
-│  Quality      │                                              │
-│  Integrations │                                   ┌────────┐ │
-│  Admin        │                                   │ Drawer │ │
-│               │                                   └────────┘ │
-└───────────────┴──────────────────────────────────────────────┘
-```
+The shell has a top bar (brand, workspace switcher, search by item key, language EN · VI, notifications, account) and a sidebar that shows only the groups allowed for the role. Example: P02 Home for the QA role.
+
+![App shell shown on P02 Home for the QA role](docs/design/prototype/p02-home-qa.png)
 
 | Sidebar group | Admin | PO | PM | BA | QA | Dev |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -632,39 +621,17 @@ CI uploads JUnit → P11 test results → P12 AC matrix
 | **Inline evidence** | P10, P12 | Selecting a test result or AC opens the source snapshot |
 | **Explainable gate** | P10, P14 | Expand to see each condition, measured value, threshold, result |
 
-### 4.5. Wireframes of key screens
+### 4.5. Key screens (Figma design)
+
+Screens from the [current UI prototype](#49-current-ui-prototype). They replace the earlier text wireframes.
 
 **P10 – Feature profile**
 
-```text
-┌───────────────────────────────────────────────────────────────┐
-│ KEY-5  Sign in with GitHub            [review]  Gate: ◐ needs review │
-├───────────────────────────────────────────────────────────────┤
-│ [Summary] [AC] [Work] [PR/CI] [Tests] [Decisions] [Timeline] │
-├───────────────────────────────────────────────────────────────┤
-│ AC (coverage 2/3)                                             │
-│  AC-1 Successful sign-in creates a session   ✓ verified (snap #41) │
-│  AC-2 Locked account is rejected             ✓ verified (snap #41) │
-│  AC-3 Session expires after 8 hours          ○ uncovered            │
-├───────────────────────────────────────────────────────────────┤
-│ PR #212  "KEY-5 login"   open   CI: passed    @linh             │
-│ Latest tests (snap #41): 118 pass · 0 fail · 3 skip             │
-├───────────────────────────────────────────────────────────────┤
-│ Decision: "Only OIDC is supported in the MVP" — BA, 12/11       │
-└───────────────────────────────────────────────────────────────┘
-```
+![P10 Feature profile for KEY-5](docs/design/prototype/p10-feature-profile.png)
 
 **P12 – AC traceability matrix**
 
-```text
-┌────────┬───────────────────────────┬──────────┬────────────┐
-│ AC     │ Mapped test               │ Result   │ Link       │
-├────────┼───────────────────────────┼──────────┼────────────┤
-│ AC-1   │ LoginTest.success         │ pass     │ active     │
-│ AC-2   │ LoginTest.lockedAccount   │ pass     │ active     │
-│ AC-3   │ —                         │ uncovered│ —          │
-└────────┴───────────────────────────┴──────────┴────────────┘
-```
+![P12 AC traceability matrix](docs/design/prototype/p12-ac-traceability.png)
 
 ### 4.6. Detailed front-end interaction flows
 
@@ -721,6 +688,37 @@ Canonical source: [Strata_UI_UX_Guidelines.md](docs/design/Strata_UI_UX_Guidelin
 | Language | English by default, with a switch to Vietnamese |
 | Modes | Light and dark |
 | Mobile | Read-only viewing; actions on desktop |
+
+### 4.9. Current UI prototype
+
+The screens below are exported from the Figma file **[Strata](https://www.figma.com/design/C7cT7HCgPXUpKqZZC5yYPC/Strata)** and show what the main MVP screens look like with the [UI/UX guidelines](docs/design/Strata_UI_UX_Guidelines.md). Sample data uses project `KEY`; desktop screens are shown for the **QA** role. Notes for each screen are in [Strata_UI_Prototype.md](docs/design/Strata_UI_Prototype.md).
+
+| Screen | What it shows |
+|---|---|
+| P02 Home (QA) | Gates waiting for review first, recent activity, project-level evidence health |
+| P10 Feature profile | AC with evidence links, explainable gate, PR/CI metadata, tests, decisions (see [4.5](#45-key-screens-figma-design)) |
+| P06 Board | Fixed lifecycle columns with item cards, linked PR and CI status |
+| P12 AC traceability | Coverage tiles and the AC × test × result matrix (see [4.5](#45-key-screens-figma-design)) |
+| P14 Gate reviews | Review queue with condition summary, rule version and immutable snapshot |
+| Mobile (read-only) | Home and Feature profile at 375 px, view only |
+
+**P02 – Role-based Home (QA)**
+
+![P02 Home for the QA role](docs/design/prototype/p02-home-qa.png)
+
+**P06 – Board**
+
+![P06 Board for Sprint 14](docs/design/prototype/p06-board.png)
+
+**P14 – Gate reviews**
+
+![P14 Gate review queue](docs/design/prototype/p14-gate-reviews.png)
+
+**Mobile – read-only**
+
+| Home (QA) | Feature profile (KEY-5) |
+|---|---|
+| ![Mobile Home, read-only](docs/design/prototype/mobile-p02-home.png) | ![Mobile Feature profile, read-only](docs/design/prototype/mobile-p10-feature-profile.png) |
 
 ---
 
@@ -1198,6 +1196,9 @@ sequenceDiagram
 - **Product**
   - [PRD – Strata MVP](docs/product/PRD_Strata_MVP.md): requirements, acceptance criteria, MVP release plan.
   - [Plan – Strata](docs/product/PLAN_Strata.md): phases after the MVP (workflow, agents, research, AI/ML…), entry/exit criteria, decisions to be made.
+- **Design**
+  - [UI/UX guidelines](docs/design/Strata_UI_UX_Guidelines.md): colors, typography, components, states, locked UX decisions.
+  - [Current UI prototype](docs/design/Strata_UI_Prototype.md): screens exported from Figma with notes.
 - **Foundations and research**
   - [Brainstorm summary](docs/background/brainstorm-summary.md): vision, pain points, core model, complete feature list.
   - [System architecture proposal](docs/background/system-architecture.md): modular monolith, tenancy, security, validation spikes.
