@@ -2,52 +2,52 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1430" height="717" viewBox="0 0 1430 717" font-family="IBM Plex Sans, Segoe UI, Arial, sans-serif" role="img" aria-labelledby="title">
   <title id="title">Sitemap Strata MVP</title>
   <rect width="1430" height="717" fill="#FFFFFF"/>
-  <text x="715" y="36" text-anchor="middle" font-size="20" font-weight="700" font-family="EB Garamond, Noto Serif, Times New Roman, serif" fill="#0B0B0B">Sơ đồ cây phân cấp Page (Sitemap) — Strata MVP</text>
+  <text x="715" y="36" text-anchor="middle" font-size="20" font-weight="700" font-family="EB Garamond, Noto Serif, Times New Roman, serif" fill="#0B0B0B">Page tree (Sitemap) — Strata MVP</text>
   <rect x="615" y="56" width="200" height="44" rx="22" fill="#0B0B0B"/>
   <text x="715" y="84" text-anchor="middle" font-size="18" font-weight="700" fill="#FFFFFF">Strata</text>
   <path d="M 715 100 V 130 M 145 130 H 1285" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 145 130 V 150" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <rect x="40" y="150" width="210" height="40" rx="8" fill="#52514E"/>
-  <text x="145" y="175" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Hệ thống chung</text>
+  <text x="145" y="175" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">General system</text>
   <rect x="40" y="206" width="210" height="61" rx="8" fill="#52514E" fill-opacity="0.06" stroke="#52514E" stroke-width="1.5"/>
-  <text x="52" y="232" font-size="14" font-weight="700" fill="#0B0B0B">P01 Đăng nhập</text>
-  <text x="52" y="250" font-size="12" font-style="italic" fill="#6F6D67">Trang đầy đủ · mọi người</text>
+  <text x="52" y="232" font-size="14" font-weight="700" fill="#0B0B0B">P01 Sign in</text>
+  <text x="52" y="250" font-size="12" font-style="italic" fill="#6F6D67">Full page · everyone</text>
   <rect x="40" y="283" width="210" height="135" rx="8" fill="#52514E" fill-opacity="0.06" stroke="#52514E" stroke-width="1.5"/>
-  <text x="52" y="309" font-size="14" font-weight="700" fill="#0B0B0B">P02 Trang chủ theo vai</text>
-  <text x="52" y="327" font-size="14" font-weight="700" fill="#0B0B0B">trò</text>
-  <text x="52" y="345" font-size="12" font-style="italic" fill="#6F6D67">Trang đầy đủ · mọi vai trò</text>
-  <text x="52" y="368" font-size="12" fill="#52514E">• Việc cần làm ngay</text>
-  <text x="52" y="384" font-size="12" fill="#52514E">• Hoạt động gần đây</text>
-  <text x="52" y="400" font-size="12" fill="#52514E">• Phím tắt</text>
+  <text x="52" y="309" font-size="14" font-weight="700" fill="#0B0B0B">P02 Role-based home</text>
+  <text x="52" y="327" font-size="14" font-weight="700" fill="#0B0B0B">page</text>
+  <text x="52" y="345" font-size="12" font-style="italic" fill="#6F6D67">Full page · all roles</text>
+  <text x="52" y="368" font-size="12" fill="#52514E">• Needs action now</text>
+  <text x="52" y="384" font-size="12" fill="#52514E">• Recent activity</text>
+  <text x="52" y="400" font-size="12" fill="#52514E">• Shortcuts</text>
   <rect x="40" y="434" width="210" height="79" rx="8" fill="#52514E" fill-opacity="0.06" stroke="#52514E" stroke-width="1.5"/>
-  <text x="52" y="460" font-size="14" font-weight="700" fill="#0B0B0B">P03 Hồ sơ và thông báo</text>
-  <text x="52" y="478" font-size="14" font-weight="700" fill="#0B0B0B">của tôi</text>
-  <text x="52" y="496" font-size="12" font-style="italic" fill="#6F6D67">Trang + drawer · mọi vai trò</text>
+  <text x="52" y="460" font-size="14" font-weight="700" fill="#0B0B0B">P03 My profile and</text>
+  <text x="52" y="478" font-size="14" font-weight="700" fill="#0B0B0B">notifications</text>
+  <text x="52" y="496" font-size="12" font-style="italic" fill="#6F6D67">Page + drawer · all roles</text>
   <path d="M 34 190 V 452" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 34 224 H 40" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 34 301 H 40" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 34 452 H 40" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 373 130 V 150" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <rect x="268" y="150" width="210" height="40" rx="8" fill="#7A4E2D"/>
-  <text x="373" y="175" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Công việc</text>
+  <text x="373" y="175" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Work</text>
   <rect x="268" y="206" width="210" height="61" rx="8" fill="#7A4E2D" fill-opacity="0.06" stroke="#7A4E2D" stroke-width="1.5"/>
-  <text x="280" y="232" font-size="14" font-weight="700" fill="#0B0B0B">P04 Danh sách dự án</text>
-  <text x="280" y="250" font-size="12" font-style="italic" fill="#6F6D67">Trang đầy đủ · mọi vai trò</text>
+  <text x="280" y="232" font-size="14" font-weight="700" fill="#0B0B0B">P04 Project list</text>
+  <text x="280" y="250" font-size="12" font-style="italic" fill="#6F6D67">Full page · all roles</text>
   <rect x="268" y="283" width="210" height="61" rx="8" fill="#7A4E2D" fill-opacity="0.06" stroke="#7A4E2D" stroke-width="1.5"/>
   <text x="280" y="309" font-size="14" font-weight="700" fill="#0B0B0B">P05 Backlog</text>
-  <text x="280" y="327" font-size="12" font-style="italic" fill="#6F6D67">Danh sách kéo-thả · PO, PM</text>
+  <text x="280" y="327" font-size="12" font-style="italic" fill="#6F6D67">Drag-and-drop list · PO, PM</text>
   <rect x="268" y="360" width="210" height="117" rx="8" fill="#7A4E2D" fill-opacity="0.06" stroke="#7A4E2D" stroke-width="1.5"/>
-  <text x="280" y="386" font-size="14" font-weight="700" fill="#0B0B0B">P06 Board Kanban</text>
-  <text x="280" y="404" font-size="12" font-style="italic" fill="#6F6D67">Bảng · Dev, QA, PM</text>
-  <text x="280" y="427" font-size="12" fill="#52514E">• Bộ lọc</text>
-  <text x="280" y="443" font-size="12" fill="#52514E">• Cột trạng thái</text>
-  <text x="280" y="459" font-size="12" fill="#52514E">• Thẻ item</text>
+  <text x="280" y="386" font-size="14" font-weight="700" fill="#0B0B0B">P06 Kanban board</text>
+  <text x="280" y="404" font-size="12" font-style="italic" fill="#6F6D67">Board · Dev, QA, PM</text>
+  <text x="280" y="427" font-size="12" fill="#52514E">• Filters</text>
+  <text x="280" y="443" font-size="12" fill="#52514E">• Status columns</text>
+  <text x="280" y="459" font-size="12" fill="#52514E">• Item cards</text>
   <rect x="268" y="493" width="210" height="61" rx="8" fill="#7A4E2D" fill-opacity="0.06" stroke="#7A4E2D" stroke-width="1.5"/>
-  <text x="280" y="519" font-size="14" font-weight="700" fill="#0B0B0B">P07 Sprint</text>
-  <text x="280" y="537" font-size="12" font-style="italic" fill="#6F6D67">Trang + bảng · PM</text>
+  <text x="280" y="519" font-size="14" font-weight="700" fill="#0B0B0B">P07 Sprints</text>
+  <text x="280" y="537" font-size="12" font-style="italic" fill="#6F6D67">Page + table · PM</text>
   <rect x="268" y="570" width="210" height="61" rx="8" fill="#7A4E2D" fill-opacity="0.06" stroke="#7A4E2D" stroke-width="1.5"/>
-  <text x="280" y="596" font-size="14" font-weight="700" fill="#0B0B0B">P08 Chi tiết item</text>
-  <text x="280" y="614" font-size="12" font-style="italic" fill="#6F6D67">Drawer / trang · mọi vai trò</text>
+  <text x="280" y="596" font-size="14" font-weight="700" fill="#0B0B0B">P08 Item details</text>
+  <text x="280" y="614" font-size="12" font-style="italic" fill="#6F6D67">Drawer / page · all roles</text>
   <path d="M 262 190 V 588" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 262 224 H 268" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 262 301 H 268" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
@@ -56,45 +56,45 @@
   <path d="M 262 588 H 268" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 601 130 V 150" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <rect x="496" y="150" width="210" height="40" rx="8" fill="#A3482A"/>
-  <text x="601" y="175" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Chức năng</text>
+  <text x="601" y="175" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Features</text>
   <rect x="496" y="206" width="210" height="61" rx="8" fill="#A3482A" fill-opacity="0.06" stroke="#A3482A" stroke-width="1.5"/>
-  <text x="508" y="232" font-size="14" font-weight="700" fill="#0B0B0B">P09 Danh sách chức năng</text>
-  <text x="508" y="250" font-size="12" font-style="italic" fill="#6F6D67">Bảng · BA, PO, QA</text>
+  <text x="508" y="232" font-size="14" font-weight="700" fill="#0B0B0B">P09 Feature list</text>
+  <text x="508" y="250" font-size="12" font-style="italic" fill="#6F6D67">Table · BA, PO, QA</text>
   <rect x="496" y="283" width="210" height="196" rx="8" fill="#A3482A" fill-opacity="0.06" stroke="#A3482A" stroke-width="1.5"/>
-  <text x="508" y="309" font-size="14" font-weight="700" fill="#0B0B0B">P10 Hồ sơ chức năng</text>
-  <text x="508" y="327" font-size="12" font-style="italic" fill="#6F6D67">Trang với tab · BA, PO, QA,</text>
+  <text x="508" y="309" font-size="14" font-weight="700" fill="#0B0B0B">P10 Feature profile</text>
+  <text x="508" y="327" font-size="12" font-style="italic" fill="#6F6D67">Page with tabs · BA, PO, QA,</text>
   <text x="508" y="342" font-size="12" font-style="italic" fill="#6F6D67">Dev</text>
-  <text x="508" y="365" font-size="12" fill="#52514E">• Tóm tắt</text>
-  <text x="508" y="381" font-size="12" fill="#52514E">• AC và độ phủ</text>
-  <text x="508" y="397" font-size="12" fill="#52514E">• Item con</text>
-  <text x="508" y="413" font-size="12" fill="#52514E">• PR và CI</text>
-  <text x="508" y="429" font-size="12" fill="#52514E">• Kết quả test</text>
-  <text x="508" y="445" font-size="12" fill="#52514E">• Quyết định</text>
+  <text x="508" y="365" font-size="12" fill="#52514E">• Summary</text>
+  <text x="508" y="381" font-size="12" fill="#52514E">• AC and coverage</text>
+  <text x="508" y="397" font-size="12" fill="#52514E">• Child items</text>
+  <text x="508" y="413" font-size="12" fill="#52514E">• PR and CI</text>
+  <text x="508" y="429" font-size="12" fill="#52514E">• Test results</text>
+  <text x="508" y="445" font-size="12" fill="#52514E">• Decisions</text>
   <text x="508" y="461" font-size="12" fill="#52514E">• Timeline</text>
   <path d="M 490 190 V 301" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 490 224 H 496" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 490 301 H 496" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 829 130 V 150" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <rect x="724" y="150" width="210" height="40" rx="8" fill="#3F7A67"/>
-  <text x="829" y="175" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Chất lượng</text>
+  <text x="829" y="175" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Quality</text>
   <rect x="724" y="206" width="210" height="61" rx="8" fill="#3F7A67" fill-opacity="0.06" stroke="#3F7A67" stroke-width="1.5"/>
-  <text x="736" y="232" font-size="14" font-weight="700" fill="#0B0B0B">P11 Kết quả test</text>
-  <text x="736" y="250" font-size="12" font-style="italic" fill="#6F6D67">Bảng · QA, Dev</text>
+  <text x="736" y="232" font-size="14" font-weight="700" fill="#0B0B0B">P11 Test results</text>
+  <text x="736" y="250" font-size="12" font-style="italic" fill="#6F6D67">Table · QA, Dev</text>
   <rect x="724" y="283" width="210" height="117" rx="8" fill="#3F7A67" fill-opacity="0.06" stroke="#3F7A67" stroke-width="1.5"/>
-  <text x="736" y="309" font-size="14" font-weight="700" fill="#0B0B0B">P12 Ma trận truy vết AC</text>
-  <text x="736" y="327" font-size="12" font-style="italic" fill="#6F6D67">Ma trận · BA, QA</text>
-  <text x="736" y="350" font-size="12" fill="#52514E">• Ma trận</text>
-  <text x="736" y="366" font-size="12" fill="#52514E">• Độ phủ</text>
-  <text x="736" y="382" font-size="12" fill="#52514E">• Liên kết stale</text>
+  <text x="736" y="309" font-size="14" font-weight="700" fill="#0B0B0B">P12 AC traceability</text>
+  <text x="736" y="327" font-size="12" font-style="italic" fill="#6F6D67">Matrix · BA, QA</text>
+  <text x="736" y="350" font-size="12" fill="#52514E">• Matrix</text>
+  <text x="736" y="366" font-size="12" fill="#52514E">• Coverage</text>
+  <text x="736" y="382" font-size="12" fill="#52514E">• Stale links</text>
   <rect x="724" y="416" width="210" height="117" rx="8" fill="#3F7A67" fill-opacity="0.06" stroke="#3F7A67" stroke-width="1.5"/>
-  <text x="736" y="442" font-size="14" font-weight="700" fill="#0B0B0B">P13 Luật gate</text>
-  <text x="736" y="460" font-size="12" font-style="italic" fill="#6F6D67">Trang + trình sửa · PM, QA</text>
-  <text x="736" y="483" font-size="12" fill="#52514E">• Danh sách luật</text>
-  <text x="736" y="499" font-size="12" fill="#52514E">• Trình sửa</text>
-  <text x="736" y="515" font-size="12" fill="#52514E">• Lịch sử phiên bản</text>
+  <text x="736" y="442" font-size="14" font-weight="700" fill="#0B0B0B">P13 Gate rules</text>
+  <text x="736" y="460" font-size="12" font-style="italic" fill="#6F6D67">Page + editor · PM, QA</text>
+  <text x="736" y="483" font-size="12" fill="#52514E">• Rule list</text>
+  <text x="736" y="499" font-size="12" fill="#52514E">• Editor</text>
+  <text x="736" y="515" font-size="12" fill="#52514E">• Version history</text>
   <rect x="724" y="549" width="210" height="61" rx="8" fill="#3F7A67" fill-opacity="0.06" stroke="#3F7A67" stroke-width="1.5"/>
-  <text x="736" y="575" font-size="14" font-weight="700" fill="#0B0B0B">P14 Hàng chờ duyệt gate</text>
-  <text x="736" y="593" font-size="12" font-style="italic" fill="#6F6D67">Danh sách · QA, PO</text>
+  <text x="736" y="575" font-size="14" font-weight="700" fill="#0B0B0B">P14 Gate review queue</text>
+  <text x="736" y="593" font-size="12" font-style="italic" fill="#6F6D67">List · QA, PO</text>
   <path d="M 718 190 V 567" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 718 224 H 724" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 718 301 H 724" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
@@ -102,31 +102,31 @@
   <path d="M 718 567 H 724" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 1057 130 V 150" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <rect x="952" y="150" width="210" height="40" rx="8" fill="#6B66A8"/>
-  <text x="1057" y="175" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Tích hợp</text>
+  <text x="1057" y="175" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Integrations</text>
   <rect x="952" y="206" width="210" height="117" rx="8" fill="#6B66A8" fill-opacity="0.06" stroke="#6B66A8" stroke-width="1.5"/>
-  <text x="964" y="232" font-size="14" font-weight="700" fill="#0B0B0B">P15 Kết nối GitHub</text>
-  <text x="964" y="250" font-size="12" font-style="italic" fill="#6F6D67">Trang cài đặt · Admin, PM</text>
-  <text x="964" y="273" font-size="12" fill="#52514E">• Cài đặt</text>
-  <text x="964" y="289" font-size="12" fill="#52514E">• Sức khỏe</text>
-  <text x="964" y="305" font-size="12" fill="#52514E">• Chưa liên kết</text>
+  <text x="964" y="232" font-size="14" font-weight="700" fill="#0B0B0B">P15 GitHub connection</text>
+  <text x="964" y="250" font-size="12" font-style="italic" fill="#6F6D67">Settings page · Admin, PM</text>
+  <text x="964" y="273" font-size="12" fill="#52514E">• Setup</text>
+  <text x="964" y="289" font-size="12" fill="#52514E">• Health</text>
+  <text x="964" y="305" font-size="12" fill="#52514E">• Unlinked</text>
   <rect x="952" y="339" width="210" height="61" rx="8" fill="#6B66A8" fill-opacity="0.06" stroke="#6B66A8" stroke-width="1.5"/>
-  <text x="964" y="365" font-size="14" font-weight="700" fill="#0B0B0B">P16 Token CI và upload</text>
-  <text x="964" y="383" font-size="12" font-style="italic" fill="#6F6D67">Trang cài đặt · Admin, PM</text>
+  <text x="964" y="365" font-size="14" font-weight="700" fill="#0B0B0B">P16 CI tokens and upload</text>
+  <text x="964" y="383" font-size="12" font-style="italic" fill="#6F6D67">Settings page · Admin, PM</text>
   <path d="M 946 190 V 357" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 946 224 H 952" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 946 357 H 952" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 1285 130 V 150" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <rect x="1180" y="150" width="210" height="40" rx="8" fill="#52514E"/>
-  <text x="1285" y="175" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Quản trị</text>
+  <text x="1285" y="175" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Administration</text>
   <rect x="1180" y="206" width="210" height="79" rx="8" fill="#52514E" fill-opacity="0.06" stroke="#52514E" stroke-width="1.5"/>
-  <text x="1192" y="232" font-size="14" font-weight="700" fill="#0B0B0B">P17 Thành viên và vai</text>
-  <text x="1192" y="250" font-size="14" font-weight="700" fill="#0B0B0B">trò</text>
-  <text x="1192" y="268" font-size="12" font-style="italic" fill="#6F6D67">Bảng · Admin</text>
+  <text x="1192" y="232" font-size="14" font-weight="700" fill="#0B0B0B">P17 Members and</text>
+  <text x="1192" y="250" font-size="14" font-weight="700" fill="#0B0B0B">roles</text>
+  <text x="1192" y="268" font-size="12" font-style="italic" fill="#6F6D67">Table · Admin</text>
   <rect x="1180" y="301" width="210" height="61" rx="8" fill="#52514E" fill-opacity="0.06" stroke="#52514E" stroke-width="1.5"/>
-  <text x="1192" y="327" font-size="14" font-weight="700" fill="#0B0B0B">P18 Nhật ký hoạt động</text>
-  <text x="1192" y="345" font-size="12" font-style="italic" fill="#6F6D67">Bảng · Admin, PM</text>
+  <text x="1192" y="327" font-size="14" font-weight="700" fill="#0B0B0B">P18 Activity log</text>
+  <text x="1192" y="345" font-size="12" font-style="italic" fill="#6F6D67">Table · Admin, PM</text>
   <path d="M 1174 190 V 319" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 1174 224 H 1180" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
   <path d="M 1174 319 H 1180" fill="none" stroke="#A5A49A" stroke-width="1.5"/>
-  <text x="40" y="687" font-size="12" fill="#6F6D67">Mỗi khu vực có màu riêng. Sidebar hiển thị theo vai trò (xem README mục 4.2). Mã P01–P18 khớp bảng Danh mục màn hình (mục 3.4).</text>
+  <text x="40" y="687" font-size="12" fill="#6F6D67">Each area has its own color. The sidebar shows items by role (see README section 4.2). Codes P01–P18 match the Screen inventory table (section 3.4).</text>
 </svg>

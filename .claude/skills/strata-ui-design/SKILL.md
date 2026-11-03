@@ -1,48 +1,48 @@
 ---
 name: strata-ui-design
-description: Thiết kế hoặc đánh giá UI/UX cho Strata (màu, phông, bố cục, thành phần, trạng thái, sơ đồ SVG) theo bộ nguyên tắc đất và trung tính đã chốt. Dùng khi người dùng yêu cầu thiết kế màn hình, chọn màu, phông, component, wireframe, sitemap, mind map hoặc kiểm tra tương phản cho Strata.
+description: Design or review UI/UX for Strata (colors, fonts, layout, components, states, SVG diagrams) using the agreed earth-tone and neutral principles. Use when the user asks to design a screen, choose colors, fonts, components, wireframes, sitemaps, mind maps, or check contrast for Strata.
 ---
 
 # Strata UI/UX design
 
-Dùng skill này để mọi đề xuất giao diện của Strata nhất quán với tài liệu chuẩn.
+Use this skill so that every Strata interface proposal stays consistent with the canonical documents.
 
-## Nguồn chuẩn
+## Canonical sources
 
-Đọc trước khi trả lời:
+Read these before answering:
 
-1. [docs/design/Strata_UI_UX_Guidelines.md](../../../docs/design/Strata_UI_UX_Guidelines.md): màu, phông, thành phần, trạng thái, khả năng truy cập.
-2. [docs/product/PRD_Strata_MVP.md](../../../docs/product/PRD_Strata_MVP.md): yêu cầu chức năng và quyền hiển thị theo vai trò.
-3. [README.md](../../../README.md) mục 4: sitemap, app shell, wireframe.
+1. [docs/design/Strata_UI_UX_Guidelines.md](../../../docs/design/Strata_UI_UX_Guidelines.md): colors, fonts, components, states, accessibility.
+2. [docs/product/PRD_Strata_MVP.md](../../../docs/product/PRD_Strata_MVP.md): functional requirements and visibility by role.
+3. [README.md](../../../README.md) section 4: sitemap, app shell, wireframes.
 
-## Quy trình
+## Process
 
-1. **Xác định màn hình và vai trò.** Đối chiếu với mục 4.2 của README (sidebar theo vai trò) và mục 4 của PRD (persona). Ghi rõ vai trò nào được thấy gì.
-2. **Chọn màu từ token.** Chỉ dùng các token trong mục 2.3 của tài liệu UI/UX. Với mỗi trạng thái, lấy màu theo tầng địa chất (mục 2.2) và chip trạng thái (mục 2.4).
-3. **Kiểm tương phản.** Mọi cặp chữ–nền phải đạt 4.5:1 (chữ thường) hoặc 3:1 (chữ lớn, icon, viền control). Nếu không đạt, đổi sang biến thể trong bảng, không tự tạo màu mới.
-4. **Kiểm trạng thái.** Mỗi trạng thái có màu, icon và nhãn chữ. Đủ trạng thái tải, rỗng, lỗi và không có quyền (mục 6).
-5. **Kiểm phông.** Tiêu đề EB Garamond từ 20px trở lên; nội dung IBM Plex Sans; mã và số liệu IBM Plex Mono.
-6. **Kiểm bố cục.** Lưới 4px, không cuộn ngang từ 360px, một nút chính mỗi màn hình. Trên mobile chỉ có chức năng đọc và xem; ẩn các thao tác sửa.
-7. **Kiểm ngôn ngữ.** Nhãn giao diện viết tiếng Anh (mặc định); chừa chỗ cho bản tiếng Việt dài hơn khoảng 20–30%.
-8. **Kiểm quyền riêng tư.** Không xếp hạng cá nhân; BA/QA không thấy diff hay mã nguồn.
-9. **Kiểm biểu tượng.** Theo mục 5.1: đá cho dữ liệu thô (commit, PR, CI run), tinh thể cho bằng chứng đã chuẩn hóa (snapshot, test result, gate_run), đá quý chỉ cho ý tưởng. Không dùng ba hình này làm icon trạng thái, và không dùng đá quý cho điểm số hay thành tích.
+1. **Identify the screen and role.** Check against section 4.2 of the README (sidebar by role) and section 4 of the PRD (personas). State which role can see what.
+2. **Pick colors from tokens.** Use only the tokens in section 2.3 of the UI/UX document. For each status, take the color from its geological layer (section 2.2) and the status chip (section 2.4).
+3. **Check contrast.** Every text–background pair must reach 4.5:1 (normal text) or 3:1 (large text, icons, control borders). If a pair fails, switch to a variant in the table; do not create a new color.
+4. **Check states.** Every status has a color, an icon and a text label. Loading, empty, error and no-permission states must all exist (section 6).
+5. **Check typography.** EB Garamond headings from 20px up; IBM Plex Sans for content; IBM Plex Mono for codes and figures.
+6. **Check layout.** 4px grid, no horizontal scrolling from 360px, one primary button per screen. On mobile, only reading and viewing features; hide editing actions.
+7. **Check language.** Interface labels are in English (default); leave room for the Vietnamese version, which is about 20–30% longer.
+8. **Check privacy.** No individual rankings; BA/QA do not see diffs or source code.
+9. **Check symbols.** Per section 5.1: stone for raw data (commit, PR, CI run), crystal for normalized evidence (snapshot, test result, gate_run), gemstone only for ideas. Do not use these shapes as status icons, and do not use gemstones for scores or achievements.
 
-## Khi tạo sơ đồ SVG
+## When creating SVG diagrams
 
-- Lưu trong `assets/`, nhúng bằng `![...](./assets/...svg)`.
-- Dùng màu theo mục 2.5 của tài liệu chuẩn (màu trong sơ đồ), không dùng màu tùy ý.
-- Giữ chữ đủ tương phản trên nền sáng và nền tối khi cần.
-- Đặt tên file theo nội dung, không dùng khoảng trắng.
+- Save them in `assets/` and embed with `![...](./assets/...svg)`.
+- Use the colors from section 2.5 of the canonical guidelines (diagram colors); do not pick colors at will.
+- Keep text legible on both light and dark backgrounds when needed.
+- Name files after their content, without spaces.
 
-## Cách trình bày kết quả
+## How to present results
 
-- Nêu rõ màn hình, vai trò và trạng thái đang bàn.
-- Liệt kê token đã dùng (tên và mã hex) và tỷ lệ tương phản cho các cặp chữ–nền.
-- Nếu có điểm chưa chắc chắn hoặc cần người duyệt, ghi vào mục 10 (việc cần chốt) thay vì tự quyết.
+- State the screen, role and status under discussion.
+- List the tokens used (name and hex) and the contrast ratios for each text–background pair.
+- If something is uncertain or needs a reviewer, record it in section 10 (decisions to finalize) instead of deciding it yourself.
 
-## Không làm
+## Do not
 
-- Không thêm màu, phông hoặc họ chữ ngoài tài liệu chuẩn khi chưa được duyệt.
-- Không dùng màu làm cách duy nhất để truyền thông tin.
-- Không đề xuất bảng xếp hạng hay giám sát theo cá nhân.
-- Không commit hoặc push nếu người dùng không yêu cầu.
+- Do not add colors, fonts or font families beyond the canonical guidelines without approval.
+- Do not use color as the only way to convey information.
+- Do not propose individual rankings or personal monitoring.
+- Do not commit or push unless the user asks.

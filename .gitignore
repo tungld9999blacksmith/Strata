@@ -4,7 +4,7 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Node / build (khi có mã nguồn)
+# Node / build (once source code exists)
 node_modules/
 dist/
 build/
@@ -12,6 +12,6 @@ build/
 .env.*
 !.env.example
 
-# Dữ liệu cục bộ
+# Local data
 *.log
 *.sqlite
