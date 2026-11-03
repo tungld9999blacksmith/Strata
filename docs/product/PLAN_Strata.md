@@ -89,7 +89,7 @@ Requirements and acceptance criteria are detailed in the [PRD](PRD_Strata_MVP.md
 
 ### 4.2 Entry conditions for P1
 
-- Team size and skills confirmed (PQ-01), stack chosen (PQ-05).
+- Team size and skills confirmed (PQ-01). Stack chosen (PQ-05: ASP.NET 9+ and Angular 19+, see PRD section 9.3).
 - P0 has confirmed at least pain points PP-01, PP-03, PP-05, or the PRD has been revised.
 - At least 1 team has committed to a pilot.
 
@@ -196,7 +196,7 @@ So that later phases do not have to rewrite the core, the MVP prepares the follo
 |---|---|---|---|---|
 | D-01 | Build team size and T0 date | Before M1 | Whole schedule | Open |
 | D-02 | First user group | End of P0 | Feature order in P1 | Open |
-| D-03 | Technology stack | Before M1 | Build speed | Open (default TypeScript) |
+| D-03 | Technology stack | Before M1 | Build speed | Decided: ASP.NET 9+ and Angular 19+ (PRD section 9.3) |
 | D-04 | Build the core ourselves or base it on Plane/OpenProject | End of P0 | Amount of code | Open (leaning toward building our own) |
 | D-05 | Business model | Before P2 | SaaS/self-host, silo | Open |
 | D-06 | Agent provided by the application or plugged in externally | Before P3 | Security, responsibility | Open |
