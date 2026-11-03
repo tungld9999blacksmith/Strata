@@ -5,40 +5,40 @@
   <text x="700" y="48" text-anchor="middle" font-size="22" font-weight="700" font-family="EB Garamond, Noto Serif, Times New Roman, serif" fill="#0B0B0B">Product Mind Map — Strata MVP</text>
   <rect x="590" y="395" width="220" height="110" rx="55" fill="#0B0B0B"/>
   <text x="700" y="444" text-anchor="middle" font-size="24" font-weight="700" font-family="EB Garamond, Noto Serif, Times New Roman, serif" fill="#FFFFFF">Strata</text>
-  <text x="700" y="474" text-anchor="middle" font-size="16" fill="#D2D1C7">MVP phần mềm</text>
+  <text x="700" y="474" text-anchor="middle" font-size="16" fill="#D2D1C7">Software MVP</text>
   <path d="M 590 450 C 560 450, 530 200, 510 200" fill="none" stroke="#52514E" stroke-width="3"/>
   <rect x="320" y="180" width="190" height="40" rx="10" fill="#52514E"/>
-  <text x="415" y="206" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">Nền tảng</text>
+  <text x="415" y="206" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">Foundation</text>
   <path d="M 320 200 C 305 200, 305 146, 290 146" fill="none" stroke="#52514E" stroke-width="1.5"/>
   <rect x="50" y="132" width="240" height="28" rx="14" fill="#52514E" fill-opacity="0.12" stroke="#52514E" stroke-width="1"/>
-  <text x="170" y="151" text-anchor="middle" font-size="14" fill="#0B0B0B">Workspace và tenancy</text>
+  <text x="170" y="151" text-anchor="middle" font-size="14" fill="#0B0B0B">Workspace and tenancy</text>
   <path d="M 320 200 C 305 200, 305 182, 290 182" fill="none" stroke="#52514E" stroke-width="1.5"/>
   <rect x="50" y="168" width="240" height="28" rx="14" fill="#52514E" fill-opacity="0.12" stroke="#52514E" stroke-width="1"/>
-  <text x="170" y="187" text-anchor="middle" font-size="14" fill="#0B0B0B">Đăng nhập OIDC</text>
+  <text x="170" y="187" text-anchor="middle" font-size="14" fill="#0B0B0B">OIDC sign-in</text>
   <path d="M 320 200 C 305 200, 305 218, 290 218" fill="none" stroke="#52514E" stroke-width="1.5"/>
   <rect x="50" y="204" width="240" height="28" rx="14" fill="#52514E" fill-opacity="0.12" stroke="#52514E" stroke-width="1"/>
-  <text x="170" y="223" text-anchor="middle" font-size="14" fill="#0B0B0B">Vai trò nhiều-nhiều</text>
+  <text x="170" y="223" text-anchor="middle" font-size="14" fill="#0B0B0B">Many-to-many roles</text>
   <path d="M 320 200 C 305 200, 305 254, 290 254" fill="none" stroke="#52514E" stroke-width="1.5"/>
   <rect x="50" y="240" width="240" height="28" rx="14" fill="#52514E" fill-opacity="0.12" stroke="#52514E" stroke-width="1"/>
   <text x="170" y="259" text-anchor="middle" font-size="14" fill="#0B0B0B">Event store</text>
   <path d="M 590 450 C 560 450, 530 450, 510 450" fill="none" stroke="#7A4E2D" stroke-width="3"/>
   <rect x="320" y="430" width="190" height="40" rx="10" fill="#7A4E2D"/>
-  <text x="415" y="456" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">Công việc</text>
+  <text x="415" y="456" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">Work</text>
   <path d="M 320 450 C 305 450, 305 396, 290 396" fill="none" stroke="#7A4E2D" stroke-width="1.5"/>
   <rect x="50" y="382" width="240" height="28" rx="14" fill="#7A4E2D" fill-opacity="0.12" stroke="#7A4E2D" stroke-width="1"/>
-  <text x="170" y="401" text-anchor="middle" font-size="14" fill="#0B0B0B">Project và item</text>
+  <text x="170" y="401" text-anchor="middle" font-size="14" fill="#0B0B0B">Projects and items</text>
   <path d="M 320 450 C 305 450, 305 432, 290 432" fill="none" stroke="#7A4E2D" stroke-width="1.5"/>
   <rect x="50" y="418" width="240" height="28" rx="14" fill="#7A4E2D" fill-opacity="0.12" stroke="#7A4E2D" stroke-width="1"/>
-  <text x="170" y="437" text-anchor="middle" font-size="14" fill="#0B0B0B">Link, sprint, bug</text>
+  <text x="170" y="437" text-anchor="middle" font-size="14" fill="#0B0B0B">Links, sprints, bugs</text>
   <path d="M 320 450 C 305 450, 305 468, 290 468" fill="none" stroke="#7A4E2D" stroke-width="1.5"/>
   <rect x="50" y="454" width="240" height="28" rx="14" fill="#7A4E2D" fill-opacity="0.12" stroke="#7A4E2D" stroke-width="1"/>
-  <text x="170" y="473" text-anchor="middle" font-size="14" fill="#0B0B0B">Board và backlog</text>
+  <text x="170" y="473" text-anchor="middle" font-size="14" fill="#0B0B0B">Board and backlog</text>
   <path d="M 320 450 C 305 450, 305 504, 290 504" fill="none" stroke="#7A4E2D" stroke-width="1.5"/>
   <rect x="50" y="490" width="240" height="28" rx="14" fill="#7A4E2D" fill-opacity="0.12" stroke="#7A4E2D" stroke-width="1"/>
-  <text x="170" y="509" text-anchor="middle" font-size="14" fill="#0B0B0B">Bình luận, mention</text>
+  <text x="170" y="509" text-anchor="middle" font-size="14" fill="#0B0B0B">Comments, mentions</text>
   <path d="M 590 450 C 560 450, 530 700, 510 700" fill="none" stroke="#3E444B" stroke-width="3"/>
   <rect x="320" y="680" width="190" height="40" rx="10" fill="#3E444B"/>
-  <text x="415" y="706" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">Bằng chứng</text>
+  <text x="415" y="706" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">Evidence</text>
   <path d="M 320 700 C 305 700, 305 664, 290 664" fill="none" stroke="#3E444B" stroke-width="1.5"/>
   <rect x="50" y="650" width="240" height="28" rx="14" fill="#3E444B" fill-opacity="0.12" stroke="#3E444B" stroke-width="1"/>
   <text x="170" y="669" text-anchor="middle" font-size="14" fill="#0B0B0B">GitHub</text>
@@ -47,29 +47,29 @@
   <text x="170" y="705" text-anchor="middle" font-size="14" fill="#0B0B0B">JUnit</text>
   <path d="M 320 700 C 305 700, 305 736, 290 736" fill="none" stroke="#3E444B" stroke-width="1.5"/>
   <rect x="50" y="722" width="240" height="28" rx="14" fill="#3E444B" fill-opacity="0.12" stroke="#3E444B" stroke-width="1"/>
-  <text x="170" y="741" text-anchor="middle" font-size="14" fill="#0B0B0B">Snapshot bất biến</text>
+  <text x="170" y="741" text-anchor="middle" font-size="14" fill="#0B0B0B">Immutable snapshot</text>
   <path d="M 810 450 C 840 450, 870 280, 890 280" fill="none" stroke="#A3482A" stroke-width="3"/>
   <rect x="890" y="260" width="190" height="40" rx="10" fill="#A3482A"/>
-  <text x="985" y="286" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">Chức năng</text>
+  <text x="985" y="286" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">Features</text>
   <path d="M 1080 280 C 1095 280, 1095 244, 1110 244" fill="none" stroke="#A3482A" stroke-width="1.5"/>
   <rect x="1110" y="230" width="240" height="28" rx="14" fill="#A3482A" fill-opacity="0.12" stroke="#A3482A" stroke-width="1"/>
-  <text x="1230" y="249" text-anchor="middle" font-size="14" fill="#0B0B0B">Hồ sơ chức năng</text>
+  <text x="1230" y="249" text-anchor="middle" font-size="14" fill="#0B0B0B">Feature profile</text>
   <path d="M 1080 280 C 1095 280, 1095 280, 1110 280" fill="none" stroke="#A3482A" stroke-width="1.5"/>
   <rect x="1110" y="266" width="240" height="28" rx="14" fill="#A3482A" fill-opacity="0.12" stroke="#A3482A" stroke-width="1"/>
   <text x="1230" y="285" text-anchor="middle" font-size="14" fill="#0B0B0B">Timeline</text>
   <path d="M 1080 280 C 1095 280, 1095 316, 1110 316" fill="none" stroke="#A3482A" stroke-width="1.5"/>
   <rect x="1110" y="302" width="240" height="28" rx="14" fill="#A3482A" fill-opacity="0.12" stroke="#A3482A" stroke-width="1"/>
-  <text x="1230" y="321" text-anchor="middle" font-size="14" fill="#0B0B0B">Quyết định</text>
+  <text x="1230" y="321" text-anchor="middle" font-size="14" fill="#0B0B0B">Decisions</text>
   <path d="M 810 450 C 840 450, 870 600, 890 600" fill="none" stroke="#3F7A67" stroke-width="3"/>
   <rect x="890" y="580" width="190" height="40" rx="10" fill="#3F7A67"/>
-  <text x="985" y="606" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">Chất lượng</text>
+  <text x="985" y="606" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">Quality</text>
   <path d="M 1080 600 C 1095 600, 1095 564, 1110 564" fill="none" stroke="#3F7A67" stroke-width="1.5"/>
   <rect x="1110" y="550" width="240" height="28" rx="14" fill="#3F7A67" fill-opacity="0.12" stroke="#3F7A67" stroke-width="1"/>
-  <text x="1230" y="569" text-anchor="middle" font-size="14" fill="#0B0B0B">Gate cơ bản</text>
+  <text x="1230" y="569" text-anchor="middle" font-size="14" fill="#0B0B0B">Basic gate</text>
   <path d="M 1080 600 C 1095 600, 1095 600, 1110 600" fill="none" stroke="#3F7A67" stroke-width="1.5"/>
   <rect x="1110" y="586" width="240" height="28" rx="14" fill="#3F7A67" fill-opacity="0.12" stroke="#3F7A67" stroke-width="1"/>
-  <text x="1230" y="605" text-anchor="middle" font-size="14" fill="#0B0B0B">Truy vết AC</text>
+  <text x="1230" y="605" text-anchor="middle" font-size="14" fill="#0B0B0B">AC traceability</text>
   <path d="M 1080 600 C 1095 600, 1095 636, 1110 636" fill="none" stroke="#3F7A67" stroke-width="1.5"/>
   <rect x="1110" y="622" width="240" height="28" rx="14" fill="#3F7A67" fill-opacity="0.12" stroke="#3F7A67" stroke-width="1"/>
-  <text x="1230" y="641" text-anchor="middle" font-size="14" fill="#0B0B0B">View theo vai trò</text>
+  <text x="1230" y="641" text-anchor="middle" font-size="14" fill="#0B0B0B">Role-based views</text>
 </svg>

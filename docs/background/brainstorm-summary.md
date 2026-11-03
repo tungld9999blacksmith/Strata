@@ -1,305 +1,305 @@
-# Tổng hợp brainstorm: Ứng dụng quản lý dự án (Phần mềm · Nghiên cứu · AI)
+# Brainstorm summary: Project management application (Software · Research · AI)
 
-> Tài liệu tổng hợp toàn bộ trao đổi trong phiên này. Các nhận định về sản phẩm hiện có (Jira, Backlog, Notion, OSF...) và kiến trúc nội bộ của họ dựa trên hiểu biết chung, **chưa được kiểm chứng lại với tài liệu chính thức**. Các số liệu pain point lấy từ nguồn ở cuối tài liệu, chủ yếu là khảo sát của nhà cung cấp công cụ nên chỉ có giá trị định hướng.
-
----
-
-## 1. Tầm nhìn
-
-Một nền tảng quản lý dự án hợp nhất cho **dự án phần mềm, dự án nghiên cứu và dự án AI/ML**, xoay quanh các ý tưởng:
-
-1. **Lõi chung, cấu hình theo loại dự án (kind):** cùng một mô hình dữ liệu (item, link, artifact, event), mỗi loại dự án chỉ khác schema trường, vòng đời, template và tích hợp.
-2. **Workflow có cổng kiểm định (gate):** dự án là một đồ thị gồm nút nguồn, nút người dùng, switch, gate và output/checkpoint. Chỉ khi vượt qua các gate mới đạt checkpoint.
-3. **Chức năng (feature) là đơn vị điều hướng chính**, không phải task hay vai trò: mỗi chức năng có một "hồ sơ" gồm timeline, version tree, các vòng lặp và lịch sử thay đổi.
-4. **Bằng chứng và lịch sử là công dân hạng nhất:** mọi thay đổi là event bất biến; mọi kết quả gắn với snapshot của nguồn dữ liệu.
-5. **Làm độ bất định nhìn thấy được:** ước lượng dạng khoảng, sổ rủi ro, trạng thái "chưa thể ước lượng", dự báo lại theo vòng.
-6. **Ứng dụng là người quan sát có dữ liệu, không phải người chỉ đạo:** phát hiện nghẽn, gợi ý thực hành kèm bằng chứng, nhóm tự quyết định.
-7. **AI agent là một loại bên thực hiện của node:** agent đề xuất, gate quyết định; thành viên kiểm soát input và output của agent (xem mục 11).
+> This document summarizes the whole discussion in this session. Assessments of existing products (Jira, Backlog, Notion, OSF...) and their internal architecture are based on general knowledge, **not yet verified against official documentation**. Pain point figures come from the sources listed at the end of this document, mostly surveys by tool vendors, so they only have directional value.
 
 ---
 
-## 2. Pain point đã tìm được
+## 1. Vision
 
-### 2.1. Theo lĩnh vực
+A unified project management platform for **software projects, research projects and AI/ML projects**, built around these ideas:
 
-| Lĩnh vực | Pain point chính | Mức tin cậy |
+1. **A common core, configured per project kind:** the same data model (item, link, artifact, event); each project kind differs only in field schema, lifecycle, templates and integrations.
+2. **Workflow with approval gates:** a project is a graph of source nodes, user nodes, switches, gates and output/checkpoints. A checkpoint is reached only after passing the gates.
+3. **The feature is the main navigation unit**, not the task or role: each feature has a "profile" with a timeline, a version tree, loops and a change history.
+4. **Evidence and history are first-class citizens:** every change is an immutable event; every result is tied to a snapshot of its data source.
+5. **Make uncertainty visible:** range estimates, risk register, a "cannot estimate yet" state, re-forecasting in each cycle.
+6. **The application is a data-driven observer, not a director:** it detects bottlenecks and suggests practices backed by evidence; teams decide.
+7. **The AI agent is a kind of performer for a node:** the agent proposes, the gate decides; team members control the agent's input and output (see section 11).
+
+---
+
+## 2. Pain points found
+
+### 2.1. By field
+
+| Field | Main pain point | Confidence level |
 |---|---|---|
-| **Phần mềm** | Lãnh đạo không hiểu khó khăn của developer (63% developer nói vậy, tăng từ 44%); quy trình nặng nề; deadline không thực tế, họp nhiều, thay đổi giữa chừng | Khảo sát Atlassian khá lớn; một số ý chỉ là bài viết quan điểm |
-| **Nghiên cứu** | ELN không làm hài lòng; công cụ PM doanh nghiệp không hợp với học thuật; sổ thí nghiệm không được duy trì; vẫn dùng giấy song song với số | Khảo sát nhỏ, poster, luận văn; không có nghiên cứu lớn |
-| **AI/ML** | Thí nghiệm bị bỏ dở (40–60% theo Comet); theo dõi thủ công (58% nhóm); notebook gây khó khăn xuyên suốt; tái lập và cộng tác khó | Phần lớn từ Comet (nhà cung cấp), mẫu nhỏ (~508 người Mỹ) |
+| **Software** | Leadership does not understand developers' difficulties (63% of developers say so, up from 44%); heavy processes; unrealistic deadlines, many meetings, mid-course changes | Large Atlassian survey; some points are only opinion articles |
+| **Research** | Dissatisfaction with ELNs; enterprise PM tools do not fit academia; lab notebooks are not maintained; paper notebooks are still used in parallel with digital records | Small surveys, posters, theses; no large study |
+| **AI/ML** | Experiments abandoned (40–60% according to Comet); manual tracking (58% of teams); notebooks cause problems throughout; reproduction and collaboration are difficult | Mostly from Comet (a vendor), small sample (~508 US respondents) |
 
-### 2.2. Pain point chung
+### 2.2. Common pain points
 
-- Thông tin rời rạc, phải tổng hợp thủ công.
-- Mất lịch sử quyết định và thí nghiệm, khó tái lập.
-- Công cụ không khớp quy trình thực tế.
-- Khoảng cách giữa người quản lý và người làm.
-- Thất bại (thí nghiệm hủy, giả thuyết bị bác) không được ghi nhận như dữ liệu có giá trị.
+- Information is scattered and must be compiled by hand.
+- Loss of history for decisions and experiments, making reproduction difficult.
+- Tools do not match actual processes.
+- A gap between managers and the people doing the work.
+- Failures (cancelled experiments, rejected hypotheses) are not recorded as valuable data.
 
-### 2.3. Khoảng trống bằng chứng
+### 2.3. Evidence gap
 
-Chưa có nguồn nào đo trực tiếp pain point của **người quản lý dự án nghiên cứu** hay **trưởng nhóm AI**. Cần phỏng vấn thực địa (xem mục 14).
+No source has directly measured the pain points of **research project managers** or **AI team leads**. Field interviews are needed (see section 14).
 
 ---
 
-## 3. Hiện trạng sản phẩm trên thị trường
+## 3. Current state of products on the market
 
-| Nhóm | Ví dụ | Giải quyết tốt | Còn thiếu |
+| Group | Examples | Solves well | Still lacking |
 |---|---|---|---|
-| Workspace tổng quát | Notion, Obsidian, Asana, ClickUp, Trello | Linh hoạt, cộng tác | Không có cấu trúc khoa học, không có bằng chứng |
-| Tài liệu và tổng quan văn liệu | Zotero, Mendeley, Elicit, ResearchRabbit | Quản lý trích dẫn, khám phá paper | Tách khỏi công việc và thí nghiệm |
-| ELN | Benchling, LabArchives, RSpace, SciNote, eLabFTW | Ghi chép thí nghiệm, audit trail | Yếu về task, timeline; trải nghiệm bị chê |
-| Nền tảng mở | OSF, Overleaf, OpenProject, Plane | Chia sẻ, tiền đăng ký, viết cộng tác | OSF thiếu quản lý công việc |
-| Quản trị cấp tổ chức | Pure, Converis, InfoEd, Cayuse | Hồ sơ công bố, tài trợ | Không phục vụ nhà nghiên cứu hằng ngày |
-| ML tracking | MLflow, W&B, Comet, DVC | Run, metric, model registry | Không biết giả thuyết, tài liệu, task |
+| General workspaces | Notion, Obsidian, Asana, ClickUp, Trello | Flexible, collaborative | No scientific structure, no evidence |
+| Documents and literature reviews | Zotero, Mendeley, Elicit, ResearchRabbit | Citation management, paper discovery | Separated from work and experiments |
+| ELN | Benchling, LabArchives, RSpace, SciNote, eLabFTW | Experiment records, audit trail | Weak on tasks and timelines; poorly received UX |
+| Open platforms | OSF, Overleaf, OpenProject, Plane | Sharing, pre-registration, collaborative writing | OSF lacks work management |
+| Institutional administration | Pure, Converis, InfoEd, Cayuse | Publication records, grants | Not built for researchers' daily work |
+| ML tracking | MLflow, W&B, Comet, DVC | Runs, metrics, model registry | Unaware of hypotheses, documents, tasks |
 
-**Điểm chung các sản phẩm giải quyết tốt:** lưu trữ tập trung, template, phiên bản, tích hợp, chia sẻ/phân quyền, báo cáo, tìm kiếm.
-**Điểm chung còn yếu:** giải thích *vì sao* (quyết định, lý do hủy), liên kết xuyên lĩnh vực, động lực ghi chép, ghi nhận thất bại.
+**Common strengths of the products that solve problems well:** centralized storage, templates, versioning, integrations, sharing/permissions, reporting, search.
+**Common weaknesses:** explaining *why* (decisions, reasons for cancellation), cross-domain linking, motivation to record, recording failures.
 
-### Khoảng trống của vòng đời bài báo khoa học
+### The gap in the scientific paper lifecycle
 
-Chưa có công cụ nào quản lý trọn vòng đời. Chuỗi *giả thuyết → thí nghiệm → con số trong bài → phản biện → xuất bản* bị cắt khúc giữa OSF, ELN, W&B, Overleaf, hệ thống nộp bài của tạp chí và CRIS. Truy vết từ claim trong bản thảo về run/thí nghiệm gốc vẫn là thủ công.
+No tool manages the full lifecycle. The chain *hypothesis → experiment → number in the paper → review → publication* is broken across OSF, ELNs, W&B, Overleaf, journal submission systems and CRIS. Tracing a claim in a manuscript back to the original run/experiment is still manual.
 
 ---
 
-## 4. Kiến trúc lõi
+## 4. Core architecture
 
-### 4.1. Năm khái niệm
+### 4.1. Five concepts
 
-| Khái niệm | Ý nghĩa |
+| Concept | Meaning |
 |---|---|
-| **Workspace** | Tổ chức/nhóm, đơn vị tenant |
-| **Project** | Một dự án có `kind` (software / research / ai) |
-| **Item** | Đơn vị công việc có kiểu: task, bug, story, epic, giả thuyết, thí nghiệm, run, paper... |
-| **Link** | Quan hệ có kiểu giữa hai item: `blocks`, `implements`, `tests`, `cites`, `produced_by`... |
-| **Artifact** | Bằng chứng: commit, PR, build, file, dataset, checkpoint, PDF |
-| **Event** | Nhật ký bất biến: ai đổi gì, khi nào, kết quả |
+| **Workspace** | Organization/team, the tenant unit |
+| **Project** | A project with a `kind` (software / research / ai) |
+| **Item** | A typed unit of work: task, bug, story, epic, hypothesis, experiment, run, paper... |
+| **Link** | A typed relationship between two items: `blocks`, `implements`, `tests`, `cites`, `produced_by`... |
+| **Artifact** | Evidence: commit, PR, build, file, dataset, checkpoint, PDF |
+| **Event** | Immutable log: who changed what, when, with what result |
 
-### 4.2. Kind là cấu hình
+### 4.2. Kind is configuration
 
-Mỗi kind gồm: schema trường, vòng đời (state machine), template/view mặc định, tích hợp mặc định.
+Each kind consists of: a field schema, a lifecycle (state machine), default templates/views, and default integrations.
 
 - Software: `backlog → in progress → review → done`
 - Research: `proposed → approved → running → analyzing → written → submitted`
 - AI run: `queued → running → evaluated → promoted / discarded`
 
-### 4.3. Mô hình dữ liệu (PostgreSQL, hướng lai)
+### 4.3. Data model (PostgreSQL, hybrid approach)
 
-Cột chung cố định + `attrs JSONB` cho phần riêng theo kind. Bảng chính: `workspace`, `app_user`, `workspace_member`, `project`, `project_member`, `sprint`, `item`, `link`, `comment`, `artifact`, `item_artifact`, `release`, `release_item`, `event`.
+Fixed common columns + `attrs JSONB` for kind-specific parts. Main tables: `workspace`, `app_user`, `workspace_member`, `project`, `project_member`, `sprint`, `item`, `link`, `comment`, `artifact`, `item_artifact`, `release`, `release_item`, `event`.
 
-Ghi chú thiết kế:
-- Mã item (ví dụ `CHAT-27`) = `project.key` + `item.seq` (tăng nguyên tử).
-- Xóa mềm (`deleted_at`) để giữ lịch sử.
-- `event` chỉ thêm, không sửa/xóa.
-- **Cần sửa:** `project_member.role` hiện là một giá trị đơn; phải đổi thành gán vai trò nhiều-nhiều (xem mục 6).
-- **Cần sửa:** thêm `tenant_id` trực tiếp vào **mọi bảng** nếu chọn mô hình pooled (xem mục 5).
+Design notes:
+- Item code (for example `CHAT-27`) = `project.key` + `item.seq` (incremented atomically).
+- Soft deletion (`deleted_at`) to keep history.
+- `event` is append-only; never edited or deleted.
+- **To fix:** `project_member.role` is currently a single value; it must become many-to-many role assignment (see section 6).
+- **To fix:** add `tenant_id` directly to **every table** if the pooled model is chosen (see section 5).
 
-### 4.4. Multi-tenant
+### 4.4. Multi-tenancy
 
-| Mô hình | Phù hợp |
+| Model | Suitable for |
 |---|---|
-| Pooled (`tenant_id` + Row-Level Security) | Gói tiêu chuẩn, nhóm nhỏ |
-| Schema riêng | Trung gian |
-| DB riêng (silo) | Doanh nghiệp, đại học, dữ liệu nhạy cảm, yêu cầu vùng dữ liệu |
+| Pooled (`tenant_id` + Row-Level Security) | Standard plan, small teams |
+| Separate schema | Intermediate |
+| Separate DB (silo) | Enterprises, universities, sensitive data, data-region requirements |
 
-Đề xuất: **mô hình lai** với bảng `tenant` làm tầng điều phối (tenant → nơi chứa dữ liệu). Tên miền (`org.app.com`) chỉ để **định tuyến**, không phải cơ chế bảo mật; cô lập thật phải ở tầng dữ liệu.
-
----
-
-## 5. Phân quyền
-
-Bài học từ Jira và Backlog (theo hiểu biết chung):
-
-- **Jira:** nhiều lớp (global → nhóm/ứng dụng → project role → permission scheme → issue security → workflow/field). Rất chi tiết, cấu hình phức tạp.
-- **Backlog:** hai cấp (tổ chức, dự án) với vai trò Administrator/Member/Reporter/Viewer. Đơn giản, ít chi tiết ở cấp issue.
-
-Áp dụng cho sản phẩm:
-- Phân quyền tới **cấp artifact** (dữ liệu chưa công bố, dữ liệu nhạy cảm).
-- Vai trò gắn với **kind** và với **gate**.
-- Tách quyền xem / bình luận / sửa / duyệt.
-- Mọi thay đổi quyền ghi vào event.
-- Mặc định đơn giản, mở các lớp phức tạp khi cần.
+Proposal: a **hybrid model** with a `tenant` table as the routing layer (tenant → data location). Domain names (`org.app.com`) are used only for **routing**, not as a security mechanism; real isolation must be at the data layer.
 
 ---
 
-## 6. Vai trò và chức năng theo vai trò
+## 5. Permissions
 
-Vai trò là **tập quyền gán được nhiều lần** (một người có thể vừa PO vừa PM).
+Lessons from Jira and Backlog (general knowledge):
 
-| Vai trò | Trách nhiệm | Gate có quyền duyệt | Tiện ích chính |
+- **Jira:** many layers (global → group/application → project role → permission scheme → issue security → workflow/field). Very detailed, complex to configure.
+- **Backlog:** two levels (organization, project) with Administrator/Member/Reporter/Viewer roles. Simple, little detail at the issue level.
+
+Applied to the product:
+- Permissions down to the **artifact level** (unpublished data, sensitive data).
+- Roles tied to the **kind** and to the **gate**.
+- Separate rights to view / comment / edit / approve.
+- Every permission change is written to the event log.
+- Simple defaults; add complex layers when needed.
+
+---
+
+## 6. Roles and role-based functions
+
+A role is a **set of permissions that can be assigned multiple times** (one person may be both PO and PM).
+
+| Role | Responsibility | Gate approval rights | Main tools |
 |---|---|---|---|
-| **PO** | Giá trị, ưu tiên, chấp nhận, phát hành | Chấp nhận nghiệp vụ, phát hành | Backlog ưu tiên, roadmap, bảng chấp nhận AC, dashboard giá trị |
-| **PM** | Lịch trình, phạm vi, rủi ro, nguồn lực | Kế hoạch, thay đổi phạm vi | Timeline/Gantt, sổ rủi ro, công suất, báo cáo tự động, yêu cầu thay đổi, cấu hình workflow/gate |
-| **BA** | Yêu cầu, tiêu chí chấp nhận, truy vết | Yêu cầu đủ để phát triển | Soạn yêu cầu có ID, ma trận truy vết, phân tích tác động, từ điển thuật ngữ |
-| **QA** | Kế hoạch/test case/kết quả/lỗi | Chất lượng, sẵn sàng test | Kho test case, nhận kết quả CI, vòng đời lỗi, độ phủ AC, báo cáo sẵn sàng phát hành |
-| **Dev** | Triển khai, ước lượng, liên kết code | Không duyệt gate nghiệp vụ | Hàng việc cá nhân, tự liên kết commit/PR, trạng thái build/test, ADR |
+| **PO** | Value, priorities, acceptance, release | Business acceptance, release | Prioritized backlog, roadmap, AC acceptance table, value dashboard |
+| **PM** | Schedule, scope, risks, resources | Plan, scope changes | Timeline/Gantt, risk register, capacity, automatic reports, change requests, workflow/gate configuration |
+| **BA** | Requirements, acceptance criteria, traceability | Requirements sufficient for development | Requirements with IDs, traceability matrix, impact analysis, glossary |
+| **QA** | Plans/test cases/results/defects | Quality, test readiness | Test case repository, CI result intake, defect lifecycle, AC coverage, release readiness report |
+| **Dev** | Implementation, estimates, code linking | Does not approve business gates | Personal work queue, automatic commit/PR linking, build/test status, ADRs |
 
-Nguyên tắc: BA và QA **không cần thấy source code**. Tầng nghiệp vụ dùng *deliverable* và *tiêu chí chấp nhận*; code/artifact là bằng chứng nằm phía sau, ẩn mặc định.
+Principle: BA and QA **do not need to see source code**. The business layer uses *deliverables* and *acceptance criteria*; code/artifacts are the evidence behind them, hidden by default.
 
 ---
 
-## 7. Workflow, gate và nguồn dữ liệu
+## 7. Workflow, gates and data sources
 
-### 7.1. Mô hình
+### 7.1. Model
 
-Dự án = đồ thị gồm:
-- **Entry:** datasource, input người dùng, hoặc deliverable do con người tạo.
-- **Switch:** rẽ nhánh theo điều kiện/trạng thái.
-- **Gate:** kiểm định chất lượng.
-- **Output/Checkpoint:** điểm đạt cuối, kèm snapshot.
+A project = a graph of:
+- **Entry:** data source, user input, or a deliverable created by a person.
+- **Switch:** branches based on conditions/status.
+- **Gate:** quality check.
+- **Output/Checkpoint:** the final accepted point, with a snapshot.
 
-### 7.2. Quyết định kiến trúc
+### 7.2. Architectural decisions
 
-- Kết hợp **dataflow** (dữ liệu chảy qua pipeline) và **token** (đơn vị công việc di chuyển giữa trạng thái); token mang tham chiếu đến snapshot dữ liệu.
-- Gate có ba kết quả: `pass` / `fail` (quay lại nút trước kèm lý do) / `needs_review` (chuyển cho người duyệt).
-- Quy tắc gate lưu dưới dạng **dữ liệu có cấu trúc**, không phải code tùy ý. Ví dụ: `failed == 0`, `coverage >= 0.80`, `approved_by has role QA`.
-- Mỗi kết quả gate là event bất biến (input nào, phiên bản luật nào, ai duyệt).
+- Combine **dataflow** (data flows through the pipeline) and **tokens** (the unit of work moving between states); a token carries a reference to a data snapshot.
+- A gate has three outcomes: `pass` / `fail` (return to the previous node with a reason) / `needs_review` (hand over to a reviewer).
+- Gate rules are stored as **structured data**, not arbitrary code. Examples: `failed == 0`, `coverage >= 0.80`, `approved_by has role QA`.
+- Each gate result is an immutable event (which inputs, which rule version, who approved).
 
-### 7.3. Nguồn dữ liệu
+### 7.3. Data sources
 
-Git (commit, PR), CI, kết quả test (JUnit XML, pytest, Go test JSON...), phân tích tĩnh, công cụ theo dõi công việc, Figma/Confluence cho thiết kế và yêu cầu.
+Git (commits, PRs), CI, test results (JUnit XML, pytest, Go test JSON...), static analysis, work tracking tools, Figma/Confluence for design and requirements.
 
-Nguyên tắc:
-- Nguồn tạo **snapshot** gắn định danh bất biến (commit SHA, run ID); gate đánh giá snapshot, không đánh giá "nhánh hiện tại".
-- **Adapter** chuẩn hóa mọi nguồn về schema chung; gate viết một lần dùng cho nhiều nguồn.
-- Xử lý idempotent, đối soát bằng polling, token tối thiểu quyền, lưu tóm tắt trong DB còn file gốc là artifact.
-- Liên kết commit ↔ item qua mã trong tên nhánh/commit, cho phép liên kết thủ công và ghi nguồn gốc liên kết.
+Principles:
+- Sources create **snapshots** that carry immutable identifiers (commit SHA, run ID); the gate evaluates snapshots, not the "current branch".
+- **Adapters** normalize every source to a common schema; a gate written once can be used across many sources.
+- Idempotent processing, reconciliation by polling, least-privilege tokens, summaries stored in the DB while the original file is an artifact.
+- Commit ↔ item linking through the code in the branch name/commit, with manual linking allowed and the origin of each link recorded.
 
-### 7.4. Truy vết nghiệp vụ
+### 7.4. Business traceability
 
 ```
-Yêu cầu (BA) → AC-03 → Test case (QA) TC-17 → Kết quả CI (PASS ở ci-8817) → Gate QA → AC-03 đã kiểm chứng
+Requirement (BA) → AC-03 → Test case (QA) TC-17 → CI result (PASS in ci-8817) → QA gate → AC-03 verified
 ```
 
-Mỗi AC có ID ổn định; thay đổi yêu cầu đánh dấu test và gate liên quan là cần xem lại (lan truyền thay đổi).
+Each AC has a stable ID; changing a requirement marks the related tests and gates for review (change propagation).
 
-### 7.5. Vấn đề phải thiết kế sẵn
+### 7.5. Problems to design for upfront
 
-Vòng lặp khi gate fail (có giới hạn số lần), lan truyền stale khi upstream đổi, rủi ro Goodhart (gate đạt ≠ chất lượng đúng nên cần phê duyệt người), tái lập (snapshot input/cấu hình/code), tách người tạo và người duyệt.
+Loops when a gate fails (with a limited number of attempts), stale propagation when upstream changes, Goodhart risk (passing the gate ≠ correct quality, so human approval is needed), reproducibility (snapshot inputs/configuration/code), separation between the creator and the approver.
 
 ---
 
-## 8. Hồ sơ chức năng (Feature dossier)
+## 8. Feature dossier
 
-Chức năng là đơn vị điều hướng trung tâm, gom: yêu cầu (nhiều phiên bản), thiết kế, công việc dev, test và kết quả, lỗi, quyết định.
+A feature is the central navigation unit, gathering: requirements (several versions), design, development work, tests and results, defects, decisions.
 
-| Góc nhìn | Trả lời | Nguồn dữ liệu | Độ khó |
+| View | Answers | Data source | Difficulty |
 |---|---|---|---|
-| **Timeline** | Chuyện gì xảy ra, theo thời gian, ai làm | Event lọc theo chức năng | Thấp |
-| **Lịch sử thay đổi** | Nội dung đổi gì (có diff) | Phiên bản yêu cầu/thiết kế | Trung bình |
-| **Version tree** | Phiên bản kế thừa/phân nhánh thế nào | Artifact có `parent_version_id` | Trung bình |
-| **Spiral / vòng lặp** | Qua bao nhiêu vòng, mỗi vòng đổi gì và vì sao | Nhóm event theo iteration + kết quả gate | Cao |
+| **Timeline** | What happened, in chronological order, who did it | Events filtered by feature | Low |
+| **Change history** | What content changed (with diffs) | Versions of requirements/designs | Medium |
+| **Version tree** | How versions inherit or branch | Artifacts with `parent_version_id` | Medium |
+| **Spiral / loops** | How many cycles, what changed in each cycle and why | Events grouped by iteration + gate results | High |
 
-Lưu ý: chỉ tạo version tree cho artifact có ý nghĩa (yêu cầu, thiết kế, PR, test case); chỉ sinh phiên bản khi có gate/phê duyệt/thay đổi được đánh dấu; hiển thị spiral như chế độ phụ, danh sách vòng có tóm tắt là chế độ mặc định; mặc định hiển thị theo hành động/vai trò, không theo cá nhân.
+Note: only create version trees for meaningful artifacts (requirements, designs, PRs, test cases); generate versions only when a gate, an approval or a marked change occurs; show the spiral as a secondary mode, with the cycle list and summaries as the default; default display by action/role, not by individual.
 
-Câu hỏi mở: iteration ánh xạ với **sprint** hay với **chu kỳ qua gate chất lượng**? (Nghiêng về gate vì gắn với bằng chứng.)
-
----
-
-## 9. Ước lượng và quản lý bất định
-
-### 9.1. Hạn chế của công cụ hiện nay
-
-Một con số duy nhất; độ chính xác giả tạo (Gantt tới từng ngày); không gắn với giả định/rủi ro; ước lượng bị dùng để đánh giá nhóm (Goodhart); không lưu lịch sử ước lượng; công việc khám phá bị trộn với công việc thường; bắt buộc điền số nên nhóm "bịa".
-
-### 9.2. Hạn chế cố hữu của con người/nhóm
-
-Planning fallacy (Kahneman & Tversky), Hofstadter's law, *unknown unknowns* (đặc biệt với thiết kế và tích hợp), thiết kế chưa chín, thời gian tích hợp bị bỏ quên, neo giá trị đầu tiên, kiến thức tập trung ở một người, scope creep không được ghi nhận.
-
-### 9.3. Chức năng đề xuất
-
-- Ước lượng dạng **khoảng/xác suất** (lạc quan–khả dĩ–bi quan; Monte Carlo trên thông lượng lịch sử).
-- Trạng thái **"chưa thể ước lượng / đang khám phá"** hợp lệ.
-- **Spike** có thời hạn, đầu ra là quyết định hoặc rủi ro đã giảm, không phải code.
-- **Sổ rủi ro** gắn với chức năng (xác suất, tác động, ước lượng bị ảnh hưởng, người theo dõi).
-- **Gate sớm:** "thiết kế đủ ổn định", "đã kiểm chứng tích hợp chính" là điều kiện để ước lượng chi tiết.
-- **Lịch sử ước lượng** + sai lệch để hiệu chỉnh theo nhóm.
-- **Dự báo lại theo vòng**, hiển thị độ bất định thu hẹp (cone of uncertainty).
-- Đo lường để cải thiện quy trình, **không** để xếp hạng cá nhân.
+Open question: does an iteration map to a **sprint** or to a **cycle through a quality gate**? (Leaning toward the gate because it is tied to evidence.)
 
 ---
 
-## 10. Phát hiện nghẽn và gợi ý thực hành
+## 9. Estimation and uncertainty management
 
-Nguyên tắc: **phát hiện → giải thích bằng dữ liệu → gợi ý vài thực hành liên quan → nhóm quyết định → app tự kiểm tra kết quả**.
+### 9.1. Limitations of current tools
 
-### 10.1. Chỉ số dòng chảy
+A single number; false precision (Gantt charts down to the day); not linked to assumptions or risks; estimates used to evaluate teams (Goodhart); estimate history not kept; exploratory work mixed with normal work; mandatory numeric fields lead teams to "make up" numbers.
 
-Cycle time, WIP, thời gian chờ theo trạng thái (queue time), tuổi của item (aging), biểu đồ dòng tích lũy (CFD), tỷ lệ/thời gian bị chặn (và blocker lặp lại).
+### 9.2. Inherent limitations of people and teams
 
-### 10.2. Khung phương pháp mượn
+Planning fallacy (Kahneman & Tversky), Hofstadter's law, *unknown unknowns* (especially with design and integration), immature designs, forgotten integration time, anchoring on the first value, knowledge concentrated in one person, unrecorded scope creep.
 
-| Phương pháp | Áp dụng |
+### 9.3. Proposed features
+
+- Estimates as **ranges/probabilities** (optimistic–likely–pessimistic; Monte Carlo over historical throughput).
+- A valid **"cannot estimate yet / exploring"** state.
+- **Time-boxed spikes**, whose output is a decision or reduced risk, not code.
+- A **risk register** linked to features (probability, impact, estimates affected, owner).
+- **Early gates:** "design is stable enough" and "main integration verified" are conditions for detailed estimation.
+- **Estimate history** and deviation to calibrate by team.
+- **Re-forecasting each cycle**, showing the narrowing uncertainty (cone of uncertainty).
+- Measure in order to improve the process, **not** to rank individuals.
+
+---
+
+## 10. Bottleneck detection and practice suggestions
+
+Principle: **detect → explain with data → suggest a few related practices → the team decides → the app checks the results itself**.
+
+### 10.1. Flow metrics
+
+Cycle time, WIP, queue time per state, item aging, cumulative flow diagram (CFD), share/duration of blocked items (and recurring blockers).
+
+### 10.2. Borrowed methods framework
+
+| Method | Application |
 |---|---|
-| **Theory of Constraints** (5 bước: xác định, khai thác, phụ thuộc, nâng cấp, lặp lại) | Khung hành động cho nghẽn |
-| **Kanban / Lean**, WIP limit, Little's law | Giới hạn việc đang làm |
-| **Toyota Andon / Kaizen / 5 Whys** | Cho phép "dừng luồng" và tìm nguyên nhân gốc |
-| **PDCA (Deming/Shewhart)** | Vòng kiểm chứng gợi ý |
-| **OODA (Boyd)** | Ra quyết định động, vòng lặp ngắn |
-| **Sun Tzu, Clausewitz** | Thích nghi theo "địa hình" nhóm; chấp nhận ma sát và sương mù |
+| **Theory of Constraints** (5 steps: identify, exploit, subordinate, elevate, repeat) | Action framework for bottlenecks |
+| **Kanban / Lean**, WIP limits, Little's law | Limits on work in progress |
+| **Toyota Andon / Kaizen / 5 Whys** | Permission to "stop the line" and find root causes |
+| **PDCA (Deming/Shewhart)** | Verification loop for suggestions |
+| **OODA (Boyd)** | Dynamic decision-making, short loops |
+| **Sun Tzu, Clausewitz** | Adapting to the team's "terrain"; accepting friction and fog |
 
-### 10.3. Ranh giới
+### 10.3. Boundaries
 
-Đo nghẽn của quy trình, không đo cá nhân; gợi ý là đề xuất và nhóm có quyền từ chối kèm lý do; mỗi gợi ý có thời hạn đánh giá; ưu tiên quy tắc đơn giản giải thích được trước khi dùng AI.
+Measure bottlenecks in the process, not in individuals; suggestions are proposals and the team may decline them with a reason; each suggestion has a review deadline; prefer simple, explainable rules before using AI.
 
 ---
 
-## 11. AI agent tự động hóa công việc trong workflow
+## 11. AI agents automating work in the workflow
 
-> Bổ sung từ side chat về ý tưởng "agent thực hiện một node, thành viên kiểm soát input/output". Các side chat khác (RBAC/ABAC, đồng bộ nhiều nguồn, mô hình phát triển phần mềm, MLflow, W&B...) **chưa được đọc** và chưa gộp vào tài liệu này.
+> Added from a side chat about the idea "an agent performs one node, team members control input/output". The other side chats (RBAC/ABAC, multi-source synchronization, software development models, MLflow, W&B...) **have not been read** and are not merged into this document.
 
-### 11.1. Ý tưởng
+### 11.1. Idea
 
-Node trong workflow đại diện cho công việc, nên bên thực hiện có thể là **người, công cụ tự động, hoặc agent AI**. Agent nhanh nhưng có thể sai một cách tự tin, nên phần "thành viên kiểm soát input và output" là **tính năng cốt lõi**, không phải phụ.
+A node in a workflow represents work, so the performer can be a **person, an automated tool, or an AI agent**. Agents are fast but can be confidently wrong, so the "team members control the agent's input and output" part is a **core feature**, not an add-on.
 
-### 11.2. Bốn nguyên tắc nền
+### 11.2. Four foundational principles
 
-1. **Agent đề xuất, gate quyết định.** Output mặc định là *bản nháp* (draft artifact); chỉ khi qua gate (tự động và/hoặc người duyệt) mới thành deliverable chính thức.
-2. **Agent không tự duyệt chính mình** (tách quyền như với người).
-3. **Mỗi node agent có một owner là thành viên**, chịu trách nhiệm về output được chấp nhận.
-4. **Mọi lần chạy đều truy vết được** như các event khác.
+1. **The agent proposes, the gate decides.** Output is by default a *draft artifact*; only after passing the gate (automatic and/or human approval) does it become an official deliverable.
+2. **An agent does not approve its own work** (permissions are separated, as for people).
+3. **Each agent node has a team-member owner** who is responsible for the accepted output.
+4. **Every run is traceable** like any other event.
 
-### 11.3. Kiểm soát đầu vào
+### 11.3. Input control
 
-| Cơ chế | Mô tả |
+| Mechanism | Description |
 |---|---|
-| **Input contract** | Khai báo agent nhận gì: schema, loại artifact, nguồn được phép |
-| **Context package** | Hiển thị cho thành viên trước khi chạy: agent sẽ "thấy" những gì |
-| **Xem và chỉnh trước khi chạy** | Bỏ bớt, thêm ghi chú, che dữ liệu nhạy cảm |
-| **Phân loại dữ liệu** | Công khai / nội bộ / bí mật / chưa công bố; agent chỉ nhận mức được phép |
-| **Snapshot đầu vào** | Lưu băm và bản sao input để tái lập và đối chiếu |
+| **Input contract** | Declares what the agent receives: schema, artifact type, allowed sources |
+| **Context package** | Shown to the team member before the run: what the agent will "see" |
+| **Review and edit before running** | Remove items, add notes, mask sensitive data |
+| **Data classification** | Public / internal / secret / unpublished; the agent receives only the allowed level |
+| **Input snapshot** | Stores a hash and a copy of the input for reproduction and comparison |
 
-**Lưu ý bảo mật:** nội dung từ nguồn ngoài (PR, comment, tài liệu) là **dữ liệu không đáng tin** và có thể chứa chỉ dẫn độc hại (prompt injection). Phải coi đó là dữ liệu để xử lý, không phải lệnh, và giới hạn quyền của agent để nội dung xấu cũng không gây hại lớn.
+**Security note:** content from external sources (PRs, comments, documents) is **untrusted data** and may contain malicious instructions (prompt injection). It must be treated as data to process, not as commands, and the agent's permissions must be limited so that malicious content cannot cause major harm.
 
-### 11.4. Kiểm soát đầu ra
+### 11.4. Output control
 
-- **Output contract:** định dạng bắt buộc (JSON schema, mẫu tài liệu); sai định dạng bị từ chối tự động.
-- **Kiểm tra tự động trước:** chạy được không, lint, schema, khớp tiêu chí chấp nhận, eval nếu có.
-- **Duyệt bởi người (`needs_review`):** xem diff input/output; chấp nhận, sửa rồi chấp nhận, hoặc từ chối kèm phản hồi để chạy lại.
-- **Ghi lại phần người sửa:** dữ liệu quý để đo chất lượng agent và cải thiện prompt.
-- **Không ghi thẳng vào dữ liệu chính:** agent chỉ ghi vào vùng nháp; "promote" là hành động của người hoặc gate.
+- **Output contract:** required format (JSON schema, document template); wrong formats are rejected automatically.
+- **Automatic checks first:** does it run, lint, schema, matches acceptance criteria, evaluation if available.
+- **Human review (`needs_review`):** see the input/output diff; accept, edit and accept, or reject with feedback to re-run.
+- **Record the human's edits:** valuable data for measuring agent quality and improving prompts.
+- **Never write directly to core data:** the agent writes only to a draft area; "promote" is an action by a person or by the gate.
 
-### 11.5. Mức tự chủ (autonomy) cấu hình theo node
+### 11.5. Autonomy level configured per node
 
-| Mức | Hành vi | Phù hợp |
+| Level | Behavior | Suitable for |
 |---|---|---|
-| **0 – Gợi ý** | Agent chỉ đưa ý kiến, người làm | Việc rủi ro cao, mới thử |
-| **1 – Soạn thảo + duyệt** | Agent tạo bản nháp, người duyệt từng lần | Mặc định cho phần lớn công việc |
-| **2 – Tự chạy + kiểm tra tự động** | Qua gate tự động thì đi tiếp, người xem tóm tắt | Việc lặp lại, có test rõ (sinh test case, định dạng tài liệu) |
-| **3 – Tự chủ có lấy mẫu** | Người chỉ kiểm tra ngẫu nhiên | Chỉ khi đã có số liệu tin cậy dài hạn |
+| **0 – Suggest** | The agent only offers opinions; a person does the work | High-risk work, new trials |
+| **1 – Draft + review** | The agent creates a draft; a person reviews each time | Default for most work |
+| **2 – Self-run + automatic checks** | Passes automatic gates and moves on; a person reviews a summary | Repetitive work with clear tests (generating test cases, document formatting) |
+| **3 – Autonomous with sampling** | A person only spot-checks randomly | Only once reliable long-term data exists |
 
-Mức nên **tự hạ** khi chất lượng giảm (ví dụ tỷ lệ bị từ chối tăng) và chỉ tăng khi có bằng chứng từ lịch sử.
+The level should be **lowered automatically** when quality drops (for example, rejection rate rises), and raised only with evidence from history.
 
-### 11.6. Guardrail vận hành
+### 11.6. Operational guardrails
 
-- **Allowlist công cụ:** ví dụ đọc repo nhưng không push; API nào được gọi; ghi vào đâu.
-- **Giới hạn ngân sách:** token, chi phí, thời gian chạy, số lần thử lại; vượt thì dừng và báo.
-- **Sandbox** cho agent chạy code.
-- **Danh tính riêng:** agent là một actor có tài khoản và quyền riêng, không dùng quyền của người giao việc.
-- **Nút dừng khẩn cấp** (liên hệ Andon): thành viên có quyền dừng được một run.
-- **Leo thang:** khi agent không chắc hoặc kiểm tra thất bại nhiều lần, trả việc về cho người kèm lý do.
+- **Tool allowlist:** for example, read a repo but not push; which APIs may be called; where it may write.
+- **Budget limits:** tokens, cost, run time, number of retries; exceeding them stops the run and raises an alert.
+- **Sandbox** for agents that run code.
+- **Own identity:** the agent is an actor with its own account and permissions, not the permissions of the person who assigned the task.
+- **Emergency stop button** (linked to Andon): a team member can stop a run.
+- **Escalation:** when the agent is uncertain or checks fail repeatedly, the task goes back to a person with the reason.
 
-### 11.7. Truy vết và cấu hình
+### 11.7. Traceability and configuration
 
 ```
 agent_run: id, node_id, token_id, agent_id, agent_version, model,
@@ -315,221 +315,221 @@ node: draft_acceptance_criteria
   agent: ba-assistant@v4
   input: [requirement_v3, glossary]
   output_schema: acceptance_criteria.v1
-  autonomy: 1          # soạn thảo + duyệt
+  autonomy: 1          # draft + review
   budget: { max_cost: 2.0, max_runs: 3 }
-  gate: ba_review      # needs_review bởi vai trò BA
+  gate: ba_review      # needs_review by the BA role
 ```
 
-### 11.8. Ví dụ theo vai trò
+### 11.8. Examples by role
 
-| Vai trò | Agent làm | Con người làm |
+| Role | Agent does | Person does |
 |---|---|---|
-| **BA** | Soạn tiêu chí chấp nhận từ yêu cầu | Duyệt và sửa |
-| **QA** | Sinh test case từ AC, đề xuất ca biên | Chọn và chỉnh |
-| **Dev** | Mở PR sửa lỗi nhỏ | Review bởi dev khác + kiểm tra tự động |
-| **Nghiên cứu** | Tóm tắt tài liệu, chạy phân tích | Kiểm chứng nguồn trích dẫn trước khi dùng |
-| **AI/ML** | Đề xuất cấu hình thí nghiệm | Phê duyệt chi phí GPU trước khi chạy |
+| **BA** | Drafts acceptance criteria from requirements | Reviews and edits |
+| **QA** | Generates test cases from AC, proposes edge cases | Selects and adjusts |
+| **Dev** | Opens a PR for a small bug fix | Reviewed by another developer + automatic checks |
+| **Research** | Summarizes documents, runs analyses | Verifies cited sources before use |
+| **AI/ML** | Proposes experiment configurations | Approves GPU cost before running |
 
-### 11.9. Rủi ro riêng của agent
+### 11.9. Agent-specific risks
 
-1. **Automation bias:** người duyệt bấm "chấp nhận" theo thói quen. Cần hiển thị phần agent không chắc, so sánh với nguồn, đo thời gian xem xét.
-2. **Chi phí kiểm chứng:** nếu duyệt tốn gần bằng tự làm thì agent không có lợi; đo tỷ lệ chấp nhận và mức chỉnh sửa theo node.
-3. **Trách nhiệm không rõ:** quy định owner và ghi lại ai chấp nhận.
-4. **Rò rỉ dữ liệu** khi gửi ngữ cảnh ra mô hình bên ngoài: chính sách theo phân loại dữ liệu, tùy chọn mô hình tự host.
-5. **Không tái lập:** mô hình thay đổi theo thời gian; ghi phiên bản mô hình và prompt, coi output là snapshot.
-6. **Dùng dữ liệu agent để đánh giá cá nhân:** tránh.
+1. **Automation bias:** reviewers click "accept" out of habit. Show the parts the agent is unsure about, compare with sources, measure review time.
+2. **Verification cost:** if review takes nearly as long as doing the work, the agent brings no benefit; measure acceptance rate and edit level per node.
+3. **Unclear accountability:** define an owner and record who accepted.
+4. **Data leakage** when context is sent to external models: policies based on data classification; option of self-hosted models.
+5. **Lack of reproducibility:** models change over time; record model and prompt versions and treat the output as a snapshot.
+6. **Using agent data to evaluate individuals:** avoid.
 
-### 11.10. Gợi ý MVP và câu hỏi mở
+### 11.10. MVP recommendations and open questions
 
-- MVP chỉ làm **mức 0 và 1**: input contract, xem/chỉnh context, output schema, gate duyệt bởi người, bản ghi `agent_run`. Chỉ mở mức cao hơn khi có số liệu về tỷ lệ chấp nhận và chỉnh sửa.
-- **Câu hỏi mở:** agent do **chính ứng dụng cung cấp** (tích hợp mô hình và quản lý prompt) hay là **agent bên ngoài** do khách hàng tự gắn qua giao diện chuẩn (webhook, MCP)? Hai cách dẫn đến thiết kế bảo mật và trách nhiệm rất khác nhau.
+- The MVP only builds **levels 0 and 1**: input contract, context review/edit, output schema, human review gate, `agent_run` record. Higher levels open only when acceptance and edit-rate data supports it.
+- **Open question:** is the agent **provided by the application itself** (integrating models and managing prompts), or an **external agent** that the customer connects through a standard interface (webhook, MCP)? The two options lead to very different security and accountability designs.
 
 ---
 
-## 12. Danh sách chức năng tổng hợp
+## 12. Consolidated feature list
 
-Ký hiệu ưu tiên: **P0** = MVP, **P1** = giai đoạn 2, **P2** = sau đó.
+Priority notation: **P0** = MVP, **P1** = phase 2, **P2** = later.
 
-### A. Nền tảng
+### A. Foundation
 
-| # | Chức năng | Ưu tiên |
+| # | Feature | Priority |
 |---|---|---|
-| A1 | Workspace, project, thành viên, đăng nhập | P0 |
-| A2 | Item có kiểu, trường tùy biến (JSONB có schema đăng ký) | P0 |
-| A3 | Link có kiểu giữa các item (kể cả khác dự án) | P0 |
-| A4 | Event log bất biến, audit trail | P0 |
-| A5 | Artifact (commit, PR, build, file, tài liệu) | P0 |
-| A6 | Multi-tenant: `tenant_id` mọi bảng + RLS; tầng điều phối tenant | P0 |
-| A7 | Silo DB / vùng dữ liệu cho doanh nghiệp, đại học | P2 |
-| A8 | Comment, mention, thông báo | P0 |
+| A1 | Workspace, project, members, sign-in | P0 |
+| A2 | Typed items, custom fields (JSONB with registered schema) | P0 |
+| A3 | Typed links between items (including across projects) | P0 |
+| A4 | Immutable event log, audit trail | P0 |
+| A5 | Artifacts (commit, PR, build, file, document) | P0 |
+| A6 | Multi-tenancy: `tenant_id` on every table + RLS; tenant routing layer | P0 |
+| A7 | Silo DB / data regions for enterprises and universities | P2 |
+| A8 | Comments, mentions, notifications | P0 |
 
-### B. Quản lý công việc
+### B. Work management
 
-| # | Chức năng | Ưu tiên |
+| # | Feature | Priority |
 |---|---|---|
-| B1 | Backlog, Kanban, bảng, sprint | P0 |
-| B2 | Timeline/Gantt, milestone, phụ thuộc | P1 |
-| B3 | Release, changelog, phiên bản | P1 |
-| B4 | Template theo kind (software / research / ai) | P1 |
-| B5 | Bug: severity, vòng đời | P0 |
+| B1 | Backlog, Kanban, boards, sprints | P0 |
+| B2 | Timeline/Gantt, milestones, dependencies | P1 |
+| B3 | Releases, changelog, versions | P1 |
+| B4 | Templates per kind (software / research / ai) | P1 |
+| B5 | Bugs: severity, lifecycle | P0 |
 
-### C. Workflow và gate
+### C. Workflow and gates
 
-| # | Chức năng | Ưu tiên |
+| # | Feature | Priority |
 |---|---|---|
-| C1 | Trình thiết kế workflow (nút: source/input/process/switch/gate/output) | P1 |
-| C2 | Gate với kết quả pass / fail / needs_review | P1 |
-| C3 | Quy tắc gate dạng dữ liệu, có phiên bản | P1 |
-| C4 | Checkpoint với snapshot, tái lập | P1 |
-| C5 | Vòng lặp có giới hạn, lan truyền stale khi upstream đổi | P1 |
-| C6 | Tách người tạo và người duyệt | P1 |
+| C1 | Workflow designer (nodes: source/input/process/switch/gate/output) | P1 |
+| C2 | Gate with pass / fail / needs_review results | P1 |
+| C3 | Gate rules as data, versioned | P1 |
+| C4 | Checkpoints with snapshots, reproducibility | P1 |
+| C5 | Limited loops, stale propagation when upstream changes | P1 |
+| C6 | Separation of creator and approver | P1 |
 
-### D. Nguồn dữ liệu và tích hợp
+### D. Data sources and integrations
 
-| # | Chức năng | Ưu tiên |
+| # | Feature | Priority |
 |---|---|---|
-| D1 | Connector GitHub/GitLab (webhook + đối soát polling) | P0 |
-| D2 | Adapter kết quả test (JUnit XML trước) | P0 |
-| D3 | Tự liên kết commit/PR ↔ item (kèm liên kết thủ công) | P0 |
-| D4 | Snapshot nguồn với định danh bất biến | P0 |
-| D5 | Connector CI, SonarQube, Figma, Confluence, Zotero, MLflow/W&B | P2 |
+| D1 | GitHub/GitLab connectors (webhooks + reconciliation polling) | P0 |
+| D2 | Test result adapters (JUnit XML first) | P0 |
+| D3 | Automatic commit/PR ↔ item linking (with manual linking) | P0 |
+| D4 | Source snapshots with immutable identifiers | P0 |
+| D5 | Connectors for CI, SonarQube, Figma, Confluence, Zotero, MLflow/W&B | P2 |
 
-### E. Hồ sơ chức năng và truy vết
+### E. Feature profile and traceability
 
-| # | Chức năng | Ưu tiên |
+| # | Feature | Priority |
 |---|---|---|
-| E1 | Hồ sơ chức năng gom yêu cầu/thiết kế/việc/test/lỗi/quyết định | P0 |
-| E2 | Timeline theo chức năng | P0 |
-| E3 | Lịch sử thay đổi có diff cho yêu cầu/thiết kế | P1 |
-| E4 | Version tree (yêu cầu, thiết kế, PR, test case) | P1 |
-| E5 | Ma trận truy vết AC ↔ test ↔ kết quả | P1 |
-| E6 | Phân tích tác động khi đổi yêu cầu | P1 |
-| E7 | Spiral / vòng lặp, danh sách vòng có tóm tắt | P2 |
+| E1 | Feature profile gathering requirements/design/work/tests/defects/decisions | P0 |
+| E2 | Timeline per feature | P0 |
+| E3 | Change history with diffs for requirements/designs | P1 |
+| E4 | Version tree (requirements, designs, PRs, test cases) | P1 |
+| E5 | AC ↔ test ↔ result traceability matrix | P1 |
+| E6 | Impact analysis when a requirement changes | P1 |
+| E7 | Spiral / loops, cycle list with summaries | P2 |
 
-### F. Theo vai trò
+### F. By role
 
-| # | Chức năng | Ưu tiên |
+| # | Feature | Priority |
 |---|---|---|
-| F1 | Vai trò nhiều-nhiều, ma trận quyền (role/permission) | P0 |
-| F2 | Góc nhìn riêng: PO, PM, BA, QA, Dev | P1 |
-| F3 | Phân quyền cấp artifact | P1 |
-| F4 | Kho test case, vòng đời lỗi, độ phủ AC | P1 |
-| F5 | Báo cáo sẵn sàng phát hành | P1 |
-| F6 | Sổ rủi ro, yêu cầu thay đổi, công suất nhóm | P1 |
+| F1 | Many-to-many roles, permission matrix (role/permission) | P0 |
+| F2 | Dedicated views: PO, PM, BA, QA, Dev | P1 |
+| F3 | Artifact-level permissions | P1 |
+| F4 | Test case repository, defect lifecycle, AC coverage | P1 |
+| F5 | Release readiness report | P1 |
+| F6 | Risk register, change requests, team capacity | P1 |
 
-### G. Ước lượng và bất định
+### G. Estimation and uncertainty
 
-| # | Chức năng | Ưu tiên |
+| # | Feature | Priority |
 |---|---|---|
-| G1 | Ước lượng dạng khoảng/độ tin cậy | P1 |
-| G2 | Trạng thái "chưa thể ước lượng", spike có thời hạn | P1 |
-| G3 | Sổ rủi ro gắn chức năng | P1 |
-| G4 | Lịch sử ước lượng và hiệu chỉnh theo nhóm | P2 |
-| G5 | Mô phỏng Monte Carlo, dự báo lại theo vòng | P2 |
+| G1 | Range/confidence estimates | P1 |
+| G2 | "Cannot estimate yet" state, time-boxed spikes | P1 |
+| G3 | Risk register linked to features | P1 |
+| G4 | Estimate history and team calibration | P2 |
+| G5 | Monte Carlo simulation, re-forecasting each cycle | P2 |
 
-### H. Phát hiện nghẽn và coaching
+### H. Bottleneck detection and coaching
 
-| # | Chức năng | Ưu tiên |
+| # | Feature | Priority |
 |---|---|---|
-| H1 | Cycle time, WIP, queue time, aging, tỷ lệ chặn | P1 |
+| H1 | Cycle time, WIP, queue time, aging, blocked rate | P1 |
 | H2 | CFD | P1 |
-| H3 | Quy tắc phát hiện nghẽn (điều kiện, ngưỡng, gợi ý) | P1 |
-| H4 | Gợi ý thực hành kèm bằng chứng, nhóm chọn/từ chối | P2 |
-| H5 | Tự đánh giá kết quả gợi ý sau thời hạn (PDCA) | P2 |
-| H6 | Andon: cho phép "dừng luồng" và gắn cảnh báo | P2 |
+| H3 | Bottleneck detection rules (conditions, thresholds, suggestions) | P1 |
+| H4 | Practice suggestions with evidence, team accepts or declines | P2 |
+| H5 | Self-evaluation of suggestion results after a deadline (PDCA) | P2 |
+| H6 | Andon: permission to "stop the line" and attach alerts | P2 |
 
-### I. Nghiên cứu và AI (module theo kind)
+### I. Research and AI (modules per kind)
 
-| # | Chức năng | Ưu tiên |
+| # | Feature | Priority |
 |---|---|---|
-| I1 | Giả thuyết, thí nghiệm, kết quả (kind research) | P1 |
-| I2 | Experiment run: tham số, metric, dataset version, checkpoint (kind ai) | P1 |
-| I3 | So sánh các run, model registry cơ bản | P2 |
-| I4 | Ghi nhận thí nghiệm bị hủy kèm lý do như dữ liệu | P1 |
-| I5 | Truy vết claim trong bản thảo ↔ run/thí nghiệm gốc | P2 |
-| I6 | Liên kết Zotero, Overleaf, OSF | P2 |
+| I1 | Hypotheses, experiments, results (research kind) | P1 |
+| I2 | Experiment run: parameters, metrics, dataset version, checkpoint (ai kind) | P1 |
+| I3 | Run comparison, basic model registry | P2 |
+| I4 | Record cancelled experiments with the reason as data | P1 |
+| I5 | Trace claims in a manuscript ↔ original run/experiment | P2 |
+| I6 | Links to Zotero, Overleaf, OSF | P2 |
 
-### J. AI agent trong workflow
+### J. AI agents in the workflow
 
-| # | Chức năng | Ưu tiên |
+| # | Feature | Priority |
 |---|---|---|
-| J1 | Node loại `agent` với owner, input contract, output schema | P1 |
-| J2 | Xem và chỉnh context package trước khi agent chạy | P1 |
-| J3 | Output vào vùng nháp, gate duyệt bởi người (xem diff, sửa, từ chối kèm phản hồi) | P1 |
-| J4 | Bản ghi `agent_run` (phiên bản mô hình/prompt, snapshot input, trace, chi phí, quyết định) | P1 |
-| J5 | Mức tự chủ 0–1 cấu hình theo node | P1 |
-| J6 | Guardrail: allowlist công cụ, ngân sách, danh tính riêng cho agent, nút dừng khẩn cấp, leo thang | P1 |
-| J7 | Phân loại dữ liệu và chính sách gửi ngữ cảnh ra mô hình ngoài | P1 |
-| J8 | Chống prompt injection: coi nội dung nguồn ngoài là dữ liệu, sandbox | P1 |
-| J9 | Số liệu chất lượng agent: tỷ lệ chấp nhận, mức chỉnh sửa, thời gian duyệt; tự hạ mức tự chủ | P2 |
-| J10 | Mức tự chủ 2–3 (tự chạy có kiểm tra tự động, lấy mẫu) | P2 |
-| J11 | Tích hợp agent bên ngoài qua giao diện chuẩn (webhook, MCP) | P2 |
+| J1 | `agent` node type with owner, input contract, output schema | P1 |
+| J2 | Review and edit the context package before the agent runs | P1 |
+| J3 | Output goes to a draft area, human review gate (see diff, edit, reject with feedback) | P1 |
+| J4 | `agent_run` record (model/prompt version, input snapshot, trace, cost, decision) | P1 |
+| J5 | Autonomy level 0–1 configured per node | P1 |
+| J6 | Guardrails: tool allowlist, budget, agent's own identity, emergency stop, escalation | P1 |
+| J7 | Data classification and policy for sending context to external models | P1 |
+| J8 | Protection against prompt injection: treat external content as data, sandbox | P1 |
+| J9 | Agent quality metrics: acceptance rate, edit level, review time; automatically lower autonomy | P2 |
+| J10 | Autonomy levels 2–3 (self-run with automatic checks, sampling) | P2 |
+| J11 | Integration of external agents through a standard interface (webhook, MCP) | P2 |
 
 ---
 
-## 13. Nhận định
+## 13. Assessment
 
-### Điểm mạnh của hướng đi
-- Khoảng trống **thật**: công cụ hiện tại hoặc linh hoạt mà không có bằng chứng, hoặc có bằng chứng mà không quản lý công việc. Chưa thấy sản phẩm nối cả giả thuyết ↔ thí nghiệm ↔ bản thảo ↔ task ↔ commit.
-- Mô hình lõi (item/link/artifact/event) đủ tổng quát cho ba loại dự án mà không ép một quy trình cứng.
-- Kết hợp **gate + bằng chứng tự động + phê duyệt người** có khả năng tạo khác biệt rõ so với công cụ PM thuần túy.
-- Hồ sơ chức năng và truy vết giải quyết đúng điểm đau mà BA/QA/PO thực sự có, chứ không chỉ dev.
-- Làm bất định nhìn thấy được là hướng ngược với phần lớn công cụ hiện nay.
+### Strengths of the direction
+- A **real** gap: current tools are either flexible without evidence, or have evidence without work management. No product yet connects hypothesis ↔ experiment ↔ manuscript ↔ task ↔ commit.
+- The core model (item/link/artifact/event) is general enough for three project kinds without forcing a rigid process.
+- Combining **gates + automatic evidence + human approval** can clearly differentiate the product from pure PM tools.
+- The feature profile and traceability address the pain points that BA/QA/PO actually have, not only developers'.
+- Making uncertainty visible runs against the direction of most current tools.
 
-### Rủi ro lớn
-1. **Phạm vi quá rộng:** làm đồng thời ba kind, workflow engine, truy vết, ước lượng và coaching sẽ rất khó. Cần chọn lát cắt hẹp nhất để chứng minh giá trị.
-2. **Gate dễ bị Goodhart:** gate đạt ≠ chất lượng đạt; cần phê duyệt người và tránh dùng chỉ số để xếp hạng cá nhân.
-3. **Gánh nặng nhập liệu:** nếu phần lớn event không đến tự động (Git, CI, test), sản phẩm sẽ lặp lại thất bại "không ai ghi chép" của ELN.
-4. **Độ phức tạp cấu hình:** workflow designer, phân quyền nhiều lớp và quy tắc gate có thể trở thành "Jira thứ hai" nếu không có mặc định tốt.
-5. **Giả định chưa kiểm chứng:** bằng chứng pain point chủ yếu từ khảo sát nhà cung cấp; chưa có dữ liệu trực tiếp từ quản lý dự án nghiên cứu và trưởng nhóm AI.
-6. **Cạnh tranh và tích hợp:** hướng "lớp liên kết" trên Git/CI/W&B/Zotero phụ thuộc chất lượng connector và có thể bị các nền tảng lớn bắt chước.
-7. **Quyền riêng tư của nhóm:** timeline theo cá nhân, ước lượng, và phát hiện nghẽn dễ trở thành giám sát nếu thiết kế không cẩn thận.
-8. **Agent làm tăng bề mặt rủi ro:** automation bias, prompt injection, rò rỉ dữ liệu ra mô hình ngoài, output không tái lập, chi phí kiểm chứng ngang tự làm (chi tiết ở mục 11.9). Nên hẹp ở mức tự chủ 0–1 trong MVP.
+### Major risks
+1. **Scope too broad:** building three kinds, a workflow engine, traceability, estimation and coaching at once will be very hard. Choose the narrowest slice to prove value.
+2. **Gates prone to Goodhart:** passing the gate ≠ quality achieved; human approval is needed, and metrics must not be used to rank individuals.
+3. **Data-entry burden:** if most events do not arrive automatically (Git, CI, tests), the product will repeat the "nobody records anything" failure of ELNs.
+4. **Configuration complexity:** a workflow designer, multi-layer permissions and gate rules can become "a second Jira" without good defaults.
+5. **Unvalidated assumptions:** pain point evidence comes mainly from vendor surveys; there is no direct data from research project managers or AI team leads.
+6. **Competition and integration:** the "linking layer" approach on top of Git/CI/W&B/Zotero depends on connector quality and can be copied by large platforms.
+7. **Team privacy:** person-level timelines, estimates and bottleneck detection easily become surveillance if not designed carefully.
+8. **Agents increase the risk surface:** automation bias, prompt injection, data leakage to external models, non-reproducible output, verification cost equal to doing the work (details in section 11.9). MVP should stay narrowly at autonomy levels 0–1.
 
-### Quyết định đã nghiêng nhưng chưa chốt
-- Cấu trúc dữ liệu: cột chung + JSONB có schema (nghiêng cách lai).
-- Iteration = chu kỳ gate hay sprint (nghiêng gate).
-- Pooled trước, silo cho doanh nghiệp.
-- Gợi ý thực hành là đề xuất, không phải quy định.
+### Decisions leaning one way but not finalized
+- Data structure: common columns + JSONB with schema (leaning toward the hybrid approach).
+- Iteration = gate cycle or sprint (leaning toward gate).
+- Pooled first, silo for enterprises.
+- Practice suggestions are proposals, not rules.
 
-### Quyết định còn mở
-1. Đối tượng đầu tiên: nhóm phần mềm, lab nghiên cứu trong trường, hay nhóm AI?
-2. Xây từ đầu hay dựng trên nền open-source (Plane, OpenProject)?
-3. Mô hình kinh doanh: thương mại, nội bộ, học thuật?
-4. Quy mô nhóm mục tiêu (cá nhân, 3–10 người, tổ chức lớn).
-5. Nền tảng: web, desktop, hay mobile.
-6. Agent do ứng dụng cung cấp hay agent bên ngoài do khách hàng gắn vào (webhook, MCP).
+### Decisions still open
+1. First target group: software teams, university research labs, or AI teams?
+2. Build from scratch or base on open source (Plane, OpenProject)?
+3. Business model: commercial, internal, academic?
+4. Target team size (individuals, 3–10 people, large organizations).
+5. Platform: web, desktop, or mobile.
+6. Agent provided by the application, or an external agent that the customer connects (webhook, MCP).
 
 ---
 
-## 14. Lộ trình đề xuất
+## 14. Suggested roadmap
 
-| Giai đoạn | Nội dung | Mục tiêu kiểm chứng |
+| Stage | Content | Validation goal |
 |---|---|---|
-| **0. Khám phá (4–6 tuần)** | Phỏng vấn 8–10 người mỗi nhóm; khảo sát ngắn 50–100 người | Xác nhận pain point nào thật sự đau và ai sẵn sàng dùng |
-| **1. MVP hẹp** | Lõi (A), tích hợp GitHub + JUnit (D1–D4), hồ sơ chức năng + timeline (E1–E2), vai trò cơ bản (F1), 1 kind | Nhóm thấy một nơi duy nhất cho một chức năng, không cần nhập tay |
-| **2. Gate và truy vết** | Workflow + gate (C), ma trận truy vết (E5), view theo vai trò (F2), nghẽn cơ bản (H1–H3), agent mức 0–1 (J1–J8) | Gate dùng được cho phát hành; BA/QA dùng không cần thấy code |
-| **3. Bất định và nghiên cứu/AI** | Ước lượng khoảng, rủi ro (G), module research/ai (I), version tree | Ước lượng bớt "điểm" và mở rộng sang kind khác |
-| **4. Coaching và quy mô** | Gợi ý thực hành, PDCA, silo DB, connector bổ sung | Thích nghi theo nhóm; sẵn sàng khách doanh nghiệp |
+| **0. Discovery (4–6 weeks)** | Interview 8–10 people per group; short survey of 50–100 people | Confirm which pain points really hurt and who is willing to use the product |
+| **1. Narrow MVP** | Core (A), GitHub + JUnit integration (D1–D4), feature profile + timeline (E1–E2), basic roles (F1), 1 kind | Teams see one place for one feature, with no manual entry |
+| **2. Gates and traceability** | Workflow + gate (C), traceability matrix (E5), role-based views (F2), basic bottleneck detection (H1–H3), agents at levels 0–1 (J1–J8) | Gates usable for releases; BA/QA can work without seeing code |
+| **3. Uncertainty and research/AI** | Range estimates, risks (G), research/ai modules (I), version tree | Estimates lose their "single number" and the product expands to other kinds |
+| **4. Coaching and scale** | Practice suggestions, PDCA, silo DB, additional connectors | Adapted per team; ready for enterprise customers |
 
-Lát cắt MVP nên đặt ở **giao điểm của ba thứ có sẵn dữ liệu tự động**: Git + kết quả test + hồ sơ chức năng, cho **một kind**; tránh làm workflow designer đầy đủ ngay từ đầu.
-
----
-
-## 15. Việc nên làm tiếp
-
-1. Soạn **bộ câu hỏi phỏng vấn** cho PM nghiên cứu, trưởng nhóm AI, và nhóm phần mềm.
-2. Chốt **ma trận quyền ở dạng dữ liệu** (`role`, `permission`, `role_permission`) và cập nhật schema (`tenant_id` mọi bảng, vai trò nhiều-nhiều).
-3. Viết **kịch bản một sprint hoàn chỉnh** cho dự án chatbot (CHAT) với năm vai trò, thể hiện deliverable, bằng chứng, và gate.
-4. Phác thảo **bộ quy tắc phát hiện nghẽn** ban đầu (điều kiện, ngưỡng, gợi ý).
-5. Phác thảo **schema chuẩn hóa** cho snapshot GitHub và JUnit XML.
-6. (Tùy chọn) Tìm thông tin cập nhật về giá/tính năng các sản phẩm và chính sách AI của nhà xuất bản.
-7. Chốt mô hình agent (của ứng dụng hay bên ngoài) và viết `agent_run` + node `agent` vào schema.
-8. Đọc các side chat còn lại (RBAC/ABAC, đồng bộ nhiều nguồn, mô hình phát triển phần mềm, MLflow, W&B, quy trình viết bài báo) và gộp vào tài liệu.
+The MVP slice should sit at the **intersection of three things with automatically available data**: Git + test results + feature profile, for **one kind**; avoid building a full workflow designer from the start.
 
 ---
 
-## Nguồn tham khảo (từ các lần tìm kiếm)
+## 15. Next steps
+
+1. Draft the **interview guide** for research PMs, AI team leads and the software team.
+2. Finalize the **permission matrix as data** (`role`, `permission`, `role_permission`) and update the schema (`tenant_id` on every table, many-to-many roles).
+3. Write a **complete one-sprint scenario** for a chatbot project (CHAT) with five roles, showing deliverables, evidence and gates.
+4. Outline an **initial set of bottleneck detection rules** (conditions, thresholds, suggestions).
+5. Outline a **standard schema** for GitHub snapshots and JUnit XML.
+6. (Optional) Look up current pricing/features of the products and publishers' AI policies.
+7. Finalize the agent model (provided by the application or external) and add `agent_run` and the `agent` node to the schema.
+8. Read the remaining side chats (RBAC/ABAC, multi-source synchronization, software development model, MLflow, W&B, paper writing workflow) and merge them into the documents.
+
+---
+
+## Sources (from the search rounds)
 
 - [Atlassian, State of Developer Experience 2025](https://www.atlassian.com/teams/software-development/state-of-developer-experience-2025)
 - [JetBrains, Developer Experience & Productivity 2025](https://lp.jetbrains.com/devex-productivity-report-full-2025-dataviz/)
@@ -538,7 +538,7 @@ Lát cắt MVP nên đặt ở **giao điểm của ba thứ có sẵn dữ li�
 - [CLPMag, Survey: scientists frustrated with ELN systems](https://clpmag.com/lab-management/survey-scientists-frustrated-eln-systems/)
 - [Liminal Bios, Why the lab notebook is failing scientists](https://liminalbios.substack.com/p/why-the-lab-notebook-is-failing-scientists)
 - [Cureus, Tailoring project management resources for research teams](https://www.cureus.com/posters/3287-tailoring-project-management-resources-for-clinical-and-translational-research-teams-insights-from-user-experience-interviews)
-- [Đại học Southampton, luận văn về công cụ số của nhà nghiên cứu](https://eprints.soton.ac.uk/384916/1/Final_Thesis_Combined.pdf)
+- [University of Southampton, thesis on researchers' digital tools](https://eprints.soton.ac.uk/384916/1/Final_Thesis_Combined.pdf)
 - [Comet, State of MLOps 2023](https://go.comet.ml/rs/912-JJP-445/images/Comet_State_of_MLOPs_Report-2023_ML_Practitioner_Survey.pdf)
-- [Comet, thông cáo báo chí 2022](https://www.comet.com/site/news-and-events/press-releases/2022/comet-releases-new-survey-highlighting-ais-latest-challenges-too-much-friction-too-little-ml/)
-- [Chalmers, nghiên cứu quản lý thí nghiệm ML (2022)](https://www.cse.chalmers.se/~bergert/paper/2022-seip-mlexpmgmt.pdf)
+- [Comet, press release 2022](https://www.comet.com/site/news-and-events/press-releases/2022/comet-releases-new-survey-highlighting-ais-latest-challenges-too-much-friction-too-little-ml/)
+- [Chalmers, research on ML experiment management (2022)](https://www.cse.chalmers.se/~bergert/paper/2022-seip-mlexpmgmt.pdf)

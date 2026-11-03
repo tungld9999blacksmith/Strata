@@ -3,50 +3,50 @@ info:
   title: Strata API
   version: 0.1.0
   description: |
-    Đặc tả REST API của Strata (MVP, dự án phần mềm).
-    Nguồn: [README mục 6.2](../../README.md), [PRD mục 6](../product/PRD_Strata_MVP.md).
+    REST API specification for Strata (MVP, software projects).
+    Sources: [README section 6.2](../../README.md), [PRD section 6](../product/PRD_Strata_MVP.md).
 
-    Quy ước chung:
-    - Dữ liệu JSON, mã hóa UTF-8. Thời gian theo ISO 8601 (UTC).
-    - Xác thực người dùng bằng cookie phiên sau OIDC (GitHub, Google). Upload JUnit dùng token CI theo dự án.
-    - Mọi endpoint kiểm quyền phía server theo RBAC (PRD mục 7). Truy cập đối tượng thuộc workspace khác trả `404`.
-    - Snapshot, event và gate_run là bất biến: không có endpoint sửa hoặc xóa (BR03, BR06, AC-F6-05).
-    - Strata không có endpoint trả mã nguồn hay diff (BR10).
-    - Danh sách trả theo cursor: `?cursor=...&limit=...` (mặc định 50, tối đa 200).
+    General conventions:
+    - JSON payloads, UTF-8 encoded. Timestamps use ISO 8601 (UTC).
+    - User requests authenticate with a session cookie after OIDC sign-in (GitHub, Google). JUnit uploads use a per-project CI token.
+    - Every endpoint enforces permissions server-side with RBAC (PRD section 7). Access to objects in another workspace returns `404`.
+    - Snapshots, events and gate_runs are immutable: no endpoint edits or deletes them (BR03, BR06, AC-F6-05).
+    - Strata has no endpoint that returns source code or diffs (BR10).
+    - Lists use cursor pagination: `?cursor=...&limit=...` (default 50, maximum 200).
   contact:
-    name: Nhóm Strata
+    name: Strata team
   license:
     name: See LICENSE
     url: ../../LICENSE
 
 servers:
   - url: https://{host}/api/v1
-    description: Môi trường triển khai
+    description: Deployment environment
     variables:
       host:
         default: localhost:8080
 
 tags:
   - name: Auth
-    description: Đăng nhập OIDC (P01)
+    description: OIDC sign-in (P01)
   - name: Workspace
-    description: Workspace, thành viên, lời mời (P17)
+    description: Workspace, members, invitations (P17)
   - name: Project
-    description: Dự án, sprint, token CI (P04, P07, P16)
+    description: Projects, sprints, CI tokens (P04, P07, P16)
   - name: Item
-    description: Item, link, bình luận, backlog, board (P05–P08)
+    description: Items, links, comments, backlog, board (P05–P08)
   - name: Notification
-    description: Thông báo trong app (P03)
+    description: In-app notifications (P03)
   - name: Integration
-    description: GitHub App và webhook (P15)
+    description: GitHub App and webhooks (P15)
   - name: Evidence
-    description: Test report, snapshot (P11, P16)
+    description: Test reports, snapshots (P11, P16)
   - name: Feature
-    description: Hồ sơ chức năng, timeline, AC và truy vết (P09, P10, P12)
+    description: Feature profile, timeline, AC and traceability (P09, P10, P12)
   - name: Gate
-    description: Luật gate, gate_run, duyệt (P13, P14)
+    description: Gate rules, gate_run, approval (P13, P14)
   - name: Audit
-    description: Nhật ký sự kiện (P18)
+    description: Event log (P18)
 
 security:
   - cookieAuth: []
@@ -58,7 +58,7 @@ paths:
   /auth/login:
     get:
       tags: [Auth]
-      summary: Chuyển hướng sang nhà cung cấp OIDC
+      summary: Redirect to the OIDC provider
       security: []
       parameters:
         - name: provider
@@ -69,12 +69,12 @@ paths:
             enum: [github, google]
         - name: returnTo
           in: query
-          description: Đường dẫn nội bộ sau khi đăng nhập. Không nhận URL ngoài.
+          description: Internal path to return to after sign-in. External URLs are not accepted.
           schema:
             type: string
       responses:
         "302":
-          description: Chuyển hướng sang trang đăng nhập của nhà cung cấp
+          description: Redirect to the provider's sign-in page
           headers:
             Location:
               schema:
@@ -86,8 +86,8 @@ paths:
   /auth/callback:
     get:
       tags: [Auth]
-      summary: Nhận callback OIDC, tạo phiên
-      description: Lần đầu đăng nhập tạo `app_user` và yêu cầu tạo hoặc tham gia workspace (AC-F1-01).
+      summary: Handle the OIDC callback and create a session
+      description: The first sign-in creates an `app_user` and asks the user to create or join a workspace (AC-F1-01).
       security: []
       parameters:
         - name: code
@@ -102,7 +102,7 @@ paths:
             type: string
       responses:
         "302":
-          description: Tạo phiên thành công, chuyển về trang chủ hoặc trang yêu cầu tham gia workspace
+          description: Session created; redirect to the home page or to the workspace join page
           headers:
             Set-Cookie:
               schema:
@@ -113,21 +113,21 @@ paths:
   /auth/logout:
     post:
       tags: [Auth]
-      summary: Hủy phiên hiện tại
+      summary: End the current session
       responses:
         "204":
-          description: Đã hủy phiên
+          description: Session ended
         "401":
           $ref: "#/components/responses/Unauthorized"
 
   /me:
     get:
       tags: [Auth]
-      summary: Thông tin người dùng hiện tại và quyền hiệu lực
-      description: Quyền hiệu lực là hợp của các vai trò theo dự án (AC-F2-01, BR04).
+      summary: Current user and effective permissions
+      description: Effective permissions are the union of the roles held per project (AC-F2-01, BR04).
       responses:
         "200":
-          description: Người dùng hiện tại
+          description: The current user
           content:
             application/json:
               schema:
@@ -136,12 +136,12 @@ paths:
           $ref: "#/components/responses/Unauthorized"
 
   # ---------------------------------------------------------------
-  # Workspace và thành viên (P17)
+  # Workspace and members (P17)
   # ---------------------------------------------------------------
   /workspaces:
     post:
       tags: [Workspace]
-      summary: Tạo workspace
+      summary: Create a workspace
       requestBody:
         required: true
         content:
@@ -150,7 +150,7 @@ paths:
               $ref: "#/components/schemas/WorkspaceCreate"
       responses:
         "201":
-          description: Workspace đã tạo; người tạo là Workspace Admin
+          description: Workspace created; the creator becomes Workspace Admin
           content:
             application/json:
               schema:
@@ -165,8 +165,8 @@ paths:
       - $ref: "#/components/parameters/WorkspaceId"
     post:
       tags: [Workspace]
-      summary: Mời thành viên bằng email hoặc link
-      description: Lời mời có hạn 7 ngày (AC-F1-04). Chỉ Workspace Admin được mời (PRD F1, mục 2.5).
+      summary: Invite a member by email or link
+      description: Invitations are valid for 7 days (AC-F1-04). Only Workspace Admins may invite (PRD F1, section 2.5).
       requestBody:
         required: true
         content:
@@ -175,7 +175,7 @@ paths:
               $ref: "#/components/schemas/InvitationCreate"
       responses:
         "201":
-          description: Lời mời đã tạo
+          description: Invitation created
           content:
             application/json:
               schema:
@@ -190,8 +190,8 @@ paths:
   /invitations/{token}/accept:
     post:
       tags: [Workspace]
-      summary: Chấp nhận lời mời
-      description: Trả `410` nếu lời mời đã quá 7 ngày, bị thu hồi hoặc đã dùng (AC-F1-04). Không tạo membership trong trường hợp đó.
+      summary: Accept an invitation
+      description: Returns `410` if the invitation is older than 7 days, has been revoked or has already been used (AC-F1-04). No membership is created in those cases.
       parameters:
         - name: token
           in: path
@@ -200,7 +200,7 @@ paths:
             type: string
       responses:
         "200":
-          description: Đã tham gia workspace
+          description: Joined the workspace
           content:
             application/json:
               schema:
@@ -217,10 +217,10 @@ paths:
       - $ref: "#/components/parameters/WorkspaceId"
     get:
       tags: [Workspace]
-      summary: Danh sách thành viên và vai trò
+      summary: List members and their roles
       responses:
         "200":
-          description: Danh sách thành viên
+          description: List of members
           content:
             application/json:
               schema:
@@ -241,10 +241,10 @@ paths:
       - $ref: "#/components/parameters/ProjectId"
     put:
       tags: [Workspace]
-      summary: Gán vai trò cho thành viên theo dự án
+      summary: Assign roles to members per project
       description: |
-        Mỗi thay đổi ghi event `role_assignment.changed` kèm actor, trước và sau (AC-F2-03, BR13).
-        Trả `409` nếu thao tác gỡ Admin cuối cùng (AC-F2-04).
+        Every change writes a `role_assignment.changed` event with actor, before and after (AC-F2-03, BR13).
+        Returns `409` when the operation would remove the last Admin (AC-F2-04).
       requestBody:
         required: true
         content:
@@ -259,7 +259,7 @@ paths:
                     $ref: "#/components/schemas/RoleAssignment"
       responses:
         "200":
-          description: Đã cập nhật vai trò
+          description: Roles updated
           content:
             application/json:
               schema:
@@ -280,18 +280,18 @@ paths:
           $ref: "#/components/responses/Conflict"
 
   # ---------------------------------------------------------------
-  # Dự án, sprint, token CI (P04, P07, P16)
+  # Projects, sprints, CI tokens (P04, P07, P16)
   # ---------------------------------------------------------------
   /projects:
     get:
       tags: [Project]
-      summary: Danh sách dự án trong workspace
+      summary: List projects in the workspace
       parameters:
         - $ref: "#/components/parameters/Cursor"
         - $ref: "#/components/parameters/Limit"
       responses:
         "200":
-          description: Danh sách dự án
+          description: List of projects
           content:
             application/json:
               schema:
@@ -300,8 +300,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
     post:
       tags: [Project]
-      summary: Tạo dự án
-      description: Mã `key` 2–6 ký tự in hoa, duy nhất trong workspace (US04). `kind` cố định `software` trong MVP.
+      summary: Create a project
+      description: The `key` is 2–6 uppercase characters, unique within the workspace (US04). `kind` is fixed to `software` in the MVP.
       requestBody:
         required: true
         content:
@@ -310,7 +310,7 @@ paths:
               $ref: "#/components/schemas/ProjectCreate"
       responses:
         "201":
-          description: Dự án đã tạo
+          description: Project created
           content:
             application/json:
               schema:
@@ -329,10 +329,10 @@ paths:
       - $ref: "#/components/parameters/ProjectKey"
     get:
       tags: [Project]
-      summary: Danh sách sprint của dự án
+      summary: List sprints of a project
       responses:
         "200":
-          description: Danh sách sprint
+          description: List of sprints
           content:
             application/json:
               schema:
@@ -349,7 +349,7 @@ paths:
           $ref: "#/components/responses/NotFound"
     post:
       tags: [Project]
-      summary: Tạo sprint
+      summary: Create a sprint
       requestBody:
         required: true
         content:
@@ -358,7 +358,7 @@ paths:
               $ref: "#/components/schemas/SprintCreate"
       responses:
         "201":
-          description: Sprint đã tạo
+          description: Sprint created
           content:
             application/json:
               schema:
@@ -375,7 +375,7 @@ paths:
       - $ref: "#/components/parameters/SprintId"
     patch:
       tags: [Project]
-      summary: Sửa sprint (tên, ngày bắt đầu, ngày kết thúc)
+      summary: Edit a sprint (name, start date, end date)
       requestBody:
         required: true
         content:
@@ -384,7 +384,7 @@ paths:
               $ref: "#/components/schemas/SprintPatch"
       responses:
         "200":
-          description: Sprint đã cập nhật
+          description: Sprint updated
           content:
             application/json:
               schema:
@@ -403,10 +403,10 @@ paths:
       - $ref: "#/components/parameters/ProjectKey"
     get:
       tags: [Project]
-      summary: Danh sách token CI của dự án (không trả giá trị token)
+      summary: List CI tokens of a project (token values are not returned)
       responses:
         "200":
-          description: Danh sách token
+          description: List of tokens
           content:
             application/json:
               schema:
@@ -423,10 +423,10 @@ paths:
           $ref: "#/components/responses/Forbidden"
     post:
       tags: [Project]
-      summary: Tạo token CI
+      summary: Create a CI token
       description: |
-        Giá trị token chỉ trả một lần trong phản hồi. Token lưu mã hóa và có quyền tối thiểu, chỉ upload test report (BR12).
-        Token không dùng tài khoản người (PRD mục 2.5.1).
+        The token value is returned only once in the response. Tokens are stored encrypted and have minimum permissions, limited to uploading test reports (BR12).
+        Tokens are not tied to a personal account (PRD section 2.5.1).
       requestBody:
         required: true
         content:
@@ -435,7 +435,7 @@ paths:
               $ref: "#/components/schemas/CiTokenCreate"
       responses:
         "201":
-          description: Token đã tạo
+          description: Token created
           content:
             application/json:
               schema:
@@ -452,10 +452,10 @@ paths:
       - $ref: "#/components/parameters/TokenId"
     delete:
       tags: [Project]
-      summary: Thu hồi token CI
+      summary: Revoke a CI token
       responses:
         "204":
-          description: Đã thu hồi
+          description: Token revoked
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -464,14 +464,14 @@ paths:
           $ref: "#/components/responses/NotFound"
 
   # ---------------------------------------------------------------
-  # Item, link, bình luận, backlog (P05–P08)
+  # Items, links, comments, backlog (P05–P08)
   # ---------------------------------------------------------------
   /projects/{projectKey}/items:
     parameters:
       - $ref: "#/components/parameters/ProjectKey"
     get:
       tags: [Item]
-      summary: Danh sách item của dự án (backlog, board)
+      summary: List items of a project (backlog, board)
       parameters:
         - name: type
           in: query
@@ -508,7 +508,7 @@ paths:
         - $ref: "#/components/parameters/Limit"
       responses:
         "200":
-          description: Danh sách item
+          description: List of items
           content:
             application/json:
               schema:
@@ -519,10 +519,10 @@ paths:
           $ref: "#/components/responses/NotFound"
     post:
       tags: [Item]
-      summary: Tạo item
+      summary: Create an item
       description: |
-        Mã item `KEY-n` tăng nguyên tử, không tái sử dụng sau khi xóa (BR02, AC-F3-01).
-        Bug bắt buộc có `severity` S1–S4; thiếu thì trả `400` (AC-F3-03). Ràng buộc này kiểm ở tầng ứng dụng.
+        The item code `KEY-n` is incremented atomically and is not reused after deletion (BR02, AC-F3-01).
+        A bug must have a `severity` of S1–S4; if it is missing, the response is `400` (AC-F3-03). This rule is enforced in the application layer.
       requestBody:
         required: true
         content:
@@ -531,7 +531,7 @@ paths:
               $ref: "#/components/schemas/ItemCreate"
       responses:
         "201":
-          description: Item đã tạo
+          description: Item created
           content:
             application/json:
               schema:
@@ -550,10 +550,10 @@ paths:
       - $ref: "#/components/parameters/ItemId"
     get:
       tags: [Item]
-      summary: Chi tiết item (dùng cho drawer)
+      summary: Item details (used by the drawer)
       responses:
         "200":
-          description: Chi tiết item
+          description: Item details
           content:
             application/json:
               schema:
@@ -564,8 +564,8 @@ paths:
           $ref: "#/components/responses/NotFound"
     patch:
       tags: [Item]
-      summary: Sửa item
-      description: Không đổi `state` qua endpoint này; dùng `/items/{itemId}/transitions`.
+      summary: Edit an item
+      description: The `state` cannot be changed through this endpoint; use `/items/{itemId}/transitions`.
       requestBody:
         required: true
         content:
@@ -574,7 +574,7 @@ paths:
               $ref: "#/components/schemas/ItemPatch"
       responses:
         "200":
-          description: Item đã cập nhật
+          description: Item updated
           content:
             application/json:
               schema:
@@ -589,11 +589,11 @@ paths:
           $ref: "#/components/responses/NotFound"
     delete:
       tags: [Item]
-      summary: Xóa mềm item
-      description: Ghi event; PM khôi phục được trong 30 ngày (AC-F3-04).
+      summary: Soft-delete an item
+      description: Writes an event; a PM can restore the item within 30 days (AC-F3-04).
       responses:
         "204":
-          description: Đã xóa mềm
+          description: Item soft-deleted
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -606,10 +606,10 @@ paths:
       - $ref: "#/components/parameters/ItemId"
     post:
       tags: [Item]
-      summary: Khôi phục item đã xóa mềm (trong 30 ngày)
+      summary: Restore a soft-deleted item (within 30 days)
       responses:
         "200":
-          description: Item đã khôi phục
+          description: Item restored
           content:
             application/json:
               schema:
@@ -628,17 +628,17 @@ paths:
       - $ref: "#/components/parameters/ItemId"
     post:
       tags: [Item]
-      summary: Chuyển trạng thái theo vòng đời
+      summary: Change status according to the lifecycle
       description: |
-        Vòng đời mặc định: `backlog → in_progress → review → done`, có `cancelled`.
-        Chuyển sai vòng đời (ví dụ `backlog → done`) bị từ chối với `409` (AC-F3-02).
+        Default lifecycle: `backlog → in_progress → review → done`, plus `cancelled`.
+        An out-of-lifecycle change (for example `backlog → done`) is refused with `409` (AC-F3-02).
 
-        Chuyển `review → done` kích hoạt gate trên snapshot mới nhất (UC12, F8):
-        - `pass`: item sang `done`.
-        - `needs_review`: item giữ `review`, chờ QA trong hàng đợi gate.
-        - `fail`: item quay về `in_progress` kèm lý do trong `gateRun`.
+        The `review → done` transition triggers the gate on the latest snapshot (UC12, F8):
+        - `pass`: the item moves to `done`.
+        - `needs_review`: the item stays in `review` and waits for QA in the gate queue.
+        - `fail`: the item returns to `in_progress` with the reason in `gateRun`.
 
-        Người đề nghị không được tự duyệt gate của chính mình (BR08, AC-F8-05).
+        The person requesting a transition may not approve their own gate (BR08, AC-F8-05).
       requestBody:
         required: true
         content:
@@ -647,7 +647,7 @@ paths:
               $ref: "#/components/schemas/TransitionRequest"
       responses:
         "200":
-          description: Đã chuyển trạng thái (kèm kết quả gate nếu có)
+          description: Status changed (including the gate result, if any)
           content:
             application/json:
               schema:
@@ -668,10 +668,10 @@ paths:
       - $ref: "#/components/parameters/ItemId"
     get:
       tags: [Item]
-      summary: Danh sách link của item (item ↔ item và item ↔ artifact)
+      summary: List links of an item (item ↔ item and item ↔ artifact)
       responses:
         "200":
-          description: Danh sách link
+          description: List of links
           content:
             application/json:
               schema:
@@ -688,10 +688,10 @@ paths:
           $ref: "#/components/responses/NotFound"
     post:
       tags: [Item]
-      summary: Tạo link thủ công
+      summary: Create a manual link
       description: |
-        Dùng cho item ↔ item (`parent_of`, `blocks`, `relates_to`, `implements`, `tests`, `duplicates`)
-        và item ↔ artifact (`source = manual`, US16, UC03).
+        Used for item ↔ item (`parent_of`, `blocks`, `relates_to`, `implements`, `tests`, `duplicates`)
+        and item ↔ artifact links (`source = manual`, US16, UC03).
       requestBody:
         required: true
         content:
@@ -700,7 +700,7 @@ paths:
               $ref: "#/components/schemas/LinkCreate"
       responses:
         "201":
-          description: Link đã tạo, ghi event
+          description: Link created; event written
           content:
             application/json:
               schema:
@@ -721,13 +721,13 @@ paths:
       - $ref: "#/components/parameters/LinkId"
     delete:
       tags: [Item]
-      summary: Gỡ liên kết
+      summary: Remove a link
       description: |
-        Gỡ liên kết tự động sai; liên kết không tự tạo lại cho cùng cặp (AC-F5-05).
-        Ghi event kèm actor.
+        Removes an automatic link that was wrong; the link is not recreated automatically for the same pair (AC-F5-05).
+        Writes an event with the actor.
       responses:
         "204":
-          description: Đã gỡ liên kết
+          description: Link removed
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -740,13 +740,13 @@ paths:
       - $ref: "#/components/parameters/ItemId"
     get:
       tags: [Item]
-      summary: Danh sách bình luận của item
+      summary: List comments on an item
       parameters:
         - $ref: "#/components/parameters/Cursor"
         - $ref: "#/components/parameters/Limit"
       responses:
         "200":
-          description: Danh sách bình luận
+          description: List of comments
           content:
             application/json:
               schema:
@@ -757,7 +757,7 @@ paths:
           $ref: "#/components/responses/NotFound"
     post:
       tags: [Item]
-      summary: Thêm bình luận (Markdown, có @mention)
+      summary: Add a comment (Markdown, with @mentions)
       requestBody:
         required: true
         content:
@@ -766,7 +766,7 @@ paths:
               $ref: "#/components/schemas/CommentCreate"
       responses:
         "201":
-          description: Bình luận đã tạo; người được mention nhận thông báo ≤ 10 giây (AC-F4-01)
+          description: Comment created; mentioned people are notified within 10 seconds (AC-F4-01)
           content:
             application/json:
               schema:
@@ -785,8 +785,8 @@ paths:
       - $ref: "#/components/parameters/CommentId"
     patch:
       tags: [Item]
-      summary: Sửa bình luận hoặc đánh dấu Quyết định
-      description: Sửa nội dung giữ lịch sử trong event (AC-F4-02). Đánh dấu `isDecision` hiện ở hồ sơ và timeline (AC-F4-04).
+      summary: Edit a comment or mark it as a Decision
+      description: Edits keep their history in events (AC-F4-02). Marking `isDecision` makes it appear in the profile and timeline (AC-F4-04).
       requestBody:
         required: true
         content:
@@ -795,7 +795,7 @@ paths:
               $ref: "#/components/schemas/CommentPatch"
       responses:
         "200":
-          description: Bình luận đã cập nhật
+          description: Comment updated
           content:
             application/json:
               schema:
@@ -814,8 +814,8 @@ paths:
       - $ref: "#/components/parameters/ProjectKey"
     put:
       tags: [Item]
-      summary: Lưu thứ tự backlog sau khi kéo-thả
-      description: Thứ tự lưu và người khác thấy trong ≤ 2 giây (AC-F3-05).
+      summary: Save the backlog order after drag-and-drop
+      description: The order is saved and other people see it within 2 seconds (AC-F3-05).
       requestBody:
         required: true
         content:
@@ -826,13 +826,13 @@ paths:
               properties:
                 itemIds:
                   type: array
-                  description: Danh sách item theo thứ tự mới từ trên xuống.
+                  description: Items in the new order, from top to bottom.
                   items:
                     type: string
                     format: uuid
       responses:
         "204":
-          description: Đã lưu thứ tự
+          description: Order saved
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -843,12 +843,12 @@ paths:
           $ref: "#/components/responses/NotFound"
 
   # ---------------------------------------------------------------
-  # Thông báo (P03)
+  # Notifications (P03)
   # ---------------------------------------------------------------
   /notifications:
     get:
       tags: [Notification]
-      summary: Thông báo của người dùng hiện tại
+      summary: Notifications of the current user
       parameters:
         - name: unread
           in: query
@@ -858,7 +858,7 @@ paths:
         - $ref: "#/components/parameters/Limit"
       responses:
         "200":
-          description: Danh sách thông báo
+          description: List of notifications
           content:
             application/json:
               schema:
@@ -871,7 +871,7 @@ paths:
       - $ref: "#/components/parameters/NotificationId"
     patch:
       tags: [Notification]
-      summary: Đánh dấu đã đọc
+      summary: Mark as read or unread
       requestBody:
         required: true
         content:
@@ -884,7 +884,7 @@ paths:
                   type: boolean
       responses:
         "200":
-          description: Đã cập nhật
+          description: Updated
           content:
             application/json:
               schema:
@@ -895,12 +895,12 @@ paths:
           $ref: "#/components/responses/NotFound"
 
   # ---------------------------------------------------------------
-  # Tích hợp GitHub (P15)
+  # GitHub integration (P15)
   # ---------------------------------------------------------------
   /integrations/github/installations:
     post:
       tags: [Integration]
-      summary: Ghi nhận cài GitHub App cho repo và gắn với dự án
+      summary: Record a GitHub App installation for a repo and attach it to a project
       requestBody:
         required: true
         content:
@@ -909,7 +909,7 @@ paths:
               $ref: "#/components/schemas/GithubInstallationCreate"
       responses:
         "201":
-          description: Đã gắn repo với dự án
+          description: Repo attached to the project
           content:
             application/json:
               schema:
@@ -926,8 +926,8 @@ paths:
   /integrations/github/status:
     get:
       tags: [Integration]
-      summary: Sức khỏe tích hợp GitHub
-      description: Trả `degraded` khi webhook lỗi và chờ polling bù (mục 2.5.2, mục 4.7).
+      summary: GitHub integration health
+      description: Returns `degraded` when webhooks fail, while waiting for polling to compensate (section 2.5.2, section 4.7).
       parameters:
         - name: projectKey
           in: query
@@ -936,7 +936,7 @@ paths:
             $ref: "#/components/schemas/ProjectKey"
       responses:
         "200":
-          description: Trạng thái tích hợp
+          description: Integration status
           content:
             application/json:
               schema:
@@ -951,8 +951,8 @@ paths:
   /integrations/github/unlinked:
     get:
       tags: [Integration]
-      summary: Commit và PR chưa gắn item
-      description: Danh sách để liên kết thủ công (UC06 luồng thay thế, mục 4.6).
+      summary: Commits and PRs not attached to an item
+      description: List for manual linking (UC06 alternative flow, section 4.6).
       parameters:
         - name: projectKey
           in: query
@@ -963,7 +963,7 @@ paths:
         - $ref: "#/components/parameters/Limit"
       responses:
         "200":
-          description: Danh sách artifact chưa liên kết
+          description: List of unlinked artifacts
           content:
             application/json:
               schema:
@@ -976,13 +976,13 @@ paths:
   /webhooks/github:
     post:
       tags: [Integration]
-      summary: Nhận webhook GitHub App
+      summary: Receive GitHub App webhooks
       description: |
-        Sự kiện: `push`, `pull_request`, `check_run`, `workflow_run` (AC-F5).
+        Events: `push`, `pull_request`, `check_run`, `workflow_run` (AC-F5).
 
-        Quy trình (UC06): xác thực HMAC → kiểm tra delivery id → ghi job → trả `202`.
-        Delivery đã xử lý trả `200` và bỏ qua (AC-F5-02). Chữ ký sai trả `401` (AC-F5-03).
-        Webhook bị mất được polling bù trong ≤ 15 phút (AC-F5-04).
+        Flow (UC06): verify HMAC → check the delivery id → write a job → return `202`.
+        A delivery that was already processed returns `200` and is skipped (AC-F5-02). A wrong signature returns `401` (AC-F5-03).
+        A lost webhook is compensated by polling within 15 minutes (AC-F5-04).
       security: []
       parameters:
         - name: X-GitHub-Event
@@ -994,13 +994,13 @@ paths:
         - name: X-GitHub-Delivery
           in: header
           required: true
-          description: Delivery id, dùng làm `external_ref` để idempotent (BR05).
+          description: Delivery id, used as `external_ref` for idempotency (BR05).
           schema:
             type: string
         - name: X-Hub-Signature-256
           in: header
           required: true
-          description: Chữ ký HMAC-SHA256 của thân yêu cầu.
+          description: HMAC-SHA256 signature of the request body.
           schema:
             type: string
             pattern: "^sha256=[0-9a-f]{64}$"
@@ -1010,33 +1010,33 @@ paths:
           application/json:
             schema:
               type: object
-              description: Payload gốc của GitHub; chỉ đọc metadata.
+              description: Original GitHub payload; only metadata is read.
       responses:
         "200":
-          description: Delivery đã xử lý trước đó, bỏ qua
+          description: Delivery was already processed; skipped
         "202":
-          description: Đã nhận và xếp job xử lý
+          description: Received and queued for processing
         "401":
           $ref: "#/components/responses/Unauthorized"
         "413":
           $ref: "#/components/responses/PayloadTooLarge"
 
   # ---------------------------------------------------------------
-  # Test report và snapshot (P11, P16)
+  # Test reports and snapshots (P11, P16)
   # ---------------------------------------------------------------
   /projects/{projectKey}/test-reports:
     parameters:
       - $ref: "#/components/parameters/ProjectKey"
     post:
       tags: [Evidence]
-      summary: Upload JUnit XML và tạo snapshot
+      summary: Upload JUnit XML and create a snapshot
       description: |
-        Dùng token CI theo dự án (không dùng tài khoản người). Tối đa 20 MB (AC-F6-04, `413`).
+        Uses a project CI token (not a personal account). Maximum 20 MB (AC-F6-04, `413`).
 
-        Snapshot bất biến gắn commit SHA, run id và hash file (AC-F6-01).
-        Cùng (SHA, run id, hash) gửi lại không tạo snapshot thứ hai, trả `200` với snapshot cũ (AC-F6-02).
-        XML hỏng trả `422` kèm lý do và không tạo snapshot (AC-F6-03).
-        Không có endpoint sửa hoặc xóa snapshot (AC-F6-05).
+        The immutable snapshot is tied to the commit SHA, run id and file hash (AC-F6-01).
+        Re-sending the same (SHA, run id, hash) does not create a second snapshot; it returns `200` with the existing one (AC-F6-02).
+        Broken XML returns `422` with the reason and creates no snapshot (AC-F6-03).
+        There is no endpoint to edit or delete snapshots (AC-F6-05).
       security:
         - ciToken: []
       parameters:
@@ -1049,7 +1049,7 @@ paths:
         - name: X-Run-Id
           in: header
           required: true
-          description: Mã lần chạy CI.
+          description: CI run identifier.
           schema:
             type: string
             maxLength: 128
@@ -1059,20 +1059,20 @@ paths:
           application/xml:
             schema:
               type: string
-              description: Nội dung JUnit XML (`testsuite` / `testcase`).
+              description: JUnit XML content (`testsuite` / `testcase`).
           application/octet-stream:
             schema:
               type: string
               format: binary
       responses:
         "200":
-          description: Đã tồn tại snapshot cùng (SHA, run id, hash)
+          description: A snapshot with the same (SHA, run id, hash) already exists
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Snapshot"
         "201":
-          description: Snapshot đã tạo
+          description: Snapshot created
           content:
             application/json:
               schema:
@@ -1091,7 +1091,7 @@ paths:
       - $ref: "#/components/parameters/SnapshotId"
     get:
       tags: [Evidence]
-      summary: Tóm tắt snapshot
+      summary: Snapshot summary
       responses:
         "200":
           description: Snapshot
@@ -1109,7 +1109,7 @@ paths:
       - $ref: "#/components/parameters/SnapshotId"
     get:
       tags: [Evidence]
-      summary: Kết quả từng test của snapshot
+      summary: Result of each test in the snapshot
       parameters:
         - name: status
           in: query
@@ -1119,7 +1119,7 @@ paths:
         - $ref: "#/components/parameters/Limit"
       responses:
         "200":
-          description: Danh sách kết quả test
+          description: List of test results
           content:
             application/json:
               schema:
@@ -1130,20 +1130,20 @@ paths:
           $ref: "#/components/responses/NotFound"
 
   # ---------------------------------------------------------------
-  # Hồ sơ chức năng, timeline (P09, P10)
+  # Feature profile, timeline (P09, P10)
   # ---------------------------------------------------------------
   /features/{featureId}/dossier:
     parameters:
       - $ref: "#/components/parameters/FeatureId"
     get:
       tags: [Feature]
-      summary: Hồ sơ chức năng (tóm tắt, AC, item con, PR/CI, test mới nhất, quyết định)
+      summary: Feature profile (summary, AC, child items, PR/CI, latest tests, decisions)
       description: |
-        Tải ≤ 2 giây p95 với 500 event (AC-F7-01). PR và commit chỉ có metadata, không diff (AC-F7-03).
-        Chức năng chưa có test trả `latestSnapshot: null`; giao diện hiện "chưa có kết quả" (UC08).
+        Loads within 2 seconds at p95 with 500 events (AC-F7-01). PRs and commits carry metadata only, no diffs (AC-F7-03).
+        A feature with no tests returns `latestSnapshot: null`; the UI shows "no results yet" (UC08).
       responses:
         "200":
-          description: Hồ sơ chức năng
+          description: Feature profile
           content:
             application/json:
               schema:
@@ -1160,18 +1160,18 @@ paths:
       - $ref: "#/components/parameters/FeatureId"
     get:
       tags: [Feature]
-      summary: Timeline của chức năng và con cháu
+      summary: Timeline of the feature and its descendants
       parameters:
         - name: category
           in: query
-          description: Lọc theo loại sự kiện (AC-F7-04).
+          description: Filter by event category (AC-F7-04).
           schema:
             $ref: "#/components/schemas/TimelineCategory"
         - $ref: "#/components/parameters/Cursor"
         - $ref: "#/components/parameters/Limit"
       responses:
         "200":
-          description: Sự kiện theo thời gian giảm dần
+          description: Events in descending chronological order
           content:
             application/json:
               schema:
@@ -1184,17 +1184,17 @@ paths:
           $ref: "#/components/responses/NotFound"
 
   # ---------------------------------------------------------------
-  # AC và truy vết (P12)
+  # AC and traceability (P12)
   # ---------------------------------------------------------------
   /features/{featureId}/acs:
     parameters:
       - $ref: "#/components/parameters/FeatureId"
     get:
       tags: [Feature]
-      summary: Danh sách AC của chức năng
+      summary: List the AC of a feature
       responses:
         "200":
-          description: Danh sách AC
+          description: List of AC
           content:
             application/json:
               schema:
@@ -1211,8 +1211,8 @@ paths:
           $ref: "#/components/responses/NotFound"
     post:
       tags: [Feature]
-      summary: Thêm AC có ID ổn định
-      description: ID dạng `KEY-n/AC-m`, không đổi sau khi tạo (US25, F9).
+      summary: Add an AC with a stable ID
+      description: IDs take the form `KEY-n/AC-m` and do not change after creation (US25, F9).
       requestBody:
         required: true
         content:
@@ -1221,7 +1221,7 @@ paths:
               $ref: "#/components/schemas/AcceptanceCriterionCreate"
       responses:
         "201":
-          description: AC đã tạo
+          description: AC created
           content:
             application/json:
               schema:
@@ -1240,9 +1240,9 @@ paths:
       - $ref: "#/components/parameters/AcId"
     patch:
       tags: [Feature]
-      summary: Sửa nội dung AC
+      summary: Edit the content of an AC
       description: |
-        Đổi nội dung AC đánh dấu mọi liên kết test của AC là `stale` cho đến khi QA xác nhận (AC-F9-03, BR14).
+        Changing the content of an AC marks all of its test links as `stale` until QA confirms (AC-F9-03, BR14).
       requestBody:
         required: true
         content:
@@ -1251,7 +1251,7 @@ paths:
               $ref: "#/components/schemas/AcceptanceCriterionPatch"
       responses:
         "200":
-          description: AC đã cập nhật
+          description: AC updated
           content:
             application/json:
               schema:
@@ -1270,9 +1270,9 @@ paths:
       - $ref: "#/components/parameters/AcId"
     put:
       tags: [Feature]
-      summary: Gán hoặc cập nhật liên kết AC ↔ test thủ công
+      summary: Set or update manual AC ↔ test links
       description: |
-        Tự động qua tag `AC:KEY-n/AC-m` trong tên test hoặc classname (F9). Thao tác này cũng dùng để QA xác nhận liên kết `stale`.
+        Created automatically from the `AC:KEY-n/AC-m` tag in a test name or classname (F9). This endpoint is also used by QA to confirm `stale` links.
       requestBody:
         required: true
         content:
@@ -1288,7 +1288,7 @@ paths:
                     format: uuid
       responses:
         "200":
-          description: Liên kết đã cập nhật
+          description: Links updated
           content:
             application/json:
               schema:
@@ -1313,11 +1313,11 @@ paths:
       - $ref: "#/components/parameters/FeatureId"
     get:
       tags: [Feature]
-      summary: Ma trận AC × test × kết quả snapshot mới nhất
-      description: Độ phủ = AC có test / tổng AC (AC-F9-02).
+      summary: Matrix of AC × tests × latest snapshot results
+      description: Coverage = AC with tests / total AC (AC-F9-02).
       responses:
         "200":
-          description: Ma trận truy vết
+          description: Traceability matrix
           content:
             application/json:
               schema:
@@ -1330,17 +1330,17 @@ paths:
           $ref: "#/components/responses/NotFound"
 
   # ---------------------------------------------------------------
-  # Luật gate và gate_run (P13, P14)
+  # Gate rules and gate_run (P13, P14)
   # ---------------------------------------------------------------
   /projects/{projectKey}/gate-rules:
     parameters:
       - $ref: "#/components/parameters/ProjectKey"
     get:
       tags: [Gate]
-      summary: Luật gate hiện hành của dự án
+      summary: Current gate rule of the project
       responses:
         "200":
-          description: Luật gate hiện hành
+          description: Current gate rule
           content:
             application/json:
               schema:
@@ -1351,14 +1351,14 @@ paths:
           $ref: "#/components/responses/NotFound"
     put:
       tags: [Gate]
-      summary: Sửa luật gate (tạo phiên bản mới)
+      summary: Edit the gate rule (creates a new version)
       description: |
-        Luật là dữ liệu có phiên bản. Mỗi lần lưu tạo phiên bản mới; `gate_run` cũ giữ phiên bản cũ (AC-F8-04, BR09).
-        Có thể kèm `preview` để xem trước kết quả trên snapshot hiện tại (P13).
+        Rules are versioned data. Each save creates a new version; old `gate_run` records keep their old version (AC-F8-04, BR09).
+        Pass `preview=true` to evaluate the rule on the latest snapshot without saving a version (P13).
       parameters:
         - name: preview
           in: query
-          description: Chỉ đánh giá thử trên snapshot mới nhất, không lưu phiên bản.
+          description: Evaluate only on the latest snapshot, without saving a version.
           schema:
             type: boolean
             default: false
@@ -1370,7 +1370,7 @@ paths:
               $ref: "#/components/schemas/GateRuleUpdate"
       responses:
         "200":
-          description: Luật đã lưu, hoặc kết quả xem thử khi `preview=true`
+          description: Rule saved, or preview result when `preview=true`
           content:
             application/json:
               schema:
@@ -1389,10 +1389,10 @@ paths:
       - $ref: "#/components/parameters/FeatureId"
     get:
       tags: [Gate]
-      summary: Lịch sử gate_run của chức năng
+      summary: Gate run history of the feature
       responses:
         "200":
-          description: Danh sách gate_run
+          description: List of gate_runs
           content:
             application/json:
               schema:
@@ -1411,10 +1411,10 @@ paths:
           $ref: "#/components/responses/NotFound"
     post:
       tags: [Gate]
-      summary: Chạy gate trên snapshot mới nhất
+      summary: Run the gate on the latest snapshot
       description: |
-        Gate đánh giá snapshot mới nhất, không đánh giá nhánh hiện tại (BR06). Không có snapshot → `fail` với lý do "thiếu bằng chứng" (UC12).
-        Kết quả bất biến, kèm snapshot và phiên bản luật (BR09). Cùng snapshot và luật cho cùng kết quả (AC-F8-03).
+        The gate evaluates the latest snapshot, not the current branch (BR06). With no snapshot, the result is `fail` with the reason "missing evidence" (UC12).
+        The result is immutable and records the snapshot and rule version (BR09). The same snapshot and rule give the same result (AC-F8-03).
       requestBody:
         content:
           application/json:
@@ -1426,7 +1426,7 @@ paths:
                   maxLength: 1000
       responses:
         "201":
-          description: gate_run đã lưu
+          description: gate_run saved
           content:
             application/json:
               schema:
@@ -1441,7 +1441,7 @@ paths:
   /gate-runs:
     get:
       tags: [Gate]
-      summary: Hàng chờ duyệt gate (P14)
+      summary: Gate review queue (P14)
       parameters:
         - name: result
           in: query
@@ -1453,7 +1453,7 @@ paths:
         - $ref: "#/components/parameters/Limit"
       responses:
         "200":
-          description: Danh sách gate_run
+          description: List of gate_runs
           content:
             application/json:
               schema:
@@ -1474,10 +1474,10 @@ paths:
       - $ref: "#/components/parameters/GateRunId"
     post:
       tags: [Gate]
-      summary: QA chấp nhận hoặc từ chối gate needs_review
+      summary: QA accepts or rejects a `needs_review` gate
       description: |
-        Chấp nhận → `pass`, item sang `done`. Từ chối → `fail`, item quay về `in_progress` (UC12).
-        Lý do là bắt buộc (US24). Người đề nghị chuyển `done` không được tự duyệt (BR08, AC-F8-05) → `403`.
+        Accept → `pass`; the item moves to `done`. Reject → `fail`; the item returns to `in_progress` (UC12).
+        A reason is mandatory (US24). The person who requested the move to `done` may not approve their own gate (BR08, AC-F8-05) → `403`.
       requestBody:
         required: true
         content:
@@ -1486,7 +1486,7 @@ paths:
               $ref: "#/components/schemas/GateDecisionRequest"
       responses:
         "200":
-          description: Đã ghi quyết định, gate_run cập nhật
+          description: Decision recorded; gate_run updated
           content:
             application/json:
               schema:
@@ -1503,13 +1503,13 @@ paths:
           $ref: "#/components/responses/Conflict"
 
   # ---------------------------------------------------------------
-  # Nhật ký sự kiện (P18)
+  # Event log (P18)
   # ---------------------------------------------------------------
   /events:
     get:
       tags: [Audit]
-      summary: Nhật ký sự kiện của workspace (chỉ Admin và PM)
-      description: Event chỉ thêm, không có endpoint sửa hoặc xóa (BR03, PRD mục 7).
+      summary: Workspace event log (Admin and PM only)
+      description: Events are append-only; no endpoint edits or deletes them (BR03, PRD section 7).
       parameters:
         - name: projectKey
           in: query
@@ -1519,7 +1519,7 @@ paths:
           in: query
           schema:
             type: string
-          description: Ví dụ `role_assignment.changed`.
+          description: For example `role_assignment.changed`.
         - name: actorId
           in: query
           schema:
@@ -1529,7 +1529,7 @@ paths:
         - $ref: "#/components/parameters/Limit"
       responses:
         "200":
-          description: Danh sách event
+          description: List of events
           content:
             application/json:
               schema:
@@ -1545,11 +1545,11 @@ components:
       type: apiKey
       in: cookie
       name: strata_session
-      description: Cookie phiên sau đăng nhập OIDC.
+      description: Session cookie issued after OIDC sign-in.
     ciToken:
       type: http
       scheme: bearer
-      description: Token CI theo dự án, quyền tối thiểu, chỉ upload test report (BR12).
+      description: Per-project CI token with minimum permissions, limited to uploading test reports (BR12).
 
   parameters:
     WorkspaceId:
@@ -1570,7 +1570,7 @@ components:
       name: projectKey
       in: path
       required: true
-      description: Mã dự án 2–6 ký tự in hoa.
+      description: Project key of 2–6 uppercase characters.
       schema:
         $ref: "#/components/schemas/ProjectKey"
     ItemId:
@@ -1612,7 +1612,7 @@ components:
       name: featureId
       in: path
       required: true
-      description: Id của item loại `feature` (neo của hồ sơ F7).
+      description: Id of an item of type `feature` (the anchor of the F7 profile).
       schema:
         type: string
         format: uuid
@@ -1660,49 +1660,49 @@ components:
 
   responses:
     BadRequest:
-      description: Dữ liệu không hợp lệ hoặc thiếu trường bắt buộc (ví dụ bug thiếu severity, AC-F3-03)
+      description: Invalid data or a required field is missing (for example a bug without severity, AC-F3-03)
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
     Unauthorized:
-      description: Chưa đăng nhập, phiên hết hạn, hoặc chữ ký/token không hợp lệ
+      description: Not signed in, session expired, or invalid signature/token
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
     Forbidden:
-      description: Không đủ quyền. Nội dung nêu rõ vai trò cần có (mục 4.7)
+      description: Insufficient permissions. The message states which role is required (section 4.7)
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
     NotFound:
-      description: Không tồn tại, hoặc thuộc workspace khác (AC-F1-02)
+      description: Does not exist, or belongs to another workspace (AC-F1-02)
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
     Conflict:
-      description: Xung đột trạng thái hoặc vi phạm quy tắc nghiệp vụ (vòng đời, mã trùng, gỡ Admin cuối)
+      description: State conflict or business rule violation (lifecycle, duplicate code, removing the last Admin)
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
     Gone:
-      description: Tài nguyên hết hạn (lời mời quá 7 ngày)
+      description: Resource expired (invitation older than 7 days)
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
     PayloadTooLarge:
-      description: File hoặc thân yêu cầu vượt giới hạn (20 MB cho JUnit, AC-F6-04)
+      description: File or request body exceeds the limit (20 MB for JUnit, AC-F6-04)
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
     UnprocessableEntity:
-      description: Nội dung hợp lệ về cú pháp nhưng không xử lý được, ví dụ XML hỏng (AC-F6-03)
+      description: Syntactically valid content that cannot be processed, for example broken XML (AC-F6-03)
       content:
         application/json:
           schema:
@@ -1715,11 +1715,11 @@ components:
       properties:
         code:
           type: string
-          description: Mã lỗi máy đọc, ví dụ `INVALID_TRANSITION`, `NOT_FOUND`, `XML_INVALID`.
+          description: Machine-readable error code, for example `INVALID_TRANSITION`, `NOT_FOUND`, `XML_INVALID`.
           example: INVALID_TRANSITION
         message:
           type: string
-          description: Thông báo cho người dùng, kèm lý do.
+          description: Message for the user, including the reason.
         details:
           type: object
           additionalProperties: true
@@ -1790,7 +1790,7 @@ components:
                 type: string
               roles:
                 type: array
-                description: Vai trò toàn workspace (Workspace Admin) và vai trò theo dự án.
+                description: Workspace-wide role (Workspace Admin) and per-project roles.
                 items:
                   $ref: "#/components/schemas/Role"
 
@@ -1805,7 +1805,7 @@ components:
           type: string
         dataLocation:
           type: string
-          description: Nơi chứa dữ liệu (`TENANT.data_location`).
+          description: Where the data is stored (`TENANT.data_location`).
         createdAt:
           type: string
           format: date-time
@@ -1826,7 +1826,7 @@ components:
         email:
           type: string
           format: email
-          description: Bỏ trống nếu tạo link mời.
+          description: Leave empty to create a link invitation.
         roles:
           type: array
           minItems: 1
@@ -1846,7 +1846,7 @@ components:
         link:
           type: string
           format: uri
-          description: Chỉ có khi tạo link mời.
+          description: Only present when a link invitation is created.
         status:
           type: string
           enum: [pending, accepted, expired, revoked]
@@ -1897,7 +1897,7 @@ components:
         kind:
           type: string
           enum: [software]
-          description: Cố định `software` trong MVP.
+          description: Fixed to `software` in the MVP.
         createdAt:
           type: string
           format: date-time
@@ -2011,7 +2011,7 @@ components:
           properties:
             token:
               type: string
-              description: Chỉ trả một lần; không lưu dạng rõ trên server.
+              description: Returned only once; never stored in plain text on the server.
 
     Item:
       type: object
@@ -2023,7 +2023,7 @@ components:
         key:
           type: string
           pattern: "^[A-Z]{2,6}-[0-9]+$"
-          description: Mã `KEY-n`, ổn định (BR02).
+          description: The `KEY-n` code, stable (BR02).
           example: KEY-12
         projectId:
           type: string
@@ -2041,7 +2041,7 @@ components:
           allOf:
             - $ref: "#/components/schemas/Severity"
           nullable: true
-          description: Bắt buộc khi `type = bug`.
+          description: Required when `type = bug`.
         assigneeId:
           type: string
           format: uuid
@@ -2054,10 +2054,10 @@ components:
           type: string
           format: uuid
           nullable: true
-          description: Chức năng (item `feature`) mà item này thuộc về.
+          description: The feature (an item of type `feature`) this item belongs to.
         rank:
           type: number
-          description: Thứ tự backlog.
+          description: Backlog order.
         deletedAt:
           type: string
           format: date-time
@@ -2137,7 +2137,7 @@ components:
           $ref: "#/components/schemas/ItemState"
         reason:
           type: string
-          description: Bắt buộc khi từ chối hoặc hủy.
+          description: Required when rejecting or cancelling.
 
     TransitionResult:
       type: object
@@ -2149,7 +2149,7 @@ components:
           allOf:
             - $ref: "#/components/schemas/GateRun"
           nullable: true
-          description: Có khi chuyển `review → done`.
+          description: Present when moving `review → done`.
 
     Link:
       type: object
@@ -2166,7 +2166,7 @@ components:
         toId:
           type: string
           format: uuid
-          description: Id item hoặc artifact.
+          description: Id of an item or an artifact.
         toKind:
           type: string
           enum: [item, artifact]
@@ -2273,7 +2273,7 @@ components:
           type: string
         link:
           type: string
-          description: Đường dẫn nội bộ tới item hoặc comment.
+          description: Internal path to the item or comment.
         read:
           type: boolean
         createdAt:
@@ -2350,13 +2350,13 @@ components:
           enum: [commit, pull_request, ci_run]
         externalRef:
           type: string
-          description: Khóa idempotent (delivery id, SHA, run id).
+          description: Idempotency key (delivery id, SHA, run id).
         title:
           type: string
-          description: Tiêu đề commit hoặc PR. Không có diff.
+          description: Commit or PR title. No diff.
         status:
           type: string
-          description: Trạng thái PR hoặc CI.
+          description: PR or CI status.
         author:
           type: string
         url:
@@ -2397,10 +2397,10 @@ components:
           type: string
         fileHash:
           type: string
-          description: SHA-256 của file gốc.
+          description: SHA-256 of the original file.
         objectRef:
           type: string
-          description: Tham chiếu object storage. Không phải URL công khai.
+          description: Reference in object storage. Not a public URL.
         total:
           type: object
           required: [pass, fail, skip]
@@ -2439,10 +2439,10 @@ components:
           minimum: 0
         message:
           type: string
-          description: Thông báo lỗi (cắt tối đa 2000 ký tự).
+          description: Error message (truncated to 2000 characters).
         acTags:
           type: array
-          description: Tag `AC:KEY-n/AC-m` đọc được từ tên hoặc classname.
+          description: `AC:KEY-n/AC-m` tags read from the name or classname.
           items:
             type: string
 
@@ -2480,7 +2480,7 @@ components:
           $ref: "#/components/schemas/TimelineCategory"
         payload:
           type: object
-          description: Trước và sau khi thay đổi, khi có. Không chứa diff hay mã nguồn.
+          description: Before and after values, where applicable. Contains no diffs or source code.
           additionalProperties: true
         at:
           type: string
@@ -2508,19 +2508,19 @@ components:
           allOf:
             - $ref: "#/components/schemas/GateResult"
           nullable: true
-          description: Kết quả gate gần nhất.
+          description: Result of the most recent gate.
         acs:
           type: array
           items:
             $ref: "#/components/schemas/AcceptanceCriterion"
         children:
           type: array
-          description: Item con (story, task, bug).
+          description: Child items (stories, tasks, bugs).
           items:
             $ref: "#/components/schemas/Item"
         artifacts:
           type: array
-          description: Commit và PR liên kết, chỉ metadata.
+          description: Linked commits and PRs, metadata only.
           items:
             $ref: "#/components/schemas/Artifact"
         latestSnapshot:
@@ -2548,16 +2548,16 @@ components:
           format: uuid
         text:
           type: string
-          description: Given/When/Then hoặc mô tả.
+          description: Given/When/Then or a description.
         coverage:
           type: string
           enum: [verified, uncovered, stale]
-          description: Đã kiểm chứng (pass ở snapshot mới nhất), chưa phủ, hoặc stale.
+          description: Verified (passing in the latest snapshot), uncovered, or stale.
         snapshotId:
           type: string
           format: uuid
           nullable: true
-          description: Snapshot làm bằng chứng.
+          description: Snapshot used as evidence.
 
     AcceptanceCriterionCreate:
       type: object
@@ -2603,7 +2603,7 @@ components:
           nullable: true
         coverage:
           type: object
-          description: Tỷ lệ AC có test.
+          description: Share of AC that have tests.
           required: [covered, total]
           properties:
             covered:
@@ -2642,12 +2642,12 @@ components:
           type: string
         expr:
           type: string
-          description: Điều kiện dạng dữ liệu, ví dụ `tests.failed == 0`, `tests.passed_ratio >= 0.95`.
+          description: Condition expressed as data, for example `tests.failed == 0` or `tests.passed_ratio >= 0.95`.
           example: tests.failed == 0
         requiresReview:
           type: boolean
           default: false
-          description: Nếu đạt nhưng cần QA duyệt, kết quả là `needs_review`.
+          description: If it passes but needs human approval, the result is `needs_review`.
 
     GateRule:
       type: object
@@ -2671,7 +2671,7 @@ components:
           format: date-time
         preview:
           type: object
-          description: Kết quả xem thử khi `preview=true`.
+          description: Preview result when `preview=true`.
           additionalProperties: true
 
     GateRuleUpdate:
@@ -2696,17 +2696,17 @@ components:
         ruleVersion:
           type: integer
           minimum: 1
-          description: Phiên bản luật tại thời điểm chạy (BR09).
+          description: Rule version at the time of the run (BR09).
         snapshotId:
           type: string
           format: uuid
           nullable: true
-          description: Null khi thiếu bằng chứng; khi đó `result = fail`.
+          description: Null when evidence is missing; the result is then `fail`.
         result:
           $ref: "#/components/schemas/GateResult"
         failures:
           type: array
-          description: Các điều kiện không đạt, ví dụ danh sách test fail (AC-F8-01).
+          description: Conditions that were not met, for example the list of failing tests (AC-F8-01).
           items:
             type: object
             required: [expr, reason]

@@ -1,458 +1,458 @@
-# PRD — Strata MVP (Workspace cho dự án phát triển phần mềm)
+# PRD — Strata MVP (Workspace for software development projects)
 
-> Strata là workspace nối công việc với bằng chứng: mỗi chức năng của một dự án phần mềm có một hồ sơ gom yêu cầu, công việc, commit/PR, kết quả test và quyết định, cập nhật tự động từ GitHub và CI.
-> **Phạm vi MVP:** chỉ dự án phần mềm. Dự án nghiên cứu, viết báo khoa học, dự án AI/ML và AI agent được giữ trong kế hoạch dài hạn ([PLAN_Strata.md](PLAN_Strata.md)) và Phụ lục B.
-> **Nguồn chuẩn:** các quyết định kiến trúc nằm ở [system-architecture.md](../background/system-architecture.md). Các pain point chưa kiểm chứng được gắn nhãn "Giả định" và cần phỏng vấn thực địa (mục 14).
+> Strata is a workspace that connects work with evidence: each feature of a software project has one profile that gathers requirements, work items, commits/PRs, test results and decisions, updated automatically from GitHub and CI.
+> **MVP scope:** software projects only. Research projects, scientific paper writing, AI/ML projects and AI agents are kept in the long-term plan ([PLAN_Strata.md](PLAN_Strata.md)) and Appendix B.
+> **Canonical source:** architecture decisions are in [system-architecture.md](../background/system-architecture.md). Pain points that cannot yet be verified are labeled "Assumption" and must be validated through field interviews (section 14).
 
 ---
 
-## 0. Thông tin tài liệu
+## 0. Document information
 
 | Field | Value |
 |---|---|
-| Product | Strata — workspace hợp nhất cho dự án phần mềm, nghiên cứu và AI (MVP: phần mềm) |
+| Product | Strata — unified workspace for software projects, research and AI (MVP: software) |
 | Version | v0.1 |
-| Status | Draft — chờ chốt nhóm người dùng đầu tiên và quy mô đội build |
+| Status | Draft — waiting for the first user group and build team size to be confirmed |
 | Product Owner | TBD |
 | Project Manager | TBD |
 | Tech Lead | TBD |
-| Ngày cập nhật | 03/11/2026 |
-| Khung thời gian | T0 → T0 + 10 tuần (T0 = ngày đủ nhân sự bắt đầu build, chưa chốt) |
+| Last updated | 2026-11-03 |
+| Timeframe | T0 → T0 + 10 weeks (T0 = the day the build team is fully staffed; not yet fixed) |
 
 ### Change log
 
-| Version | Ngày | Thay đổi |
+| Version | Date | Change |
 |---|---|---|
-| v0.1 | 03/11/2026 | Bản đầu. Thu hẹp phạm vi từ "phần mềm · nghiên cứu · AI" xuống phần mềm. Giữ nghiên cứu/AI làm phase sau (Phụ lục B). |
+| v0.1 | 2026-11-03 | First version. Scope narrowed from "software · research · AI" to software. Research/AI kept as later phases (Appendix B). |
 
 ---
 
-## 1. Tóm tắt
+## 1. Summary
 
-**Vấn đề:** thông tin về một chức năng phần mềm nằm rải rác ở công cụ quản lý công việc, Git, CI và tài liệu. BA, QA, PO phải hỏi dev hoặc tổng hợp tay để biết chức năng đang ở đâu, đã được kiểm chứng chưa, vì sao yêu cầu đổi.
+**Problem:** information about a software feature is scattered across the work management tool, Git, CI and documents. BA, QA and PO have to ask developers or compile information by hand to find out where a feature is, whether it has been verified, and why a requirement changed.
 
-**Giải pháp MVP:** Strata gom mọi thứ quanh **chức năng (feature)**. Commit, PR và kết quả test (JUnit) tự đến từ GitHub/CI, được lưu thành **snapshot bất biến**. Mỗi chức năng có hồ sơ và timeline. Một **gate chất lượng** đơn giản đánh giá snapshot để quyết định "đủ điều kiện hoàn thành".
+**MVP solution:** Strata gathers everything around a **feature**. Commits, PRs and test results (JUnit) arrive automatically from GitHub/CI and are stored as **immutable snapshots**. Each feature has a profile and a timeline. A simple **quality gate** evaluates the snapshot to decide whether the feature is "eligible for completion".
 
-**Thành công của MVP:** một nhóm phần mềm 3–10 người dùng Strata thật trong ít nhất 4 tuần, hầu hết liên kết commit/PR–item không cần nhập tay, và BA/QA trả lời được "chức năng X đang ở đâu" mà không phải hỏi dev.
+**MVP success:** a software team of 3–10 people uses Strata for real work for at least 4 weeks, most commit/PR–item links require no manual entry, and BA/QA can answer "where is feature X?" without asking developers.
 
 ```
-GitHub/CI → webhook/upload → snapshot bất biến → liên kết với item → hồ sơ chức năng + timeline → gate → quyết định hoàn thành
+GitHub/CI → webhook/upload → immutable snapshot → link to item → feature profile + timeline → gate → completion decision
 ```
 
-**Thuật ngữ:** *chức năng (feature)* là đơn vị công việc của người dùng, có hồ sơ riêng. *F-n* (F1…F10) là tính năng của chính Strata trong tài liệu này.
+**Terms:** *feature* is the user-facing unit of work, with its own profile. *F-n* (F1…F10) are the features of Strata itself as described in this document.
 
 ---
 
-## 2. Vấn đề (Pain points)
+## 2. Problems (Pain points)
 
-Nhãn bằng chứng: **Có nguồn** = có khảo sát/bài viết nhưng phần lớn từ nhà cung cấp công cụ nên chỉ có giá trị định hướng; **Giả định** = suy luận từ brainstorm, chưa phỏng vấn.
+Evidence labels: **Sourced** = backed by a survey or article, mostly from tool vendors, so only directional value; **Assumption** = inferred from brainstorming, not yet validated through interviews.
 
-### 2.1 Phía người làm (Dev, QA)
+### 2.1 From the makers' side (Dev, QA)
 
-| ID | Pain point | Bằng chứng | Tính năng |
+| ID | Pain point | Evidence | Features |
 |---|---|---|---|
-| PP-01 | Thông tin một chức năng rải rác ở nhiều công cụ, phải tổng hợp thủ công | Có nguồn (khảo sát Atlassian 2025, định hướng) | F5, F6, F7 |
-| PP-02 | Quy trình nặng nề, nhiều thủ tục không tạo giá trị; lãnh đạo không hiểu khó khăn của developer | Có nguồn (Atlassian: 63% developer; InfoWorld) | F3, F10 |
-| PP-03 | Nhập liệu tay để "cập nhật trạng thái" mà dữ liệu đã có sẵn ở Git/CI | Giả định | F5, F6 |
-| PP-04 | Kiểm tra "đủ chất lượng để phát hành" dựa trên cảm tính, kiểm tay, khó tái lập | Giả định | F6, F8 |
+| PP-01 | Information about a feature is scattered across many tools and must be compiled by hand | Sourced (Atlassian survey 2025, directional) | F5, F6, F7 |
+| PP-02 | Heavy processes with many formalities that add no value; leadership does not understand developers' difficulties | Sourced (Atlassian: 63% of developers; InfoWorld) | F3, F10 |
+| PP-03 | Manual entry to "update status" even though the data already exists in Git/CI | Assumption | F5, F6 |
+| PP-04 | Checking "good enough to release" relies on gut feeling and manual checks, hard to reproduce | Assumption | F6, F8 |
 
-### 2.2 Phía điều phối (PO, PM, BA)
+### 2.2 From the coordinators' side (PO, PM, BA)
 
-| ID | Pain point | Bằng chứng | Tính năng |
+| ID | Pain point | Evidence | Features |
 |---|---|---|---|
-| PP-05 | Không thấy tình trạng thật của yêu cầu so với code/test nếu không hỏi dev; BA/QA không cần xem code nhưng cần biết "đã kiểm chứng chưa" | Giả định | F7, F9, F10 |
-| PP-06 | Mất lịch sử vì sao yêu cầu đổi, quyết định nào đã chốt | Giả định | F4, F7 |
-| PP-07 | Công cụ cấu hình phức tạp, cần người chuyên trách ("Jira thứ hai") | Có nguồn (bài viết quan điểm, định hướng) | F2, F3 |
+| PP-05 | Without asking developers, the real status of a requirement compared with code/tests is unknown; BA/QA do not need to read code but need to know "has it been verified?" | Assumption | F7, F9, F10 |
+| PP-06 | The history of why a requirement changed and which decisions were settled is lost | Assumption | F4, F7 |
+| PP-07 | Tools are complex to configure and need a dedicated specialist ("a second Jira") | Sourced (opinion articles, directional) | F2, F3 |
 
 ---
 
-## 3. Mục tiêu & phi mục tiêu
+## 3. Goals and non-goals
 
-### 3.1 Mục tiêu
+### 3.1 Goals
 
-| # | Mục tiêu | Pain point |
+| # | Goal | Pain point |
 |---|---|---|
-| G1 | Một chức năng có một nơi duy nhất cho yêu cầu, công việc, commit/PR, kết quả test và quyết định | PP-01, PP-06 |
-| G2 | Bằng chứng đến tự động từ GitHub và CI; nhập tay chỉ là ngoại lệ | PP-03 |
-| G3 | BA/QA/PO biết trạng thái kiểm chứng của chức năng mà không cần xem code | PP-05 |
-| G4 | Quyết định "đủ điều kiện hoàn thành" dựa trên snapshot, tái lập được | PP-04 |
-| G5 | Mặc định đơn giản: nhóm bắt đầu dùng trong dưới 30 phút, không cần cấu hình workflow | PP-02, PP-07 |
+| G1 | A feature has one single place for requirements, work items, commits/PRs, test results and decisions | PP-01, PP-06 |
+| G2 | Evidence arrives automatically from GitHub and CI; manual entry is only an exception | PP-03 |
+| G3 | BA/QA/PO know the verification status of a feature without reading code | PP-05 |
+| G4 | The decision "eligible for completion" is based on a snapshot and is reproducible | PP-04 |
+| G5 | Simple defaults: teams start using it in under 30 minutes, with no workflow configuration | PP-02, PP-07 |
 
-### 3.2 Phi mục tiêu
+### 3.2 Non-goals
 
-Không thay thế Jira/Linear cho mọi trường hợp (không có cấu hình trường/workflow tự do); không lưu hay hiển thị mã nguồn; không đo hay xếp hạng cá nhân; không có AI agent, nghiên cứu, AI/ML, ước lượng, phân tích nghẽn trong MVP.
+Does not replace Jira/Linear in every case (no free-form field or workflow configuration); does not store or display source code; does not measure or rank individuals; the MVP has no AI agent, research, AI/ML, estimation or bottleneck analysis.
 
 ---
 
-## 4. Người dùng
+## 4. Users
 
-| Persona | Mô tả | Kênh | Spec |
+| Persona | Description | Channel | Spec |
 |---|---|---|---|
-| Workspace Admin | Tạo workspace, mời thành viên, kết nối GitHub | Web app | F1, F2, F5 |
-| PO | Quyết định giá trị, ưu tiên, chấp nhận chức năng | Web app | F3, F7, F8, F10 |
-| PM | Tiến độ sprint, rủi ro, cấu hình gate | Web app | F3, F8, F10 |
-| BA | Viết yêu cầu và tiêu chí chấp nhận (AC), truy vết | Web app | F3, F7, F9 |
-| QA | Test, bug, duyệt gate | Web app | F6, F8, F9 |
-| Dev | Làm việc, liên kết commit/PR, xem kết quả build/test | Web app, GitHub | F3, F5, F6 |
+| Workspace Admin | Creates the workspace, invites members, connects GitHub | Web app | F1, F2, F5 |
+| PO | Decides value and priorities, accepts features | Web app | F3, F7, F8, F10 |
+| PM | Sprint progress, risks, gate configuration | Web app | F3, F8, F10 |
+| BA | Writes requirements and acceptance criteria (AC), traces them | Web app | F3, F7, F9 |
+| QA | Tests, bugs, gate approval | Web app | F6, F8, F9 |
+| Dev | Works on items, links commits/PRs, views build/test results | Web app, GitHub | F3, F5, F6 |
 
-Một người có thể giữ nhiều vai trò (ví dụ vừa PO vừa PM).
+One person may hold several roles (for example both PO and PM).
 
-### Use case tiêu biểu
+### Representative use cases
 
-- **UC-A — "Chức năng KEY-5 đang ở đâu?"** BA mở hồ sơ KEY-5 → thấy 3 AC, 2 AC đã có test pass ở snapshot mới nhất, 1 AC chưa phủ, 1 PR đang review.
-- **UC-B — "Đủ điều kiện hoàn thành chưa?"** Dev chuyển KEY-5 sang `done` → gate đánh giá snapshot → `needs_review` → QA duyệt → `done`, ghi người duyệt và snapshot.
-- **UC-C — "Vì sao yêu cầu đổi?"** PO mở timeline KEY-5 → thấy comment đánh dấu *Quyết định* và lịch sử thay đổi AC.
+- **UC-A — "Where is KEY-5?"** A BA opens the KEY-5 profile → sees 3 AC, 2 AC with passing tests in the latest snapshot, 1 uncovered AC, and 1 PR under review.
+- **UC-B — "Is it eligible for completion yet?"** A developer moves KEY-5 to `done` → the gate evaluates the snapshot → `needs_review` → QA approves → `done`, recording the approver and the snapshot.
+- **UC-C — "Why did the requirement change?"** A PO opens the KEY-5 timeline → sees a comment marked *Decision* and the history of AC changes.
 
 ---
 
-## 5. Phạm vi
+## 5. Scope
 
-| Ưu tiên | ID | Tính năng | Mốc |
+| Priority | ID | Feature | Milestone |
 |---|---|---|---|
-| Must | F1 | Workspace, tenancy và đăng nhập | M1 |
-| Must | F2 | Vai trò và phân quyền | M1 |
-| Must | F3 | Dự án, item, link, sprint, bug | M2 |
-| Must | F4 | Bình luận, mention, thông báo | M2 |
-| Must | F5 | Kết nối GitHub | M3 |
-| Must | F6 | Kết quả test JUnit và snapshot | M4 |
-| Must | F7 | Hồ sơ chức năng và timeline | M4 |
-| Should | F8 | Quality gate cơ bản | M5 |
-| Should | F9 | Truy vết AC ↔ test ↔ kết quả | M5 |
-| Could | F10 | Góc nhìn theo vai trò | M5 |
+| Must | F1 | Workspace, tenancy and sign-in | M1 |
+| Must | F2 | Roles and permissions | M1 |
+| Must | F3 | Projects, items, links, sprints, bugs | M2 |
+| Must | F4 | Comments, mentions, notifications | M2 |
+| Must | F5 | GitHub connection | M3 |
+| Must | F6 | JUnit test results and snapshots | M4 |
+| Must | F7 | Feature profile and timeline | M4 |
+| Should | F8 | Basic quality gate | M5 |
+| Should | F9 | AC ↔ test ↔ result traceability | M5 |
+| Could | F10 | Role-based views | M5 |
 
-**Out of scope (MVP):** workflow designer đầy đủ; AI agent; space private/public và publish; dự án nghiên cứu, vòng đời bài báo, giả thuyết/thí nghiệm; dự án AI/ML và experiment tracking; ước lượng dạng khoảng, sổ rủi ro; phân tích nghẽn và coaching; version tree, diff lịch sử yêu cầu; ABAC, phân quyền cấp artifact; DB riêng theo tenant (silo); GitLab, CI/SonarQube/Figma/Confluence connector; mobile app. Chi tiết ở Phụ lục B.
-
----
-
-## 6. Yêu cầu tính năng
-
-### F1 — Workspace, tenancy và đăng nhập
-
-- Đăng nhập OIDC (GitHub, Google). Không lưu mật khẩu trong MVP.
-- Workspace là đơn vị tenant. Một người thuộc nhiều workspace; mời bằng email hoặc link có hạn 7 ngày.
-- Mọi bảng có `tenant_id` và Row-Level Security (RLS).
-
-**Acceptance criteria**
-- AC-F1-01: _Given_ người dùng chưa có tài khoản, _when_ đăng nhập GitHub lần đầu, _then_ tạo `app_user` và yêu cầu tạo hoặc tham gia workspace.
-- AC-F1-02: _Given_ thành viên workspace A, _when_ gọi API với id item của workspace B, _then_ trả 404 và ghi log truy cập bị từ chối.
-- AC-F1-03: _Given_ truy vấn thiếu điều kiện tenant (trong bộ test), _when_ chạy bằng role của ứng dụng, _then_ RLS trả 0 dòng.
-- AC-F1-04: _Given_ lời mời quá 7 ngày, _when_ mở link, _then_ báo hết hạn và không tạo membership.
-
-### F2 — Vai trò và phân quyền
-
-- Vai trò: Workspace Admin, PO, PM, BA, QA, Dev, Viewer. Gán nhiều vai trò cho một người, theo từng dự án.
-- Quyền = hành động × loại đối tượng, lưu dạng dữ liệu (`role`, `permission`, `role_permission`). MVP chỉ dùng RBAC.
-- Mọi thay đổi vai trò ghi event.
-
-**Acceptance criteria**
-- AC-F2-01: _Given_ người có hai vai trò PO và PM, _when_ kiểm tra quyền, _then_ quyền hiệu lực là hợp của hai vai trò.
-- AC-F2-02: _Given_ Viewer, _when_ gọi API tạo item, _then_ trả 403 và UI không hiện nút tạo.
-- AC-F2-03: _Given_ Admin đổi vai trò của thành viên, _when_ lưu, _then_ ghi event `role_assignment.changed` kèm actor, trước, sau.
-- AC-F2-04: _Given_ chỉ còn một Admin, _when_ Admin đó gỡ vai trò của chính mình, _then_ bị từ chối.
-
-### F3 — Dự án, item, link, sprint, bug
-
-- Project có `key` 2–6 ký tự in hoa và cột `kind` (MVP cố định `software`).
-- Item type: `epic`, `story`, `task`, `bug`, `feature` (chức năng, neo của hồ sơ F7). Vòng đời mặc định: `backlog → in_progress → review → done`, có `cancelled`.
-- Link: `parent_of`, `blocks`, `relates_to`, `implements`, `tests`, `duplicates`.
-- Backlog xếp hạng kéo-thả, board Kanban, sprint (ngày bắt đầu/kết thúc, gán item). Bug có severity S1–S4.
-- Mã item `KEY-n`, tăng nguyên tử. Xóa mềm.
-
-**Acceptance criteria**
-- AC-F3-01: _Given_ hai người cùng tạo item, _when_ lưu đồng thời, _then_ hai mã khác nhau, không trùng, không bỏ số hỏng.
-- AC-F3-02: _Given_ item ở `backlog`, _when_ chuyển thẳng sang `done`, _then_ bị từ chối theo vòng đời mặc định.
-- AC-F3-03: _Given_ tạo bug, _when_ thiếu severity, _then_ bị từ chối với thông báo trường bắt buộc.
-- AC-F3-04: _Given_ xóa item, _when_ xác nhận, _then_ xóa mềm, event ghi lại, PM khôi phục được trong 30 ngày.
-- AC-F3-05: _Given_ kéo thả đổi thứ tự backlog, _when_ thả, _then_ thứ tự lưu và người khác thấy trong ≤ 2 giây.
-
-### F4 — Bình luận, mention, thông báo
-
-- Bình luận Markdown, `@mention`, đánh dấu một bình luận là **Quyết định**.
-- Thông báo trong app và email tóm tắt; mỗi người cấu hình riêng.
-
-**Acceptance criteria**
-- AC-F4-01: _Given_ bình luận có `@An`, _when_ gửi, _then_ An nhận thông báo ≤ 10 giây; người không có quyền xem item không nhận nội dung.
-- AC-F4-02: _Given_ sửa hoặc xóa bình luận, _when_ lưu, _then_ giữ lịch sử thay đổi trong event.
-- AC-F4-03: _Given_ tắt email, _when_ có mention, _then_ vẫn thấy trong app, không gửi email.
-- AC-F4-04: _Given_ đánh dấu Quyết định, _when_ lưu, _then_ bình luận hiện ở mục Quyết định của hồ sơ và trên timeline.
-
-### F5 — Kết nối GitHub
-
-- Cài **GitHub App** với quyền tối thiểu: đọc metadata, PR, checks, workflow runs. Strata không đọc nội dung file mã nguồn.
-- Nhận webhook `push`, `pull_request`, `check_run`, `workflow_run`. Xác thực chữ ký HMAC. Xử lý idempotent theo delivery id và `external_ref`.
-- Polling đối soát mỗi 15 phút để bù webhook thiếu.
-- Tự liên kết theo mã item (`KEY-12`) trong tên nhánh, commit message, tiêu đề PR. Cho phép liên kết/gỡ liên kết thủ công; lưu nguồn gốc liên kết (`auto` / `manual`).
-- Artifact: `commit`, `pull_request`, `ci_run`.
-
-**Acceptance criteria**
-- AC-F5-01: _Given_ push commit "KEY-12 sửa đăng nhập", _when_ webhook đến, _then_ tạo artifact `commit` liên kết KEY-12 và hiện trên timeline.
-- AC-F5-02: _Given_ webhook cùng delivery id gửi 3 lần, _when_ xử lý, _then_ chỉ một artifact và một event.
-- AC-F5-03: _Given_ webhook chữ ký sai, _when_ nhận, _then_ trả 401 và không xử lý.
-- AC-F5-04: _Given_ webhook bị mất, _when_ polling chạy, _then_ tạo artifact còn thiếu trong ≤ 15 phút với nguồn `poll`.
-- AC-F5-05: _Given_ liên kết tự động sai, _when_ người có quyền gỡ, _then_ liên kết bị gỡ, event ghi lại, liên kết không tự tạo lại cho cùng cặp.
-
-### F6 — Kết quả test JUnit và snapshot
-
-- Upload JUnit XML qua API (token CI theo dự án) hoặc GitHub Action mẫu. Parse `testsuite`/`testcase`: pass, fail, skip, thời gian, thông báo lỗi.
-- Mỗi upload tạo `source_snapshot` bất biến: commit SHA, run id, hash file. File gốc lưu object storage; DB lưu tóm tắt và tham chiếu.
-- Liên kết với item qua commit SHA, PR, nhánh.
-
-**Acceptance criteria**
-- AC-F6-01: _Given_ JUnit hợp lệ, _when_ upload, _then_ tạo snapshot có tổng pass/fail/skip khớp file và gắn commit SHA.
-- AC-F6-02: _Given_ upload lại cùng (SHA, run id, hash), _when_ xử lý, _then_ không tạo snapshot thứ hai.
-- AC-F6-03: _Given_ XML hỏng, _when_ upload, _then_ trả 422 kèm lý do, không tạo snapshot.
-- AC-F6-04: _Given_ file lớn hơn 20 MB, _when_ upload, _then_ trả 413.
-- AC-F6-05: _Given_ snapshot đã tạo, _when_ gọi API sửa hoặc xóa, _then_ không có endpoint nào cho phép.
-
-### F7 — Hồ sơ chức năng và timeline
-
-- Hồ sơ gom: mô tả/yêu cầu, AC, item con, commit/PR (chỉ metadata và liên kết, không diff), kết quả test mới nhất, quyết định, timeline.
-- Timeline là event lọc theo chức năng và con cháu, sắp theo thời gian, lọc theo loại (trạng thái, code, test, bình luận, quyết định).
-- Hiển thị theo hành động và vai trò, không theo xếp hạng cá nhân.
-
-**Acceptance criteria**
-- AC-F7-01: _Given_ chức năng có 500 event, _when_ mở hồ sơ, _then_ trang tải ≤ 2 giây (p95) và hiện item con, PR, kết quả test mới nhất.
-- AC-F7-02: _Given_ commit liên kết mới, _when_ webhook xử lý xong, _then_ xuất hiện trên timeline ≤ 30 giây.
-- AC-F7-03: _Given_ BA mở hồ sơ, _when_ xem commit/PR, _then_ chỉ thấy tiêu đề, trạng thái, tác giả, link GitHub; không có diff hay mã nguồn.
-- AC-F7-04: _Given_ lọc timeline theo "test", _when_ áp dụng, _then_ chỉ hiện sự kiện test của chức năng.
-
-### F8 — Quality gate cơ bản
-
-- Gate gắn với chuyển trạng thái `review → done` của một chức năng, hoặc với một release. Không có workflow designer.
-- Quy tắc là **dữ liệu có phiên bản**, ví dụ `tests.failed == 0`, `tests.passed_ratio >= 0.95`, `bugs.open(severity<=S2) == 0`, `approved_by has role QA`.
-- Kết quả: `pass`, `fail`, `needs_review`. Gate đánh giá snapshot mới nhất. Mỗi lần chạy lưu `gate_run` bất biến kèm snapshot và phiên bản luật.
-- Người đề nghị không được tự duyệt.
-
-**Acceptance criteria**
-- AC-F8-01: _Given_ snapshot có 2 test fail và luật `failed == 0`, _when_ gate chạy, _then_ `fail`, liệt kê test fail, chức năng không sang `done`.
-- AC-F8-02: _Given_ luật cần QA duyệt và test pass, _when_ gate chạy, _then_ `needs_review`; khi QA duyệt thì `pass` và ghi người duyệt.
-- AC-F8-03: _Given_ cùng snapshot và cùng phiên bản luật, _when_ chạy lại, _then_ cùng kết quả.
-- AC-F8-04: _Given_ sửa luật, _when_ lưu, _then_ tạo phiên bản mới; `gate_run` cũ giữ phiên bản luật cũ.
-- AC-F8-05: _Given_ người đề nghị chuyển `done`, _when_ tự duyệt, _then_ bị từ chối.
-
-### F9 — Truy vết AC ↔ test ↔ kết quả
-
-- AC có ID ổn định (`KEY-5/AC-3`). Test ánh xạ AC bằng tag trong tên test hoặc classname (ví dụ `AC:KEY-5/AC-3`), hoặc liên kết thủ công.
-- Ma trận AC × test × kết quả snapshot mới nhất; độ phủ AC.
-- Đổi nội dung AC đánh dấu liên kết test là `stale` cho đến khi QA xác nhận.
-
-**Acceptance criteria**
-- AC-F9-01: _Given_ test có tag `AC:KEY-5/AC-3` pass ở snapshot mới nhất, _when_ mở ma trận, _then_ AC-3 "đã kiểm chứng" kèm tham chiếu snapshot.
-- AC-F9-02: _Given_ AC không có test, _when_ mở ma trận, _then_ "chưa phủ"; độ phủ = AC có test / tổng AC.
-- AC-F9-03: _Given_ sửa nội dung AC-3, _when_ lưu, _then_ liên kết test của AC-3 là `stale` cho đến khi QA xác nhận.
-
-### F10 — Góc nhìn theo vai trò
-
-- Trang chủ theo vai trò: PO (backlog ưu tiên, chức năng chờ chấp nhận), PM (sprint, item bị chặn), BA (yêu cầu thiếu AC), QA (gate chờ duyệt, bug mở), Dev (việc của tôi, trạng thái PR/CI).
-- BA/QA ẩn thông tin code mặc định.
-
-**Acceptance criteria**
-- AC-F10-01: _Given_ QA mở trang chủ, _when_ có gate `needs_review` chờ QA, _then_ danh sách hiện đầu trang.
-- AC-F10-02: _Given_ Dev mở trang chủ, _when_ có item được giao, _then_ hiện kèm trạng thái PR và CI mới nhất.
+**Out of scope (MVP):** full workflow designer; AI agents; private/public spaces and publishing; research projects, paper lifecycle, hypotheses/experiments; AI/ML projects and experiment tracking; range estimation, risk register; bottleneck analysis and coaching; version tree, requirement history diffs; ABAC, artifact-level permissions; per-tenant DB (silo); GitLab, CI/SonarQube/Figma/Confluence connectors; mobile app. Details in Appendix B.
 
 ---
 
-## 7. Nguyên tắc dữ liệu và bằng chứng
+## 6. Feature Requirements
 
-| Nguyên tắc | Quy tắc |
+### F1 — Workspace, tenancy and sign-in
+
+- OIDC sign-in (GitHub, Google). No passwords stored in the MVP.
+- The workspace is the tenant unit. One person may belong to several workspaces; invitations by email or link valid for 7 days.
+- Every table has `tenant_id` and Row-Level Security (RLS).
+
+**Acceptance criteria**
+- AC-F1-01: _Given_ a user without an account, _when_ they sign in with GitHub for the first time, _then_ an `app_user` is created and they are asked to create or join a workspace.
+- AC-F1-02: _Given_ a member of workspace A, _when_ they call the API with the id of an item in workspace B, _then_ the response is 404 and the refused access is logged.
+- AC-F1-03: _Given_ a query without the tenant condition (in the test suite), _when_ it runs under the application role, _then_ RLS returns 0 rows.
+- AC-F1-04: _Given_ an invitation older than 7 days, _when_ the link is opened, _then_ it reports that the invitation has expired and no membership is created.
+
+### F2 — Roles and permissions
+
+- Roles: Workspace Admin, PO, PM, BA, QA, Dev, Viewer. Multiple roles may be assigned to one person, per project.
+- Permission = action × object type, stored as data (`role`, `permission`, `role_permission`). The MVP uses RBAC only.
+- Every role change writes an event.
+
+**Acceptance criteria**
+- AC-F2-01: _Given_ a person with both PO and PM roles, _when_ permissions are checked, _then_ the effective permissions are the union of both roles.
+- AC-F2-02: _Given_ a Viewer, _when_ they call the API to create an item, _then_ the response is 403 and the UI does not show the create button.
+- AC-F2-03: _Given_ an Admin changes a member's role, _when_ saved, _then_ a `role_assignment.changed` event is written with actor, before and after.
+- AC-F2-04: _Given_ only one Admin remains, _when_ that Admin removes their own role, _then_ the change is refused.
+
+### F3 — Projects, items, links, sprints, bugs
+
+- A project has a `key` of 2–6 uppercase characters and a `kind` column (fixed to `software` in the MVP).
+- Item types: `epic`, `story`, `task`, `bug`, `feature` (a feature is the anchor of the F7 profile). Default lifecycle: `backlog → in_progress → review → done`, plus `cancelled`.
+- Links: `parent_of`, `blocks`, `relates_to`, `implements`, `tests`, `duplicates`.
+- Backlog ranked by drag-and-drop, Kanban board, sprints (start/end dates, items assigned). Bugs have severity S1–S4.
+- Item code `KEY-n`, incremented atomically. Soft deletion.
+
+**Acceptance criteria**
+- AC-F3-01: _Given_ two people create items at the same time, _when_ both are saved, _then_ they get two different codes, with no duplicate and no broken sequence.
+- AC-F3-02: _Given_ an item in `backlog`, _when_ it is moved directly to `done`, _then_ the change is refused under the default lifecycle.
+- AC-F3-03: _Given_ a bug is created, _when_ its severity is missing, _then_ it is refused with a required-field message.
+- AC-F3-04: _Given_ an item is deleted, _when_ the deletion is confirmed, _then_ it is soft-deleted, the event is recorded, and a PM can restore it within 30 days.
+- AC-F3-05: _Given_ backlog items are reordered by drag-and-drop, _when_ dropped, _then_ the order is saved and other people see it within ≤ 2 seconds.
+
+### F4 — Comments, mentions, notifications
+
+- Markdown comments, `@mention`, and marking a comment as a **Decision**.
+- In-app notifications and summary emails; each person configures their own settings.
+
+**Acceptance criteria**
+- AC-F4-01: _Given_ a comment containing `@An`, _when_ it is posted, _then_ An receives a notification within ≤ 10 seconds; people without permission to view the item do not receive its content.
+- AC-F4-02: _Given_ a comment is edited or deleted, _when_ saved, _then_ the change history is kept in events.
+- AC-F4-03: _Given_ email is turned off, _when_ a mention occurs, _then_ it is still visible in the app and no email is sent.
+- AC-F4-04: _Given_ a comment is marked as a Decision, _when_ saved, _then_ it appears in the profile's Decisions section and on the timeline.
+
+### F5 — GitHub connection
+
+- Install a **GitHub App** with minimum permissions: read metadata, PRs, checks, workflow runs. Strata does not read source file contents.
+- Receives the webhooks `push`, `pull_request`, `check_run`, `workflow_run`. Verifies the HMAC signature. Processes idempotently by delivery id and `external_ref`.
+- Reconciliation polling every 15 minutes to compensate for missing webhooks.
+- Automatic linking by item code (`KEY-12`) in the branch name, commit message and PR title. Manual linking and unlinking are allowed; the origin of each link is stored (`auto` / `manual`).
+- Artifacts: `commit`, `pull_request`, `ci_run`.
+
+**Acceptance criteria**
+- AC-F5-01: _Given_ a push of a commit "KEY-12 fix sign-in", _when_ the webhook arrives, _then_ a `commit` artifact linked to KEY-12 is created and appears on the timeline.
+- AC-F5-02: _Given_ a webhook with the same delivery id is sent 3 times, _when_ processed, _then_ only one artifact and one event exist.
+- AC-F5-03: _Given_ a webhook with a wrong signature, _when_ received, _then_ the response is 401 and it is not processed.
+- AC-F5-04: _Given_ a webhook was lost, _when_ polling runs, _then_ the missing artifact is created within ≤ 15 minutes with source `poll`.
+- AC-F5-05: _Given_ an automatic link is wrong, _when_ a person with permission removes it, _then_ the link is removed, the event is recorded, and the link is not automatically recreated for the same pair.
+
+### F6 — JUnit test results and snapshots
+
+- Upload JUnit XML through the API (project CI token) or a sample GitHub Action. Parses `testsuite`/`testcase`: pass, fail, skip, duration, error message.
+- Each upload creates an immutable `source_snapshot`: commit SHA, run id, file hash. The original file is stored in object storage; the DB stores a summary and a reference.
+- Linked to items through commit SHA, PR and branch.
+
+**Acceptance criteria**
+- AC-F6-01: _Given_ a valid JUnit file, _when_ uploaded, _then_ a snapshot is created whose pass/fail/skip totals match the file and which is tied to the commit SHA.
+- AC-F6-02: _Given_ the same (SHA, run id, hash) is uploaded again, _when_ processed, _then_ no second snapshot is created.
+- AC-F6-03: _Given_ broken XML, _when_ uploaded, _then_ the response is 422 with the reason, and no snapshot is created.
+- AC-F6-04: _Given_ a file larger than 20 MB, _when_ uploaded, _then_ the response is 413.
+- AC-F6-05: _Given_ a snapshot has been created, _when_ an API call tries to edit or delete it, _then_ no endpoint allows it.
+
+### F7 — Feature profile and timeline
+
+- The profile gathers: description/requirements, AC, child items, commits/PRs (metadata and links only, no diffs), latest test results, decisions, and timeline.
+- The timeline is the event stream filtered by the feature and its descendants, sorted by time, and filterable by type (status, code, test, comments, decisions).
+- Displayed by action and role, not by individual ranking.
+
+**Acceptance criteria**
+- AC-F7-01: _Given_ a feature has 500 events, _when_ its profile is opened, _then_ the page loads within ≤ 2 seconds (p95) and shows child items, PRs and the latest test results.
+- AC-F7-02: _Given_ a new linked commit, _when_ the webhook has been processed, _then_ it appears on the timeline within ≤ 30 seconds.
+- AC-F7-03: _Given_ a BA opens a profile, _when_ they view commits/PRs, _then_ they see only the title, status, author and GitHub link; no diff or source code.
+- AC-F7-04: _Given_ the timeline is filtered by "test", _when_ applied, _then_ only the feature's test events are shown.
+
+### F8 — Basic quality gate
+
+- The gate is attached to the `review → done` transition of a feature, or to a release. There is no workflow designer.
+- Rules are **versioned data**, for example `tests.failed == 0`, `tests.passed_ratio >= 0.95`, `bugs.open(severity<=S2) == 0`, `approved_by has role QA`.
+- Results: `pass`, `fail`, `needs_review`. The gate evaluates the latest snapshot. Each run stores an immutable `gate_run` with the snapshot and the rule version.
+- The requester may not approve their own gate.
+
+**Acceptance criteria**
+- AC-F8-01: _Given_ a snapshot has 2 failing tests and the rule `failed == 0`, _when_ the gate runs, _then_ the result is `fail`, the failing tests are listed, and the feature does not move to `done`.
+- AC-F8-02: _Given_ a rule requires QA approval and the tests pass, _when_ the gate runs, _then_ the result is `needs_review`; once QA approves, it becomes `pass` and the approver is recorded.
+- AC-F8-03: _Given_ the same snapshot and rule version, _when_ the gate is run again, _then_ the result is the same.
+- AC-F8-04: _Given_ a rule is edited and saved, _when_ saved, _then_ a new version is created; old `gate_run` records keep the old rule version.
+- AC-F8-05: _Given_ the requester moves an item to `done`, _when_ they try to approve it themselves, _then_ it is refused.
+
+### F9 — AC ↔ test ↔ result traceability
+
+- AC have stable IDs (`KEY-5/AC-3`). Tests map to AC by a tag in the test name or classname (for example `AC:KEY-5/AC-3`), or by manual linking.
+- Matrix of AC × tests × latest snapshot results; AC coverage.
+- Changing the content of an AC marks its test links as `stale` until QA confirms.
+
+**Acceptance criteria**
+- AC-F9-01: _Given_ a test tagged `AC:KEY-5/AC-3` passes in the latest snapshot, _when_ the matrix is opened, _then_ AC-3 is "verified" with a reference to the snapshot.
+- AC-F9-02: _Given_ an AC has no test, _when_ the matrix is opened, _then_ it shows "uncovered"; coverage = AC with tests / total AC.
+- AC-F9-03: _Given_ the content of AC-3 is edited, _when_ saved, _then_ AC-3's test links are `stale` until QA confirms.
+
+### F10 — Role-based views
+
+- Role-based home page: PO (prioritized backlog, features awaiting acceptance), PM (sprints, blocked items), BA (requirements missing AC), QA (gates awaiting review, open bugs), Dev (my work, PR/CI status).
+- BA/QA hide code information by default.
+
+**Acceptance criteria**
+- AC-F10-01: _Given_ QA opens the home page, _when_ a `needs_review` gate is waiting for QA, _then_ the list appears at the top.
+- AC-F10-02: _Given_ a Dev opens the home page, _when_ items are assigned to them, _then_ they are shown with the latest PR and CI status.
+
+---
+
+## 7. Data and evidence principles
+
+| Principle | Rule |
 |---|---|
-| Bằng chứng bất biến | Snapshot gắn commit SHA và run id; không sửa, không xóa. Gate chỉ đánh giá snapshot, không đánh giá "nhánh hiện tại". |
-| Event chỉ thêm | Mọi thay đổi (trạng thái, quyền, luật gate) ghi event; không có API sửa hoặc xóa event. |
-| Dữ liệu tự đến trước | Ưu tiên nguồn tự động (Git, CI). Nhập tay là ngoại lệ và ghi nguồn gốc. |
-| Đo quy trình, không đo người | Không bảng xếp hạng cá nhân, không dùng timeline để chấm điểm. |
-| Gate là đề xuất có người duyệt | Gate đạt không đồng nghĩa chất lượng đúng; luật cần duyệt người cho thay đổi quan trọng. |
-| Tối thiểu quyền | Token GitHub chỉ đọc; BA/QA không cần thấy code; Strata không lưu mã nguồn. |
-| AI | MVP không có AI agent. Khi thêm (Phụ lục B), agent đề xuất và gate quyết định; xem [PLAN_Strata.md](PLAN_Strata.md). |
+| Immutable evidence | Snapshots carry the commit SHA and run id; not edited, not deleted. The gate evaluates snapshots, not the "current branch". |
+| Append-only events | Every change (status, permissions, gate rules) writes an event; there is no API to edit or delete events. |
+| Automatic data comes first | Automatic sources (Git, CI) are preferred. Manual entry is an exception and its origin is recorded. |
+| Measure the process, not people | No individual rankings; the timeline is not used for scoring. |
+| Gate is a proposal with human approval | A passing gate does not guarantee correct quality; rules require human approval for important changes. |
+| Minimum permissions | GitHub tokens are read-only; BA/QA do not need to see code; Strata does not store source code. |
+| AI | The MVP has no AI agent. When added (Appendix B), an agent proposes and the gate decides; see [PLAN_Strata.md](PLAN_Strata.md). |
 
 ---
 
-## 8. Yêu cầu phi chức năng
+## 8. Non-functional requirements
 
-Các con số là **đề xuất**, cần xác nhận khi có số liệu tải thật.
+The numbers are **proposals** and must be confirmed with real load data.
 
-| Nhóm | Yêu cầu |
+| Area | Requirement |
 |---|---|
-| Hiệu năng | API đọc p95 ≤ 300 ms; board 200 item tải ≤ 1,5 s; hồ sơ chức năng 500 event ≤ 2 s (p95); webhook → timeline ≤ 30 s. |
-| Cô lập dữ liệu | `tenant_id` mọi bảng + RLS; bộ test tự động chứng minh truy vấn thiếu tenant trả 0 dòng, kể cả qua tìm kiếm. |
-| Bảo mật | OIDC; kiểm quyền phía server cho mọi API; token tích hợp mã hóa khi lưu; chữ ký HMAC webhook; tuân thủ OWASP Top 10; audit trail thay đổi quyền. |
-| Độ tin cậy | Webhook và upload idempotent; polling đối soát; sao lưu hằng ngày; RPO ≤ 24 giờ, RTO ≤ 4 giờ. |
-| Quan sát | Log có cấu trúc, trace id xuyên webhook → worker → timeline; metric độ trễ ingest. |
-| Mở rộng | Đăng ký `kind` và item type bằng dữ liệu; `attrs` JSONB có schema đăng ký; kiến trúc modular monolith với ranh giới module rõ. |
-| Quyền riêng tư | Không thu thập số liệu theo cá nhân để xếp hạng; xuất và xóa dữ liệu workspace theo yêu cầu. |
-| Khả dụng | Web, desktop-first, dùng được trên màn hình ≥ 360 px; tiếng Việt và tiếng Anh. |
+| Performance | Read API p95 ≤ 300 ms; board with 200 items loads in ≤ 1.5 s; feature profile with 500 events ≤ 2 s (p95); webhook → timeline ≤ 30 s. |
+| Data isolation | `tenant_id` on every table + RLS; the automated test suite proves that queries without a tenant return 0 rows, including through search. |
+| Security | OIDC; server-side permission checks for every API; integration tokens encrypted at rest; HMAC signature on webhooks; OWASP Top 10 compliance; audit trail of permission changes. |
+| Reliability | Idempotent webhooks and uploads; reconciliation polling; daily backups; RPO ≤ 24 hours, RTO ≤ 4 hours. |
+| Observability | Structured logs; trace id across webhook → worker → timeline; ingest latency metrics. |
+| Extensibility | Register `kind` and item types as data; `attrs` JSONB with a registered schema; modular monolith with clear module boundaries. |
+| Privacy | No per-person metrics collected for ranking; workspace data can be exported and deleted on request. |
+| Availability | Web, desktop-first, usable on screens ≥ 360 px; Vietnamese and English. |
 
 ---
 
-## 9. Kiến trúc và công nghệ
+## 9. Architecture and technology
 
-| Thành phần | Lựa chọn | Vai trò |
+| Component | Choice | Role |
 |---|---|---|
-| Web app | SPA TypeScript | Board, hồ sơ chức năng, timeline |
-| API | Modular monolith TypeScript | Logic nghiệp vụ, kiểm quyền |
-| CSDL | PostgreSQL (RLS, JSONB, full-text) | Dữ liệu chính, event |
-| Object storage | S3-compatible | File JUnit gốc, log |
-| Hàng đợi | Bảng job trong PostgreSQL (ban đầu) | Ingest webhook, polling, gate |
-| Worker | Tiến trình riêng cùng codebase | Xử lý webhook, parse JUnit, đánh giá gate |
-| Xác thực | OIDC (GitHub, Google) | Đăng nhập |
-| Tích hợp | GitHub App | Webhook + polling đối soát |
+| Web app | TypeScript SPA | Board, feature profile, timeline |
+| API | TypeScript modular monolith | Business logic, permission checks |
+| Database | PostgreSQL (RLS, JSONB, full-text) | Core data, events |
+| Object storage | S3-compatible | Original JUnit files, logs |
+| Queue | Job table in PostgreSQL (initially) | Webhook ingest, polling, gate |
+| Worker | Separate process in the same codebase | Webhook handling, JUnit parsing, gate evaluation |
+| Authentication | OIDC (GitHub, Google) | Sign-in |
+| Integration | GitHub App | Webhook + reconciliation polling |
 
-Ngăn xếp là đề xuất mặc định, chốt theo kỹ năng nhóm (PQ-05). Sơ đồ C4 chi tiết ở [README.md](../../README.md#5-kiến-trúc-c4).
+The stack is the default proposal, to be confirmed based on team skills (PQ-05). The detailed C4 diagrams are in [README.md](../../README.md#5-c4-architecture).
 
-### 9.1 Quyết định: mô hình dữ liệu item (ADR-01)
+### 9.1 Decision: item data model (ADR-01)
 
-**Trạng thái:** Đề xuất. **Bối cảnh:** item có cột chung và trường riêng theo kind/type; MVP chỉ cần `software` nhưng phase sau thêm research và AI.
+**Status:** Proposed. **Context:** items have common columns and type/kind-specific fields; the MVP only needs `software`, but later phases add research and AI.
 
-| Tiêu chí | A. Cột chung + `attrs` JSONB có schema đăng ký | B. Bảng riêng theo kind |
+| Criterion | A. Common columns + `attrs` JSONB with registered schema | B. Separate table per kind |
 |---|---|---|
-| Thêm kind mới | Đăng ký schema, không migration | Migration và code mới |
-| Truy vấn xuyên kind | Một bảng | Nhiều bảng, union |
-| Kiểm tra dữ liệu | Cần kiểm schema ở tầng ứng dụng | Ràng buộc DB mạnh |
-| Hiệu năng lọc | Index biểu thức khi cần | Tốt hơn trên cột riêng |
+| Adding a new kind | Register a schema, no migration | New migration and code |
+| Querying across kinds | One table | Several tables, union |
+| Data validation | Schema checks needed in the application layer | Strong DB constraints |
+| Filter performance | Expression indexes when needed | Better on dedicated columns |
 
-**Quyết định đề xuất:** A. Cột chung (`id`, `tenant_id`, `project_id`, `type`, `state`, `title`, `seq`…) và `attrs` JSONB; trường hay lọc được đưa ra cột khi đo thấy cần.
+**Proposed decision:** A. Common columns (`id`, `tenant_id`, `project_id`, `type`, `state`, `title`, `seq`…) and `attrs` JSONB; fields that are often filtered are promoted to columns once measurements show the need.
 
-### 9.2 Quyết định: cô lập tenant (ADR-02)
+### 9.2 Decision: tenant isolation (ADR-02)
 
-**Trạng thái:** Đề xuất. Pooled với `tenant_id` + RLS cho MVP; bảng `tenant` làm tầng điều phối (tenant → nơi chứa dữ liệu) để sau này chuyển khách lớn sang DB riêng không đổi code ứng dụng. Tên miền chỉ định tuyến, không phải cơ chế bảo mật.
+**Status:** Proposed. Pooled with `tenant_id` + RLS for the MVP; a `tenant` table acts as the routing layer (tenant → data location), so large customers can later move to a dedicated DB without changing application code. Domain names are used for routing only, not as a security mechanism.
 
 ---
 
-## 10. Chỉ số thành công
+## 10. Success metrics
 
-Mục tiêu là **đề xuất**, chưa có baseline.
+Targets are **proposals** without a baseline yet.
 
-| Nhóm | Chỉ số | Mục tiêu | Cách đo |
+| Area | Metric | Target | How measured |
 |---|---|---|---|
-| Giá trị | Tỷ lệ commit/PR liên kết tự động với item | ≥ 80% | Đếm liên kết `auto` / tổng commit trong nhóm dùng thử |
-| Giá trị | Thời gian trả lời "chức năng X đang ở đâu" | ≤ 1 phút | Quan sát có hướng dẫn với BA/QA, so với baseline phỏng vấn |
-| Áp dụng | Số nhóm dùng thật | ≥ 3 nhóm | Hoạt động hằng tuần trong 4 tuần |
-| Áp dụng | Thành viên hoạt động hằng tuần | ≥ 60% | Phiên đăng nhập có thao tác |
-| An toàn | Rò rỉ chéo tenant | 0 | Bộ test RLS trong CI |
-| Độ tin cậy | Webhook trùng/lệch thứ tự tạo bản sao | 0 | Test tự động + giám sát |
-| Gate | Số nhóm dùng gate cho phát hành thật | ≥ 2 nhóm | Số `gate_run` gắn release |
-| Hiệu năng | Hồ sơ chức năng 500 event | ≤ 2 s (p95) | APM |
+| Value | Share of commits/PRs automatically linked to items | ≥ 80% | Count of `auto` links / total commits in the pilot teams |
+| Value | Time to answer "where is feature X?" | ≤ 1 minute | Guided observation with BA/QA, compared with the interview baseline |
+| Adoption | Number of teams using it for real work | ≥ 3 teams | Weekly activity over 4 weeks |
+| Adoption | Weekly active members | ≥ 60% | Sessions with at least one action |
+| Safety | Cross-tenant leaks | 0 | RLS test suite in CI |
+| Reliability | Duplicate or out-of-order webhooks creating copies | 0 | Automated tests + monitoring |
+| Gate | Number of teams using the gate for real releases | ≥ 2 teams | Number of `gate_run` linked to releases |
+| Performance | Feature profile with 500 events | ≤ 2 s (p95) | APM |
 
 ---
 
-## 11. Kế hoạch phát hành
+## 11. Release plan
 
-Thời gian tính theo tuần kể từ T0. Số tuần giả định đội 3–4 người, cần xác nhận (PQ-01).
+Timing is counted in weeks from T0. The week counts assume a build team of 3–4 people and must be confirmed (PQ-01).
 
-| Mốc | Thời gian | Nội dung | Tiêu chí hoàn thành |
+| Milestone | Timing | Content | Done when |
 |---|---|---|---|
-| M0 — Khám phá | Song song, 4–6 tuần | Phỏng vấn 8–10 người mỗi nhóm; spike RLS, webhook, gate | Chốt nhóm đầu tiên; AC-F1-03, AC-F5-02 đạt trên spike |
-| M1 — Lõi | Tuần 1–2 | F1, F2, event store | AC-F1, AC-F2 đạt |
-| M2 — Công việc | Tuần 3–4 | F3, F4 | AC-F3, AC-F4 đạt; dùng nội bộ được |
-| M3 — GitHub | Tuần 5–6 | F5 | AC-F5 đạt trên repo thật |
-| M4 — Test và hồ sơ | Tuần 7–8 | F6, F7 | AC-F6, AC-F7 đạt; demo 1 chức năng đầu-cuối |
-| M5 — Gate và dogfood | Tuần 9–10 | F8, F9, F10 (Could) | AC-F8, AC-F9 đạt; ≥ 1 nhóm dùng thử bắt đầu |
+| M0 — Discovery | In parallel, 4–6 weeks | Interview 8–10 people per group; spikes on RLS, webhooks, gate | First group chosen; AC-F1-03 and AC-F5-02 pass on the spikes |
+| M1 — Core | Weeks 1–2 | F1, F2, event store | AC-F1, AC-F2 pass |
+| M2 — Work | Weeks 3–4 | F3, F4 | AC-F3, AC-F4 pass; usable internally |
+| M3 — GitHub | Weeks 5–6 | F5 | AC-F5 passes on a real repo |
+| M4 — Tests and profile | Weeks 7–8 | F6, F7 | AC-F6, AC-F7 pass; end-to-end demo of one feature |
+| M5 — Gate and dogfooding | Weeks 9–10 | F8, F9, F10 (Could) | AC-F8, AC-F9 pass; ≥ 1 pilot team starts |
 
 ---
 
-## 12. Rủi ro
+## 12. Risks
 
-| Rủi ro | Mức | Giảm thiểu |
+| Risk | Level | Mitigation |
 |---|---|---|
-| Phạm vi lan sang nghiên cứu/AI trước khi MVP chứng minh giá trị | Cao | Giữ Phụ lục B; chỉ mở phase sau khi đạt tiêu chí thoát của MVP ([PLAN](PLAN_Strata.md)) |
-| Phần lớn dữ liệu không tự đến (thiếu mã item trong commit) → lặp lại thất bại "không ai ghi chép" | Cao | Gợi ý quy ước tên nhánh; liên kết thủ công 1 bước; đo tỷ lệ `auto` |
-| Cạnh tranh: Jira, Linear, GitHub Projects, Plane, OpenProject có thể thêm tính năng tương tự | Cao | Tập trung vào snapshot bất biến + gate + truy vết; kiểm chứng giá trị sớm bằng phỏng vấn (chưa kiểm chứng cạnh tranh) |
-| Pain point chưa kiểm chứng (nhiều "Giả định") | Cao | M0: phỏng vấn trước khi cam kết; điều chỉnh PRD |
-| Trở thành "Jira thứ hai" do cấu hình phức tạp | Trung bình | Mặc định tốt; workflow cố định trong MVP; không cho tùy biến trường |
-| Gate bị Goodhart (đạt gate ≠ chất lượng đúng) | Trung bình | Luật cần duyệt người; hiển thị lý do gate; không dùng để chấm điểm cá nhân |
-| Rò rỉ chéo tenant | Cao | RLS + test tự động trong CI; review truy vấn thô |
-| Timeline thành công cụ giám sát cá nhân | Trung bình | Hiển thị theo hành động/vai trò; không bảng xếp hạng |
+| Scope spreads to research/AI before the MVP proves its value | High | Keep Appendix B; open later phases only after meeting the MVP exit criteria ([PLAN](PLAN_Strata.md)) |
+| Most data does not arrive automatically (missing item codes in commits) → repeats the failure of "nobody records anything" | High | Suggest branch-naming conventions; one-step manual linking; measure the `auto` rate |
+| Competition: Jira, Linear, GitHub Projects, Plane, OpenProject may add similar features | High | Focus on immutable snapshots + gate + traceability; validate value early through interviews (competition not yet verified) |
+| Pain points not yet validated (many "Assumption" labels) | High | M0: interview before committing; adjust the PRD |
+| Becomes "a second Jira" because of complex configuration | Medium | Good defaults; fixed workflow in the MVP; no custom fields |
+| Gate is Goodharted (passing the gate ≠ correct quality) | Medium | Rules require human approval; show the gate reasons; never use it to score individuals |
+| Cross-tenant leaks | High | RLS + automated tests in CI; review raw queries |
+| Timeline becomes a personal monitoring tool | Medium | Display by action/role; no leaderboards |
 
 ---
 
-## 13. Phụ thuộc và giả định
+## 13. Dependencies and assumptions
 
-**Phụ thuộc:** GitHub App và webhook hoạt động ổn định; nhóm dùng thử dùng GitHub và có CI sinh JUnit XML; có nhân sự full-stack TypeScript và PostgreSQL; hạ tầng container và object storage.
+**Dependencies:** the GitHub App and webhooks work reliably; pilot teams use GitHub and have CI that generates JUnit XML; there is full-stack TypeScript and PostgreSQL staff; container infrastructure and object storage are available.
 
-**Giả định:** nhóm mục tiêu 3–10 người dùng GitHub; quy ước mã item trong commit/PR chấp nhận được; JUnit XML đủ phổ biến cho giai đoạn đầu (pytest, Go test, Jest đều xuất được); đội build 3–4 người; chưa có số liệu baseline về thời gian tổng hợp thông tin.
+**Assumptions:** the target group is 3–10 people who use GitHub; the item-code convention in commits/PRs is acceptable; JUnit XML is common enough for the early stage (pytest, Go test and Jest can all export it); the build team is 3–4 people; there is no baseline data yet on the time spent compiling information.
 
 ---
 
-## 14. Câu hỏi mở
+## 14. Open questions
 
-| ID | Câu hỏi | Đề xuất |
+| ID | Question | Proposal |
 |---|---|---|
-| PQ-01 | Quy mô và kỹ năng đội build, ngày T0? | Chốt trước khi cam kết lịch ở mục 11 |
-| PQ-02 | Nhóm người dùng đầu tiên: nhóm sản phẩm nhỏ, outsource, hay lớp/đồ án sinh viên? | Chọn nhóm có CI + JUnit sẵn và 1 BA/QA |
-| PQ-03 | Chỉ GitHub hay thêm GitLab trong MVP? | Chỉ GitHub; GitLab ở phase 2 |
-| PQ-04 | Xây từ đầu hay dựng trên Plane/OpenProject? | Xây lõi mỏng riêng; đánh giá lại sau M0 |
-| PQ-05 | Ngăn xếp công nghệ (TypeScript hay Python)? | TypeScript mặc định, chốt theo kỹ năng |
-| PQ-06 | Triển khai SaaS hay tự host? | SaaS trước; tự host khi có khách yêu cầu |
-| PQ-07 | Mô hình kinh doanh (thương mại, nội bộ, học thuật)? | Chưa quyết định; ảnh hưởng quyết định silo/self-host |
-| PQ-08 | Iteration = sprint hay chu kỳ qua gate? | MVP dùng sprint; chu kỳ gate xét ở phase 2 |
-| PQ-09 | "Strata" là tên mã nội bộ hay tên thương mại? Cần kiểm tra trùng tên và tên miền trước khi công bố | Dùng làm tên mã; kiểm tra thương hiệu trước khi ra mắt |
-| PQ-10 | Chính sách lưu dữ liệu test (thời hạn lưu file JUnit gốc)? | 12 tháng, cấu hình theo workspace |
+| PQ-01 | Size and skills of the build team; T0 date? | Confirm before committing to the schedule in section 11 |
+| PQ-02 | First user group: small product team, outsourcing, or student classes/projects? | Pick a group that already has CI + JUnit and 1 BA/QA |
+| PQ-03 | GitHub only, or add GitLab in the MVP? | GitHub only; GitLab in phase 2 |
+| PQ-04 | Build from scratch or on top of Plane/OpenProject? | Build a thin custom core; re-evaluate after M0 |
+| PQ-05 | Technology stack (TypeScript or Python)? | TypeScript by default; confirm based on skills |
+| PQ-06 | SaaS or self-hosted? | SaaS first; self-host when a customer requests it |
+| PQ-07 | Business model (commercial, internal, academic)? | Not decided; affects the silo/self-host decision |
+| PQ-08 | Is an iteration a sprint or a cycle through the gate? | MVP uses sprints; gate cycles considered in phase 2 |
+| PQ-09 | Is "Strata" an internal codename or a commercial name? Trademark and domain checks are needed before publishing | Use as a codename; check the trademark before launch |
+| PQ-10 | Retention policy for test data (how long to keep the original JUnit files)? | 12 months, configurable per workspace |
 
 ---
 
-## 15. Truy vết
+## 15. Traceability
 
-| Mục PRD | Tài liệu gốc |
+| PRD section | Source document |
 |---|---|
-| 2 Vấn đề | `docs/background/brainstorm-summary.md` mục 2–3 |
-| 3, 5 Mục tiêu, phạm vi | `docs/background/brainstorm-summary.md` mục 12 (danh sách chức năng P0), 14 (lộ trình) |
-| 6 F1, F2 | `docs/background/brainstorm-summary.md` mục 4.4–6; `docs/background/system-architecture.md` mục Dữ liệu và đa tenant |
-| 6 F3 | `docs/background/brainstorm-summary.md` mục 4 |
-| 6 F5, F6 | `docs/background/brainstorm-summary.md` mục 7.3 |
-| 6 F7 | `docs/background/brainstorm-summary.md` mục 8 |
-| 6 F8, F9 | `docs/background/brainstorm-summary.md` mục 7.2, 7.4 |
-| 9 Kiến trúc | `docs/background/system-architecture.md` |
-| Phụ lục B | `docs/background/brainstorm-summary.md` mục 11, 12 (P1, P2); `docs/background/research-landscape-report.md` |
-| Kế hoạch dài hạn | [PLAN_Strata.md](PLAN_Strata.md) |
+| 2 Problems | `docs/background/brainstorm-summary.md` sections 2–3 |
+| 3, 5 Goals, scope | `docs/background/brainstorm-summary.md` section 12 (P0 feature list), 14 (roadmap) |
+| 6 F1, F2 | `docs/background/brainstorm-summary.md` sections 4.4–6; `docs/background/system-architecture.md` section on data and multi-tenancy |
+| 6 F3 | `docs/background/brainstorm-summary.md` section 4 |
+| 6 F5, F6 | `docs/background/brainstorm-summary.md` section 7.3 |
+| 6 F7 | `docs/background/brainstorm-summary.md` section 8 |
+| 6 F8, F9 | `docs/background/brainstorm-summary.md` sections 7.2, 7.4 |
+| 9 Architecture | `docs/background/system-architecture.md` |
+| Appendix B | `docs/background/brainstorm-summary.md` sections 11, 12 (P1, P2); `docs/background/research-landscape-report.md` |
+| Long-term plan | [PLAN_Strata.md](PLAN_Strata.md) |
 
 ---
 
-## Phụ lục A — Các điểm đã thay đổi so với bản brainstorm rộng
+## Appendix A — Changes compared with the broader brainstorm
 
-### A.1 Pain point
+### A.1 Pain points
 
-| Pain point cũ | Đã sửa |
+| Old pain point | Fixed |
 |---|---|
-| Gộp pain point của phần mềm, nghiên cứu và AI/ML | MVP chỉ giữ pain point phần mềm (mục 2). Pain point nghiên cứu/AI chuyển sang Plan, cần phỏng vấn trước khi dùng. |
-| Số liệu từ khảo sát nhà cung cấp coi như sự thật | Gắn nhãn "Có nguồn (định hướng)" hoặc "Giả định". |
-| Chưa có bằng chứng trực tiếp cho PM nghiên cứu và trưởng nhóm AI | Ghi rõ là khoảng trống; phỏng vấn thuộc phase Khám phá của Plan. |
+| Pain points for software, research and AI/ML were combined | The MVP keeps only software pain points (section 2). Research/AI pain points moved to the Plan and need interviews before use. |
+| Figures from vendor surveys treated as facts | Labeled "Sourced (directional)" or "Assumption". |
+| No direct evidence for research PMs and AI team leads | Stated explicitly as a gap; interviews belong to the Discovery phase of the Plan. |
 
-### A.2 Sản phẩm và kỹ thuật
+### A.2 Product and technical
 
-| # | Bản brainstorm | MVP hiện tại | Lý do |
+| # | Brainstorm version | Current MVP | Reason |
 |---|---|---|---|
-| 1 | Ba kind: software, research, ai | Chỉ `software`; cột `kind` vẫn giữ | Một lát cắt hẹp có dữ liệu tự động |
-| 2 | Workflow designer đầy đủ (source/input/process/switch/gate/agent/output) | Gate cơ bản gắn với chuyển trạng thái/release | Tránh "Jira thứ hai" |
-| 3 | AI agent mức 0–3 | Không có agent | Chờ gate và đo chất lượng; Plan phase 3 |
-| 4 | Space private/public + publish | Chưa có | Cần cho nghiên cứu và agent |
-| 5 | Ước lượng khoảng, rủi ro, nghẽn | Chưa có | Cần dữ liệu lịch sử từ dùng thật |
-| 6 | Tìm kiếm có lọc quyền (FTS + vector) | Tìm theo mã và tiêu đề | Vector/RAG cần space và phân loại dữ liệu |
+| 1 | Three kinds: software, research, ai | Only `software`; the `kind` column is kept | A narrow slice with automatically available data |
+| 2 | Full workflow designer (source/input/process/switch/gate/agent/output) | Basic gate attached to status transitions/releases | Avoid becoming "a second Jira" |
+| 3 | AI agent levels 0–3 | No agent | Wait for gate and quality measurement; Plan phase 3 |
+| 4 | Private/public spaces + publishing | Not yet | Needed for research and agents |
+| 5 | Range estimates, risks, bottlenecks | Not yet | Requires historical data from real use |
+| 6 | Permission-filtered search (FTS + vector) | Search by code and title | Vector/RAG requires spaces and data classification |
 
 ---
 
-## Phụ lục B — Backlog tính năng phase sau
+## Appendix B — Feature backlog for later phases
 
-Thứ tự và điều kiện vào/thoát ở [PLAN_Strata.md](PLAN_Strata.md).
+The order and entry/exit conditions are in [PLAN_Strata.md](PLAN_Strata.md).
 
-| ID | Tính năng | Hiện trạng MVP | Phạm vi dự kiến | Ghi chú kỹ thuật |
+| ID | Feature | MVP status | Planned scope | Technical notes |
 |---|---|---|---|---|
-| WF-01 | Workflow designer: nút source/input/process/switch/gate/output | Gate cố định (F8) | Phase 2 | Token + dataflow; luật gate là dữ liệu có phiên bản; vòng lặp có giới hạn |
-| WF-02 | Lan truyền stale khi upstream đổi | Chỉ `stale` ở AC (F9) | Phase 2 | Đồ thị phụ thuộc giữa nút |
-| HIS-01 | Lịch sử thay đổi có diff, version tree | Chưa có | Phase 2 | `parent_version_id` cho artifact |
-| INT-01 | Connector GitLab, CI (Jenkins, GitHub Actions nâng cao), SonarQube, Figma, Confluence | Chỉ GitHub + JUnit | Phase 2 | Adapter chuẩn hóa về schema snapshot |
-| AGT-01 | Node `agent`, input contract, output schema, vùng nháp, `agent_run` | Không có | Phase 3 | Qua MCP tool gateway; agent không ghi thẳng dữ liệu chính |
-| AGT-02 | Guardrail: allowlist công cụ, ngân sách, sandbox, nút dừng khẩn cấp | Không có | Phase 3 | Chống prompt injection: nội dung ngoài là dữ liệu |
-| AGT-03 | Mức tự chủ 2–3, số liệu chất lượng agent | Không có | Sau phase 3 | Chỉ mở khi có tỷ lệ chấp nhận ổn định |
-| SPC-01 | Space private/public cá nhân, dự án, tổ chức; publish tường minh | Mặc định dự án | Phase 3 | `publication` + tham chiếu ngược; thu hồi được |
-| SRC-01 | Tìm kiếm FTS + vector có lọc quyền | Tìm mã/tiêu đề | Phase 3 | Mỗi đoạn gắn space + mức hiển thị; pgvector |
-| AUTHZ-01 | ABAC, phân quyền cấp artifact | RBAC theo dự án | Phase 3 | Policy decision point dùng chung UI/API/search/agent |
-| EST-01 | Ước lượng dạng khoảng, spike, sổ rủi ro | Chưa có | Phase 4 | Monte Carlo trên thông lượng lịch sử |
-| FLOW-01 | Cycle time, WIP, CFD, quy tắc phát hiện nghẽn | Chưa có | Phase 4 | Đo quy trình, không đo cá nhân |
-| COACH-01 | Gợi ý thực hành kèm bằng chứng, PDCA, Andon | Chưa có | Phase 7 | Gợi ý là đề xuất, nhóm có quyền từ chối |
-| RSC-01 | Kind `research`: giả thuyết, thí nghiệm, kết quả, vòng đời trạng thái | Chưa có | Phase 5 | Sau khi phỏng vấn PM nghiên cứu |
-| RSC-02 | Truy vết claim trong bản thảo ↔ run/thí nghiệm gốc | Chưa có | Phase 5 | Chuỗi giả thuyết → thí nghiệm → số liệu → bản thảo |
-| RSC-03 | Liên kết Zotero, Overleaf, OSF, ORCID/Crossref | Chưa có | Phase 5 | Adapter; kiểm chứng trích dẫn |
-| RSC-04 | Quản lý vòng đời viết bài báo: bản thảo, phản biện, nộp, xuất bản | Chưa có | Phase 5 | Phụ thuộc chính sách AI của nhà xuất bản |
-| ML-01 | Kind `ai`: experiment run, tham số, metric, dataset version, checkpoint | Chưa có | Phase 6 | Ghi nhận thí nghiệm bị hủy kèm lý do |
-| ML-02 | Connector MLflow, Weights & Biases, DVC; so sánh run, model registry cơ bản | Chưa có | Phase 6 | Adapter, không thay thế công cụ tracking |
-| ENT-01 | DB riêng theo tenant (silo), vùng dữ liệu, khóa theo tenant | Pooled + RLS | Phase 6 | Bảng `tenant` điều phối đã có từ MVP |
-| MOB-01 | Ứng dụng mobile | Web responsive | Chưa xếp lịch | Theo nhu cầu người dùng |
+| WF-01 | Workflow designer: source/input/process/switch/gate/output nodes | Fixed gate (F8) | Phase 2 | Tokens + dataflow; gate rules are versioned data; loops with limits |
+| WF-02 | Propagation of `stale` when upstream changes | Only `stale` on AC (F9) | Phase 2 | Dependency graph between nodes |
+| HIS-01 | Change history with diffs, version tree | Not yet | Phase 2 | `parent_version_id` for artifacts |
+| INT-01 | Connectors for GitLab, CI (Jenkins, advanced GitHub Actions), SonarQube, Figma, Confluence | GitHub + JUnit only | Phase 2 | Adapters normalizing to the snapshot schema |
+| AGT-01 | `agent` node, input contract, output schema, draft area, `agent_run` | None | Phase 3 | Through an MCP tool gateway; agents do not write directly to core data |
+| AGT-02 | Guardrails: tool allowlist, budget, sandbox, emergency stop | None | Phase 3 | Against prompt injection: external content is data |
+| AGT-03 | Autonomy levels 2–3, agent quality metrics | None | After phase 3 | Opened only when acceptance rates are stable |
+| SPC-01 | Personal, project and organization private/public spaces; explicit publishing | Project default | Phase 3 | `publication` + back reference; revocable |
+| SRC-01 | FTS + vector search with permission filtering | Code/title search | Phase 3 | Each chunk carries space and visibility level; pgvector |
+| AUTHZ-01 | ABAC, artifact-level permissions | Project-based RBAC | Phase 3 | Shared policy decision point for UI/API/search/agent |
+| EST-01 | Range estimates, spikes, risk register | Not yet | Phase 4 | Monte Carlo over historical throughput |
+| FLOW-01 | Cycle time, WIP, CFD, bottleneck detection rules | Not yet | Phase 4 | Measures the process, not individuals |
+| COACH-01 | Practice suggestions with evidence, PDCA, Andon | Not yet | Phase 7 | Suggestions are proposals; teams may decline |
+| RSC-01 | `research` kind: hypotheses, experiments, results, status lifecycle | Not yet | Phase 5 | After interviewing research PMs |
+| RSC-02 | Tracing claims in a manuscript ↔ original run/experiment | Not yet | Phase 5 | Chain: hypothesis → experiment → figures → manuscript |
+| RSC-03 | Links to Zotero, Overleaf, OSF, ORCID/Crossref | Not yet | Phase 5 | Adapters; citation verification |
+| RSC-04 | Paper writing lifecycle: drafts, peer review, submission, publication | Not yet | Phase 5 | Depends on publisher AI policies |
+| ML-01 | `ai` kind: experiment runs, parameters, metrics, dataset versions, checkpoints | Not yet | Phase 6 | Record cancelled experiments with the reason |
+| ML-02 | Connectors for MLflow, Weights & Biases, DVC; run comparison, basic model registry | Not yet | Phase 6 | Adapters; does not replace tracking tools |
+| ENT-01 | Per-tenant DB (silo), data regions, tenant-based keys | Pooled + RLS | Phase 6 | The `tenant` routing table already exists from the MVP |
+| MOB-01 | Mobile application | Responsive web | Not scheduled | Based on user needs |

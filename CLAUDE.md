@@ -1,40 +1,40 @@
 # CLAUDE.md — Strata
 
-Hướng dẫn cho trợ lý AI khi làm việc trong repo này.
+Guidance for the AI assistant when working in this repo.
 
-## Dự án
+## Project
 
-**Strata** là workspace nối công việc với bằng chứng cho dự án phần mềm: mỗi chức năng có một hồ sơ gom yêu cầu, công việc, commit/PR, kết quả test và quyết định, cập nhật từ GitHub và CI. MVP chỉ phục vụ dự án phần mềm.
+**Strata** is a workspace that connects work with evidence for software projects: each feature has one profile that gathers requirements, work items, commits/PRs, test results and decisions, updated from GitHub and CI. The MVP serves software projects only.
 
-Repo hiện chứa tài liệu (chưa có mã ứng dụng).
+The repo currently contains documentation only (no application code yet).
 
-## Tài liệu chuẩn
+## Canonical documents
 
-| Nội dung | File |
+| Content | File |
 |---|---|
-| Tổng quan và sơ đồ | [README.md](README.md) |
-| Yêu cầu sản phẩm (PRD) | [docs/product/PRD_Strata_MVP.md](docs/product/PRD_Strata_MVP.md) |
-| Kế hoạch và các phase | [docs/product/PLAN_Strata.md](docs/product/PLAN_Strata.md) |
-| Nguyên tắc UI/UX, màu, phông | [docs/design/Strata_UI_UX_Guidelines.md](docs/design/Strata_UI_UX_Guidelines.md) |
-| Kiến trúc hệ thống | [docs/background/system-architecture.md](docs/background/system-architecture.md) |
+| Overview and diagrams | [README.md](README.md) |
+| Product requirements (PRD) | [docs/product/PRD_Strata_MVP.md](docs/product/PRD_Strata_MVP.md) |
+| Plan and phases | [docs/product/PLAN_Strata.md](docs/product/PLAN_Strata.md) |
+| UI/UX principles, colors, fonts | [docs/design/Strata_UI_UX_Guidelines.md](docs/design/Strata_UI_UX_Guidelines.md) |
+| System architecture | [docs/background/system-architecture.md](docs/background/system-architecture.md) |
 
-Khi có mâu thuẫn, ưu tiên theo thứ tự: PRD, sau đó tài liệu UI/UX, rồi README.
+When sources conflict, the priority order is: PRD, then the UI/UX guidelines, then the README.
 
-## Quy ước làm việc
+## Working conventions
 
-- **Ngôn ngữ tài liệu:** tiếng Việt. Thuật ngữ kỹ thuật và mã (`KEY-n`, `snapshot`, `gate_run`) giữ nguyên tiếng Anh.
-- **Ngôn ngữ giao diện:** tiếng Anh mặc định, có chuyển sang tiếng Việt. Nhãn trong wireframe và mockup viết tiếng Anh trước.
-- **Quyết định UI/UX đã chốt** (03/11/2026): mở đầu bằng Trang chủ theo vai trò; mobile chỉ đọc và xem; giữ bảng màu đất và phông trong tài liệu UI/UX. Xem mục 10 của tài liệu đó.
-- **Sơ đồ:** ưu tiên SVG đặt trong `assets/` và nhúng bằng `![...](./assets/...)`. Không thêm sơ đồ Mermaid mới cho mind map hoặc sitemap.
-- **Thiết kế giao diện:** trước khi đề xuất màu, phông, bố cục hay thành phần, đọc [Strata_UI_UX_Guidelines.md](docs/design/Strata_UI_UX_Guidelines.md) và dùng skill `strata-ui-design`.
-- **Màu:** chỉ dùng token trong bảng 2.3 của tài liệu UI/UX. Không thêm màu mới khi chưa được duyệt.
-- **Hệ ẩn dụ:** tầng địa chất cho màu; đá (dữ liệu thô) và tinh thể (bằng chứng đã chuẩn hóa) cho biểu tượng; đá quý chỉ là icon ý tưởng (mục 5.1 của tài liệu UI/UX).
-- **Tương phản:** mọi cặp chữ–nền phải đạt WCAG AA trước khi chốt.
-- **Quyền riêng tư:** không đề xuất giao diện xếp hạng hoặc giám sát cá nhân (README mục 2.3.4, BR11; PRD mục 7).
-- **Không lưu mã nguồn** trong Strata; BA/QA không thấy diff (README mục 2.3.4, BR10; PRD mục 7).
+- **Document language:** English. Technical terms and codes (`KEY-n`, `snapshot`, `gate_run`) stay in English.
+- **Interface language:** English by default, with a switch to Vietnamese. Labels in wireframes and mockups are written in English first.
+- **Locked UI/UX decisions** (2026-11-03): open with the role-based Home page; mobile is read-only; keep the earth-tone palette and typography in the UI/UX document. See section 10 of that document.
+- **Diagrams:** prefer SVG files in `assets/`, embedded with `![...](./assets/...)`. Do not add new Mermaid diagrams for mind maps or sitemaps.
+- **Interface design:** before proposing colors, fonts, layouts or components, read [Strata_UI_UX_Guidelines.md](docs/design/Strata_UI_UX_Guidelines.md) and use the `strata-ui-design` skill.
+- **Colors:** use only the tokens in table 2.3 of the UI/UX document. Do not add new colors without approval.
+- **Metaphor:** geological layers for color; raw stone (source data) and crystal (normalized evidence) for symbols; gemstones are idea icons only (section 5.1 of the UI/UX document).
+- **Contrast:** every text–background pair must meet WCAG AA before sign-off.
+- **Privacy:** do not propose interfaces that rank or monitor individuals (README section 2.3.4, BR11; PRD section 7).
+- **Source code is not stored** in Strata; BA/QA do not see diffs (README section 2.3.4, BR10; PRD section 7).
 
-## Lưu ý khi sửa file
+## Notes when editing files
 
-- README.md dùng kiểu xuống dòng CRLF. Khi sửa bằng script, giữ nguyên CRLF.
-- Không commit hoặc push khi chưa được yêu cầu.
-- Không xóa hoặc đổi tên các mã PRD (F1–F10, AC-Fx-xx, US, BR) vì tài liệu khác tham chiếu tới chúng.
+- README.md uses CRLF line endings. When editing with scripts, keep CRLF.
+- Do not commit or push unless asked.
+- Do not delete or rename PRD codes (F1–F10, AC-Fx-xx, US, BR), because other documents reference them.

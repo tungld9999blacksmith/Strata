@@ -1,283 +1,283 @@
-# Strata — Nguyên tắc thiết kế UI/UX
+# Strata — UI/UX Design Principles
 
-> Tài liệu này là **nguồn chuẩn** cho màu sắc, phông chữ, thành phần và tương tác của Strata. Khi có mâu thuẫn với mục 4 của [README](../../README.md), tài liệu này thắng và README cần được cập nhật theo.
-> Trạng thái: **v0.2, đã chốt ngày 03/11/2026** (quyết định UX-Q1 đến UX-Q5 ở mục 10). Các giá trị màu đã kiểm tra tương phản WCAG.
+> This document is the **canonical source** for Strata's colors, typography, components and interactions. If it conflicts with section 4 of the [README](../../README.md), this document wins and the README must be updated accordingly.
+> Status: **v0.2, finalized on 2026-11-03** (decisions UX-Q1 to UX-Q5 in section 10). Color values have been checked for WCAG contrast.
 
 ---
 
-## 1. Nguyên tắc UX cốt lõi
+## 1. Core UX principles
 
-| # | Nguyên tắc | Cách thể hiện |
+| # | Principle | How it is expressed |
 |---|---|---|
-| U1 | **Bằng chứng nhìn thấy được** | Mọi trạng thái "đã kiểm chứng" kèm nhãn chữ và liên kết tới snapshot hoặc nguồn. |
-| U2 | **Chức năng là trung tâm** | Từ item, PR hay test luôn có đường về Hồ sơ chức năng. |
-| U3 | **Mặc định đơn giản** | Workflow cố định, ít cấu hình. Người mới bắt đầu dùng trong 30 phút. |
-| U4 | **Đo quy trình, không đo người** | Không bảng xếp hạng cá nhân. Chỉ số hiển thị theo nhóm, chức năng hoặc hành động. |
-| U5 | **Giải thích được** | Gate hiển thị từng điều kiện, giá trị đo, ngưỡng và lý do pass/fail/needs_review. |
-| U6 | **Ẩn code mặc định với BA/QA** | Chỉ hiển thị metadata, tiêu đề, trạng thái và link GitHub. Không có diff. |
-| U7 | **Mở đầu theo vai trò** | Sau đăng nhập, người dùng vào Trang chủ theo vai trò (P02) với "việc cần làm ngay" của vai trò đó. |
-| U8 | **Một hệ ẩn dụ thống nhất** | Tầng địa chất cho **màu** (mục 2.2); đá thô → tinh thể cho **hình khối và biểu tượng dữ liệu**; đá quý chỉ là **icon ý tưởng** (mục 5.1). |
+| U1 | **Visible evidence** | Every "verified" status comes with a text label and a link to the snapshot or source. |
+| U2 | **Features are central** | From an item, PR or test there is always a path back to the Feature profile. |
+| U3 | **Simple by default** | Fixed workflow, little configuration. New users can start within 30 minutes. |
+| U4 | **Measure the process, not people** | No individual leaderboards. Metrics are shown per team, feature or action. |
+| U5 | **Explainable** | The gate shows each condition, the measured value, the threshold and the reason for pass/fail/needs_review. |
+| U6 | **Hide code by default for BA/QA** | Show only metadata, title, status and GitHub link. No diffs. |
+| U7 | **Start by role** | After sign-in, users land on the role-based Home page (P02) with the "needs action now" items for their role. |
+| U8 | **One unified metaphor** | The geological layers provide the **colors** (section 2.2); raw stone → crystal provides the **shapes and data symbols**; gemstones are only **idea icons** (section 5.1). |
 
 ---
 
-## 2. Màu sắc
+## 2. Colors
 
-### 2.1. Nguyên tắc phối màu
+### 2.1. Color principles
 
-1. **Trung tính chiếm 80–90% diện tích.** Nền, card, viền và chữ là trung tính có tông ấm. Màu nhấn chỉ dùng cho hành động chính và trạng thái.
-2. **Chữ thường đạt tương phản ≥ 4.5:1.** Chữ lớn (≥ 24px hoặc ≥ 18.7px đậm), icon và viền control đạt ≥ 3:1. Kiểm bằng công cụ, không đoán bằng mắt.
-3. **Chữ trên nền màu chọn theo ngưỡng.** Chữ trắng khi nền đủ tối; chữ đen `#0B0B0B` khi nền sáng (ví dụ ochre).
-4. **Một màu, một nghĩa.** Màu trạng thái không dùng để trang trí. Cùng một màu không được đổi nghĩa giữa các màn hình.
-5. **Không dựa vào màu đơn thuần.** Trạng thái luôn có nhãn chữ hoặc icon. Không dùng cặp đỏ–xanh lục làm cách phân biệt duy nhất (khoảng 8% nam giới bị mù màu đỏ–xanh lục).
-6. **Mỗi token có cặp sáng và tối.** Chế độ tối không đảo màu. Màu nhấn sáng hơn một chút, và mọi cặp chữ–nền được kiểm lại.
-7. **Không thêm màu ngoài bảng token.** Nếu cần màu mới, đề xuất vào mục 2.4 trước rồi mới dùng.
+1. **Neutrals cover 80–90% of the area.** Backgrounds, cards, borders and text use warm-toned neutrals. Accent colors are used only for primary actions and statuses.
+2. **Normal text reaches a contrast of ≥ 4.5:1.** Large text (≥ 24px, or ≥ 18.7px bold), icons and control borders reach ≥ 3:1. Verify with a tool, not by eye.
+3. **Text on colored backgrounds is chosen by threshold.** White text on sufficiently dark fills; black `#0B0B0B` text on light fills (for example ochre).
+4. **One color, one meaning.** Status colors are never used decoratively. The same color must not change meaning between screens.
+5. **Never rely on color alone.** Every status has a text label or an icon. Red–green is not the only way to distinguish anything (about 8% of men have red–green color blindness).
+6. **Every token has a light and a dark value.** Dark mode is not a simple inversion. Accent colors are slightly lighter, and every text–background pair is re-checked.
+7. **No colors outside the token table.** If a new color is needed, propose it in section 2.4 first, then use it.
 
-### 2.2. Ý nghĩa màu theo tầng địa chất
+### 2.2. Meaning of colors by geological layer
 
-Mỗi màu gắn với một **tầng** trong hệ thống. Nguyên tắc: tầng càng sâu càng bất biến, tầng càng nổi càng đang thay đổi.
+Each color is tied to a **layer** of the system. Principle: the deeper the layer, the more stable it is; the more it surfaces, the more it is changing.
 
-| Tầng (màu gốc) | Ý nghĩa trong Strata | Dùng cho | Ví dụ hiển thị |
+| Layer (source color) | Meaning in Strata | Used for | Display example |
 |---|---|---|---|
-| **Đá gốc** (đá xám than) | Bằng chứng bất biến, không sửa được | Snapshot, event, gate_run, nhật ký | Nhãn "Bất biến" kèm icon khóa |
-| **Cát** (kem ấm) | Nền tài liệu, nội dung đọc | Card mô tả, khối trích dẫn, quyết định | Nền khối "Quyết định" |
-| **Đất nâu** (umber) | Công việc đang làm | Item, board, `in_progress` | Thẻ item đang làm |
-| **Đất sét nung** (terracotta) | Cổng và hành động chính | Nút chính, gate, duyệt, CTA | Nút "Đề nghị hoàn thành" |
-| **Đất phong hóa** (ochre) | Chờ xử lý hoặc đã cũ | `needs_review`, `stale`, chờ QA | Chip "Cần duyệt" |
-| **Khoáng xanh** (mineral) | Đã kiểm chứng, đạt | `pass`, AC đã kiểm chứng | Chip "Đã kiểm chứng" |
-| **Đỏ đá** | Lỗi, bị chặn | `fail`, test lỗi, vi phạm quy tắc | Chip "Không đạt" |
-| **Tím đá** (plum) | Quyết định và truy vết | Bình luận Quyết định, liên kết AC–test | Dấu "Quyết định" |
+| **Bedrock** (charcoal stone) | Immutable evidence, cannot be edited | Snapshots, events, gate_run, logs | "Immutable" label with a lock icon |
+| **Sand** (warm cream) | Document background, reading content | Description cards, quote blocks, decisions | Background of a "Decision" block |
+| **Umber** (brown soil) | Work in progress | Items, board, `in_progress` | Item card in progress |
+| **Terracotta** (fired clay) | Gates and primary actions | Primary buttons, gates, approvals, CTAs | "Request completion" button |
+| **Ochre** (weathered soil) | Waiting or outdated | `needs_review`, `stale`, waiting for QA | "Needs review" chip |
+| **Mineral green** | Verified, passed | `pass`, verified AC | "Verified" chip |
+| **Rock red** | Errors, blocked | `fail`, failing tests, rule violations | "Failed" chip |
+| **Plum** (rock violet) | Decisions and traceability | Decision comments, AC–test links | "Decision" marker |
 
-### 2.3. Bảng token
+### 2.3. Token table
 
-Giá trị hex là giá trị đã chốt cho v0.1. Cột tỷ lệ là tương phản với nền cùng chế độ.
+Hex values are the values finalized for v0.1. The ratio column is the contrast against the background of the same mode.
 
-**Trung tính (nền, viền, chữ)**
+**Neutrals (backgrounds, borders, text)**
 
-| Token | Sáng | Tối | Dùng cho |
+| Token | Light | Dark | Used for |
 |---|---|---|---|
-| `bg` | `#F9F9F7` | `#0B0B0B` | Nền trang |
-| `surface` | `#FFFFFF` | `#1A1A19` | Card, panel |
-| `surface-raised` | `#FCFCFB` | `#20201F` | Popover, drawer |
-| `surface-sunken` | `#F3F3F0` | `#151515` | Vùng lồng, bảng sọc |
-| `border` | `#D2D1C7` | `#383835` | Viền thường |
-| `border-strong` | `#A5A49A` | `#5F5E5A` | Viền control, ô nhập |
-| `text` | `#0B0B0B` (18.7:1) | `#F0EFEC` (17.1:1) | Chữ chính |
-| `text-2` | `#52514E` (7.5:1) | `#A5A49A` (7.0:1 trên `surface`) | Chữ phụ |
-| `text-3` | `#6F6D67` (5.2:1 trên `surface`) | `#8A8880` (4.9:1 trên `surface`) | Chữ mờ, nhãn, siêu dữ liệu |
+| `bg` | `#F9F9F7` | `#0B0B0B` | Page background |
+| `surface` | `#FFFFFF` | `#1A1A19` | Cards, panels |
+| `surface-raised` | `#FCFCFB` | `#20201F` | Popovers, drawers |
+| `surface-sunken` | `#F3F3F0` | `#151515` | Nested areas, striped tables |
+| `border` | `#D2D1C7` | `#383835` | Regular borders |
+| `border-strong` | `#A5A49A` | `#5F5E5A` | Control borders, input fields |
+| `text` | `#0B0B0B` (18.7:1) | `#F0EFEC` (17.1:1) | Primary text |
+| `text-2` | `#52514E` (7.5:1) | `#A5A49A` (7.0:1 on `surface`) | Secondary text |
+| `text-3` | `#6F6D67` (5.2:1 on `surface`) | `#8A8880` (4.9:1 on `surface`) | Muted text, labels, metadata |
 
-**Tầng màu (fill và chữ)**
+**Layer colors (fills and text)**
 
-| Token | Fill sáng | Chữ sáng (trên `bg`) | Fill tối | Chữ tối (trên `bg`) | Ghi chú |
+| Token | Light fill | Light text (on `bg`) | Dark fill | Dark text (on `bg`) | Notes |
 |---|---|---|---|---|---|
-| `bedrock` | `#3E444B` | — | `#B4B3A8` | — | Chữ trắng trên fill sáng: 9.8:1 |
-| `sand` | `#F5F1E8` | — | `#2C2C2A` | — | Chỉ làm nền, không làm chữ |
-| `umber` | `#7A4E2D` | — | `#C08A5B` | `#C08A5B` (6.6:1) | Chữ trắng trên fill sáng: 7.1:1 |
-| `terracotta` | `#A3482A` | `#A3482A` (5.7:1) | `#D97757` | `#D97757` (6.3:1) | Chữ trắng trên fill sáng: 6.0:1; chữ đen trên fill tối: 6.3:1 |
-| `ochre` | `#F0AC54` | `#8F5B12` (5.4:1) | `#F0AC54` | `#F0AC54` (10.1:1) | Trên fill sáng dùng chữ `#0B0B0B` (10.1:1) |
-| `mineral` | `#3F7A67` | `#3F7A67` (4.8:1) | `#8FBFAE` | `#8FBFAE` (9.6:1) | Chữ trắng trên fill sáng: 5.0:1 |
-| `fail` | `#B23A2E` | `#B23A2E` (5.6:1) | `#E07A6E` | `#E07A6E` (6.7:1) | Chữ trắng trên fill sáng: 5.9:1 |
-| `plum` | `#6B66A8` | — | `#A7A2D6` | `#A7A2D6` (8.2:1) | Chữ trắng trên fill sáng: 5.1:1 |
+| `bedrock` | `#3E444B` | — | `#B4B3A8` | — | White text on the light fill: 9.8:1 |
+| `sand` | `#F5F1E8` | — | `#2C2C2A` | — | Background only, not for text |
+| `umber` | `#7A4E2D` | — | `#C08A5B` | `#C08A5B` (6.6:1) | White text on the light fill: 7.1:1 |
+| `terracotta` | `#A3482A` | `#A3482A` (5.7:1) | `#D97757` | `#D97757` (6.3:1) | White text on the light fill: 6.0:1; black text on the dark fill: 6.3:1 |
+| `ochre` | `#F0AC54` | `#8F5B12` (5.4:1) | `#F0AC54` | `#F0AC54` (10.1:1) | On light fills use `#0B0B0B` text (10.1:1) |
+| `mineral` | `#3F7A67` | `#3F7A67` (4.8:1) | `#8FBFAE` | `#8FBFAE` (9.6:1) | White text on the light fill: 5.0:1 |
+| `fail` | `#B23A2E` | `#B23A2E` (5.6:1) | `#E07A6E` | `#E07A6E` (6.7:1) | White text on the light fill: 5.9:1 |
+| `plum` | `#6B66A8` | — | `#A7A2D6` | `#A7A2D6` (8.2:1) | White text on the light fill: 5.1:1 |
 
-**Trọng tâm (focus ring):** sáng `#7A4E2D` (6.7:1 trên `bg`), tối `#C08A5B` (6.6:1 trên `bg`). Vòng 2px, cách control 2px.
+**Focus ring:** light `#7A4E2D` (6.7:1 on `bg`), dark `#C08A5B` (6.6:1 on `bg`). A 2px ring, offset 2px from the control.
 
-> **Lưu ý về màu slide:** `#C6613F` (clay trong slide) không dùng làm chữ trên nền sáng vì chỉ đạt 3.8:1. Dùng `#A3482A` cho chữ và fill có chữ trắng.
+> **Note on slide colors:** `#C6613F` (the clay color in the slides) is not used as text on light backgrounds because it only reaches 3.8:1. Use `#A3482A` for text and for fills with white text.
 
-### 2.4. Chip trạng thái
+### 2.4. Status chips
 
-Mỗi trạng thái có **màu + icon + nhãn chữ**. Không bỏ bớt thành phần nào.
+Every status has **a color + an icon + a text label**. No component is dropped.
 
-| Trạng thái | Tầng | Icon | Nhãn | Fill sáng / chữ | Fill tối / chữ |
+| Status | Layer | Icon | Label | Light fill / text | Dark fill / text |
 |---|---|---|---|---|---|
-| Đã kiểm chứng (`pass`) | mineral | ✓ | Đã kiểm chứng | `#3F7A67` / trắng | `#8FBFAE` / `#0B0B0B` |
-| Cần duyệt (`needs_review`) | ochre | ◐ | Cần duyệt | `#F0AC54` / `#0B0B0B` | `#F0AC54` / `#0B0B0B` |
-| Cũ, cần xác nhận (`stale`) | ochre | ⟳ | Cần xác nhận | `#F0AC54` / `#0B0B0B` | `#F0AC54` / `#0B0B0B` |
-| Không đạt (`fail`) | fail | ✕ | Không đạt | `#B23A2E` / trắng | `#E07A6E` / `#0B0B0B` |
-| Chưa phủ | bedrock nhạt | ○ | Chưa phủ | viền `border-strong`, chữ `text-2` | viền `border-strong`, chữ `text-2` |
-| Bất biến | bedrock | khóa | Bất biến | `#3E444B` / trắng | `#B4B3A8` / `#0B0B0B` |
-| Quyết định | plum | cờ ⚑ | Quyết định | `#6B66A8` / trắng | `#A7A2D6` / `#0B0B0B` |
+| Verified (`pass`) | mineral | ✓ | Verified | `#3F7A67` / white | `#8FBFAE` / `#0B0B0B` |
+| Needs review (`needs_review`) | ochre | ◐ | Needs review | `#F0AC54` / `#0B0B0B` | `#F0AC54` / `#0B0B0B` |
+| Outdated, needs confirmation (`stale`) | ochre | ⟳ | Needs confirmation | `#F0AC54` / `#0B0B0B` | `#F0AC54` / `#0B0B0B` |
+| Failed (`fail`) | fail | ✕ | Failed | `#B23A2E` / white | `#E07A6E` / `#0B0B0B` |
+| Uncovered | bedrock, light | ○ | Uncovered | border `border-strong`, text `text-2` | border `border-strong`, text `text-2` |
+| Immutable | bedrock | lock | Immutable | `#3E444B` / white | `#B4B3A8` / `#0B0B0B` |
+| Decision | plum | flag ⚑ | Decision | `#6B66A8` / white | `#A7A2D6` / `#0B0B0B` |
 
-Icon trạng thái không dùng hình đá, tinh thể hay đá quý (dành cho loại đối tượng và ý tưởng, xem mục 5.1). Không dùng emoji trong giao diện; dùng icon vector.
+Status icons do not use stones, crystals or gems (those are reserved for object types and ideas, see section 5.1). No emoji in the interface; use vector icons.
 
-### 2.5. Màu trong sơ đồ (SVG)
+### 2.5. Colors in diagrams (SVG)
 
-Sơ đồ trong `assets/` (mind map, sitemap) dùng cùng bảng token. Mỗi nhóm lấy màu của tầng có nghĩa gần nhất, để màu trong sơ đồ không mâu thuẫn với màu trong giao diện.
+Diagrams in `assets/` (mind maps, sitemap) use the same token table. Each group takes the color of the closest-meaning layer, so the colors in diagrams do not contradict the colors in the interface.
 
-| Nhóm trong sơ đồ | Token | Hex | Lý do |
+| Group in the diagram | Token | Hex | Reason |
 |---|---|---|---|
-| Hệ thống chung, Nền tảng, Quản trị | `text-2` (trung tính) | `#52514E` | Hạ tầng, không mang trạng thái |
-| Bằng chứng | `bedrock` | `#3E444B` | Bằng chứng bất biến |
-| Công việc | `umber` | `#7A4E2D` | Công việc đang làm |
-| Chức năng | `terracotta` | `#A3482A` | Trung tâm sản phẩm, hành động chính |
-| Chất lượng | `mineral` | `#3F7A67` | Kiểm chứng; nghĩa trùng với trạng thái "đã kiểm chứng" nên được phép |
-| Tích hợp | `plum` | `#6B66A8` | Truy vết nguồn bằng chứng |
+| General system, Foundation, Administration | `text-2` (neutral) | `#52514E` | Infrastructure, carries no status |
+| Evidence | `bedrock` | `#3E444B` | Immutable evidence |
+| Work | `umber` | `#7A4E2D` | Work in progress |
+| Features | `terracotta` | `#A3482A` | Product core, primary actions |
+| Quality | `mineral` | `#3F7A67` | Verification; its meaning matches the "verified" status, so it is allowed |
+| Integrations | `plum` | `#6B66A8` | Tracing evidence sources |
 
-Quy tắc:
+Rules:
 
-- Tiêu đề nhóm: chữ trắng trên fill đặc. Mọi fill trong bảng đạt ≥ 5:1 với chữ trắng.
-- Ô con: nền là màu nhóm với độ đậm 6–12% trên `surface`, viền là màu nhóm, chữ `text` (`#0B0B0B`).
-- Đường nối: `border-strong` (`#A5A49A`) cho cây; màu nhóm cho nhánh mind map.
-- Tiêu đề sơ đồ dùng EB Garamond (dự phòng Noto Serif, Times New Roman); chữ còn lại IBM Plex Sans. Không dùng Georgia làm dự phòng vì phông này hiển thị sai dấu tiếng Việt.
-- Không dùng `fail` hay `ochre` cho nhóm trong sơ đồ vì hai màu này chỉ mang nghĩa trạng thái.
-- Nền sơ đồ là `surface` (`#FFFFFF`).
+- Group titles: white text on a solid fill. Every fill in the table reaches ≥ 5:1 with white text.
+- Child boxes: background is the group color at 6–12% strength on `surface`, border is the group color, text is `text` (`#0B0B0B`).
+- Connector lines: `border-strong` (`#A5A49A`) for trees; the group color for mind map branches.
+- Diagram titles use EB Garamond (fallback Noto Serif, Times New Roman); other text uses IBM Plex Sans. Do not use Georgia as a fallback because it renders Vietnamese diacritics incorrectly.
+- Do not use `fail` or `ochre` for groups in diagrams, because these two colors only carry status meaning.
+- The diagram background is `surface` (`#FFFFFF`).
 
 ---
 
-## 3. Phông chữ
+## 3. Typography
 
-### 3.1. Họ chữ
+### 3.1. Font families
 
-| Vai trò | Phông | Lý do | Trọng số |
+| Role | Font | Reason | Weight |
 |---|---|---|---|
-| Tiêu đề | **EB Garamond** | Cảm giác học thuật, hợp với hình ảnh tầng đất và lưu trữ. Đã dùng trong slide. | 500–600 |
-| Giao diện và nội dung | **IBM Plex Sans** | Hỗ trợ tiếng Việt, nhiều trọng số, dễ đọc ở cỡ nhỏ. | 400, 500, 600 |
-| Mã và số liệu | **IBM Plex Mono** | Độ rộng cố định cho `KEY-12`, SHA, run id và số liệu test. | 400 |
+| Headings | **EB Garamond** | Academic feel, fits the imagery of soil layers and archives. Already used in the slides. | 500–600 |
+| Interface and content | **IBM Plex Sans** | Supports Vietnamese, many weights, readable at small sizes. | 400, 500, 600 |
+| Code and figures | **IBM Plex Mono** | Fixed width for `KEY-12`, SHA, run ids and test numbers. | 400 |
 
-Không thêm họ chữ thứ tư.
+Do not add a fourth font family.
 
-### 3.2. Thang cỡ chữ (desktop trước)
+### 3.2. Type scale (desktop first)
 
-| Token | Phông | Cỡ / line-height | Trọng số | Dùng cho |
+| Token | Font | Size / line height | Weight | Used for |
 |---|---|---|---|---|
-| `display` | EB Garamond | 32 / 1.2 | 600 | Tên trang (H1) |
-| `h2` | EB Garamond | 24 / 1.25 | 600 | Khối nội dung (H2) |
-| `h3` | EB Garamond | 20 / 1.3 | 500 | Card, drawer (H3) |
-| `body` | IBM Plex Sans | 16 / 1.5 | 400 | Chữ thân bài, mô tả, AC |
-| `ui` | IBM Plex Sans | 14 / 1.4 | 400–500 | Nhãn, bảng, menu, form |
-| `caption` | IBM Plex Sans | 12 / 1.4 | 500 | Chú thích, siêu dữ liệu |
-| `mono` | IBM Plex Mono | 14 / 1.4 | 400 | Mã item, SHA, số liệu test |
+| `display` | EB Garamond | 32 / 1.2 | 600 | Page titles (H1) |
+| `h2` | EB Garamond | 24 / 1.25 | 600 | Content blocks (H2) |
+| `h3` | EB Garamond | 20 / 1.3 | 500 | Cards, drawers (H3) |
+| `body` | IBM Plex Sans | 16 / 1.5 | 400 | Body text, descriptions, AC |
+| `ui` | IBM Plex Sans | 14 / 1.4 | 400–500 | Labels, tables, menus, forms |
+| `caption` | IBM Plex Sans | 12 / 1.4 | 500 | Captions, metadata |
+| `mono` | IBM Plex Mono | 14 / 1.4 | 400 | Item codes, SHA, test numbers |
 
-### 3.3. Quy tắc
+### 3.3. Rules
 
-- Chữ nhỏ nhất là **12px**. Nội dung chính trên mobile giữ **16px**.
-- EB Garamond chỉ dùng từ **20px** trở lên. Không dùng cho nhãn, nút hay bảng.
-- Số liệu trong bảng và card dùng `font-variant-numeric: tabular-nums` để các cột thẳng hàng.
-- Độ dài dòng tối đa khoảng **70 ký tự** cho đoạn mô tả và tiêu chí chấp nhận.
-- Tải Google Fonts đúng subset tiếng Việt và chỉ những trọng số đang dùng.
-
----
-
-## 4. Bố cục, khoảng cách và hình khối
-
-| Thuộc tính | Giá trị |
-|---|---|
-| Lưới cơ sở | 4px. Khoảng cách dùng bội số của 4 (4, 8, 12, 16, 24, 32, 48). |
-| Bán kính | Control 6px; card 8px; chip 999px (dạng viên). |
-| Đổ bóng | Tối thiểu. Card dùng viền thay cho bóng; drawer và popover có bóng nhẹ. |
-| Chiều rộng | Desktop trước. Từ 360px trở lên không cuộn ngang. |
-| Lề mobile | 16px hai bên. |
-| Mobile | **Chỉ đọc và xem.** Xem trang chủ, hồ sơ chức năng, timeline, kết quả test và trạng thái gate. Không kéo-thả, không sửa item, không duyệt gate, không sửa luật trên mobile; các nút này ẩn kèm ghi chú "Mở trên desktop để thao tác". |
-| Sidebar | Theo vai trò (xem README mục 4.2). Không hiển thị mục không có quyền. |
+- The smallest text is **12px**. Main content on mobile stays at **16px**.
+- EB Garamond is used only from **20px** upward. It is not used for labels, buttons or tables.
+- Numbers in tables and cards use `font-variant-numeric: tabular-nums` so that columns line up.
+- Maximum line length is about **70 characters** for descriptions and acceptance criteria.
+- Load Google Fonts with the correct Vietnamese subset and only the weights in use.
 
 ---
 
-## 5. Thành phần chính
+## 4. Layout, spacing and shape
 
-| Thành phần | Quy tắc |
+| Property | Value |
 |---|---|
-| **Nút chính** | Fill `terracotta`, chữ trắng (sáng) hoặc `#0B0B0B` (tối). Mỗi màn hình chỉ có một nút chính. |
-| **Nút phụ** | Viền `border-strong`, nền `surface`, chữ `text`. |
-| **Nút nguy hiểm** | Fill `fail`, luôn có bước xác nhận. |
-| **Chip trạng thái** | Theo mục 2.4. Không bao giờ chỉ có màu. |
-| **Thẻ item** | Mã `KEY-n` (mono), tiêu đề, người được giao, chip PR/CI, severity nếu là bug. |
-| **Hồ sơ chức năng** | Tab có deep link. Thứ tự tab cố định: Tóm tắt, AC, Công việc, PR/CI, Test, Quyết định, Timeline. |
-| **Gate** | Panel mở rộng: danh sách điều kiện, giá trị đo, ngưỡng, kết quả từng điều kiện. |
-| **Bằng chứng** | Mọi số liệu test hoặc AC "đã kiểm chứng" là liên kết tới snapshot. |
-| **Drawer** | Chi tiết item không rời danh sách. Phím `Esc` đóng. |
-| **Toast hoàn tác** | Kéo-thả và đổi trạng thái có hoàn tác trong 5 giây. |
+| Base grid | 4px. Spacing uses multiples of 4 (4, 8, 12, 16, 24, 32, 48). |
+| Radius | Controls 6px; cards 8px; chips 999px (pill shape). |
+| Shadows | Minimal. Cards use borders instead of shadows; drawers and popovers have a light shadow. |
+| Width | Desktop first. No horizontal scrolling at 360px and above. |
+| Mobile margins | 16px on both sides. |
+| Mobile | **Read-only viewing.** View the home page, feature profiles, timelines, test results and gate status. No drag-and-drop, no item edits, no gate approval, no rule edits on mobile; these buttons are hidden with the note "Open on desktop to act". |
+| Sidebar | Based on role (see README section 4.2). Items the user has no permission for are not shown. |
 
-### 5.1. Ngôn ngữ biểu tượng: đá, tinh thể, đá quý
+---
 
-Bên cạnh tầng địa chất (dùng cho màu), Strata dùng ba khái niệm khoáng vật cho **hình khối và biểu tượng**. Chúng kể cùng một câu chuyện với luồng dữ liệu của sản phẩm: dữ liệu thô từ GitHub/CI (**đá**) được chuẩn hóa thành bằng chứng có cấu trúc (**tinh thể**); còn **đá quý** chỉ đại diện cho ý tưởng.
+## 5. Key components
+
+| Component | Rule |
+|---|---|
+| **Primary button** | `terracotta` fill, white text (light mode) or `#0B0B0B` (dark mode). Each screen has only one primary button. |
+| **Secondary button** | `border-strong` border, `surface` background, `text` text. |
+| **Danger button** | `fail` fill; always has a confirmation step. |
+| **Status chip** | According to section 2.4. Never color only. |
+| **Item card** | `KEY-n` code (mono), title, assignee, PR/CI chips, severity if it is a bug. |
+| **Feature profile** | Tabs with deep links. Fixed tab order: Summary, AC, Work, PR/CI, Tests, Decisions, Timeline. |
+| **Gate** | Expandable panel: list of conditions, measured value, threshold, result of each condition. |
+| **Evidence** | Every test figure or "verified" AC is a link to the snapshot. |
+| **Drawer** | Item details without leaving the list. `Esc` closes it. |
+| **Undo toast** | Drag-and-drop and status changes can be undone within 5 seconds. |
+
+### 5.1. Symbol language: stone, crystal, gemstone
+
+Alongside the geological layers (used for color), Strata uses three mineral concepts for **shapes and symbols**. They tell the same story as the product's data flow: raw data from GitHub/CI (**stone**) is normalized into structured evidence (**crystal**); the **gemstone** represents only ideas.
 
 ```text
-Đá thô (dữ liệu nguồn) ──chuẩn hóa──▶ Tinh thể (bằng chứng có cấu trúc) ──gate──▶ quyết định
-Đá quý = ý tưởng (đứng riêng, không nằm trong luồng dữ liệu)
+Raw stone (source data) ──normalize──▶ Crystal (structured evidence) ──gate──▶ decision
+Gemstone = idea (stands apart, not part of the data flow)
 ```
 
-| Khái niệm | Hình khối | Ý nghĩa | Dùng cho | Không dùng cho |
+| Concept | Shape | Meaning | Used for | Not used for |
 |---|---|---|---|---|
-| **Đá** (stone) | Khối đa giác không đều, góc bo nhẹ (2px), không đối xứng | Dữ liệu thô, đến từ nguồn, chưa xử lý | Icon artifact: commit, PR, CI run, file JUnit gốc; artifact "chưa liên kết"; minh họa trạng thái rỗng | Trạng thái, kết quả gate |
-| **Tinh thể** (crystal) | Lục giác hoặc đa diện đối xứng, cạnh sắc, có mặt cắt | Bằng chứng đã chuẩn hóa, có cấu trúc, tái lập được | Icon snapshot, test result, ma trận AC, gate_run; minh họa khi đã có bằng chứng | Trạng thái đạt/không đạt (dùng chip mục 2.4) |
-| **Đá quý** (gem) | Viên đá cắt mài (mặt bàn và các mặt vát) | **Chỉ là icon ý tưởng** | Ghi chú ý tưởng, đề xuất chức năng mới, gợi ý và mẹo hướng dẫn | Trạng thái, điểm số, phần thưởng, xếp hạng, độ ưu tiên |
+| **Stone** | Irregular polygon, slightly rounded corners (2px), asymmetric | Raw data, arrived from a source, not yet processed | Icons for artifacts: commit, PR, CI run, original JUnit file; "unlinked" artifacts; empty-state illustrations | Status, gate results |
+| **Crystal** | Hexagon or symmetric polyhedron, sharp edges, with a cross-section | Normalized evidence, structured, reproducible | Icons for snapshots, test results, AC matrix, gate_run; illustrations once evidence exists | Pass/fail status (use the chips in section 2.4) |
+| **Gemstone** | Cut gem (table facets and bevels) | **Idea icon only** | Idea notes, proposals for new features, tips and onboarding hints | Status, scores, rewards, rankings, priorities |
 
-Quy tắc:
+Rules:
 
-1. **Biểu tượng chỉ nói loại đối tượng, không nói trạng thái.** Trạng thái luôn là chip (màu + icon trạng thái + nhãn) theo mục 2.4.
-2. **Đá quý không mang giá trị.** Không dùng đá quý cho thành tích, huy hiệu hay "điểm" cá nhân (theo U4: không đo người).
-3. **Một màu.** Icon dùng `currentColor` theo màu chữ xung quanh. Chỉ minh họa lớn (trạng thái rỗng, onboarding) được tô bằng token tầng địa chất; không tạo màu mới cho đá hay tinh thể.
-4. **Lưới icon:** 16, 20 và 24px; nét 1.5px; đá bo góc 2px, tinh thể và đá quý góc sắc để phân biệt bằng hình chứ không bằng màu.
-5. **Tối thiểu hóa.** Mỗi màn hình không quá một minh họa khoáng vật; icon trong bảng và danh sách giữ đơn giản.
-6. **Truy cập.** Icon có ý nghĩa phải kèm nhãn chữ hoặc `aria-label`; icon trang trí đặt `aria-hidden="true"`.
-7. **Nguồn icon:** dùng một bộ icon nét (ví dụ Lucide, có sẵn `gem` và `hexagon`) cho icon thường; vẽ riêng icon đá và tinh thể theo quy tắc 4 để cùng độ dày nét.
+1. **Symbols indicate the object type, not the status.** Status is always a chip (color + status icon + label) according to section 2.4.
+2. **Gemstones carry no value.** Do not use gemstones for achievements, badges or individual "points" (per U4: do not measure people).
+3. **One color.** Icons use `currentColor`, matching the surrounding text color. Only large illustrations (empty states, onboarding) are filled with layer tokens; do not create new colors for stones or crystals.
+4. **Icon grid:** 16, 20 and 24px; stroke 1.5px; stones have 2px rounded corners, crystals and gemstones have sharp corners so they are distinguished by shape rather than color.
+5. **Keep it minimal.** Each screen has no more than one mineral illustration; icons in tables and lists stay simple.
+6. **Accessibility.** Meaningful icons carry a text label or `aria-label`; decorative icons use `aria-hidden="true"`.
+7. **Icon source:** use one line-icon set for regular icons (for example Lucide, which has `gem` and `hexagon`); draw the stone and crystal icons by hand following rule 4, so the stroke weight matches.
 
 ---
 
-## 6. Trạng thái giao diện
+## 6. Interface states
 
-| Trạng thái | Biểu hiện | Hành động |
+| State | Appearance | Action |
 |---|---|---|
-| Đang tải | Skeleton đúng bố cục | Không cần |
-| Rỗng | Giải thích ngắn và nút hành động | Ví dụ: "Kết nối GitHub" |
-| Lỗi | Thông báo kèm mã lỗi, không kèm chi tiết kỹ thuật | Thử lại; liên hệ Admin nếu là quyền |
-| Không có quyền | Trang 403 nêu rõ vai trò cần có | Yêu cầu quyền từ Admin |
-| Tích hợp suy giảm | Banner `degraded` | Xem sức khỏe; chờ polling bù |
-| Bằng chứng cũ | Chip `stale` | QA xác nhận hoặc cập nhật |
+| Loading | Skeleton matching the layout | None needed |
+| Empty | Short explanation and an action button | For example: "Connect GitHub" |
+| Error | Message with an error code, without technical details | Retry; contact Admin if it is a permission issue |
+| No permission | 403 page stating the required role | Request permission from Admin |
+| Degraded integration | `degraded` banner | Check health; wait for polling to compensate |
+| Outdated evidence | `stale` chip | QA confirms or updates |
 
 ---
 
-## 7. Khả năng truy cập
+## 7. Accessibility
 
-- Mọi cặp chữ–nền đạt tương phản theo mục 2.1.
-- Mọi thao tác dùng được bằng bàn phím. Thứ tự Tab theo thứ tự đọc.
-- Vòng focus luôn hiển thị (mục 2.3).
-- Vùng bấm tối thiểu 24×24px; nên 40px cho nút chính.
-- Tôn trọng `prefers-reduced-motion`: tắt chuyển động trang trí.
-- Ngôn ngữ: **tiếng Anh mặc định**, có chuyển sang tiếng Việt (xem PRD mục 8). Lựa chọn ngôn ngữ lưu theo người dùng.
-- Không có thông tin chỉ truyền bằng màu, âm thanh hoặc vị trí.
-
----
-
-## 8. Nội dung và giọng văn
-
-- Nhãn giao diện viết tiếng Anh trước, bản tiếng Việt dùng cùng khóa chuỗi. Nhãn ngắn, dùng động từ khi là nút (ví dụ "Create item" / "Tạo item", "Review gate" / "Duyệt gate").
-- Thiết kế bố cục chừa chỗ cho bản tiếng Việt, thường dài hơn tiếng Anh khoảng 20–30%.
-- Thuật ngữ thống nhất với PRD: chức năng, item, snapshot, gate, quyết định, AC.
-- Không dùng từ đánh giá con người ("kém", "chậm"). Mô tả quy trình ("đang chờ duyệt").
-- Mọi thông báo lỗi nêu việc cần làm tiếp theo.
+- Every text–background pair meets the contrast requirements in section 2.1.
+- Every action can be done with the keyboard. Tab order follows reading order.
+- The focus ring is always visible (section 2.3).
+- Minimum tap target 24×24px; 40px is preferred for primary buttons.
+- Respect `prefers-reduced-motion`: turn off decorative motion.
+- Language: **English by default**, with a switch to Vietnamese (see PRD section 8). The language choice is saved per user.
+- No information is conveyed by color, sound or position alone.
 
 ---
 
-## 9. Danh sách kiểm trước khi duyệt thiết kế
+## 8. Content and tone
 
-- [ ] Dùng đúng token trong mục 2.3; không có màu ngoài bảng.
-- [ ] Mọi cặp chữ–nền đã kiểm tương phản.
-- [ ] Mỗi trạng thái có màu, icon và nhãn chữ.
-- [ ] Đá, tinh thể, đá quý dùng đúng nghĩa ở mục 5.1; đá quý chỉ dùng cho ý tưởng.
-- [ ] Chỉ có một nút chính trên mỗi màn hình.
-- [ ] Phông đúng mục 3; không có họ chữ thứ tư.
-- [ ] Màn hình hoạt động từ 360px và chữ không bị cắt.
-- [ ] Có đủ trạng thái tải, rỗng, lỗi, không có quyền.
-- [ ] BA/QA không thấy diff hoặc mã nguồn.
-- [ ] Không có bảng xếp hạng hay chỉ số theo cá nhân.
-- [ ] Có bản sáng và bản tối.
+- Interface labels are written in English first; the Vietnamese version uses the same string keys. Labels are short, and buttons use verbs (for example "Create item" / "Tạo item", "Review gate" / "Duyệt gate").
+- Layouts leave room for the Vietnamese version, which is usually about 20–30% longer than English.
+- Terms follow the PRD: feature, item, snapshot, gate, decision, AC.
+- Do not use words that judge people ("poor", "slow"). Describe the process instead ("waiting for review").
+- Every error message states the next action to take.
 
 ---
 
-## 10. Quyết định đã chốt
+## 9. Checklist before design approval
 
-| ID | Câu hỏi | Quyết định (03/11/2026) | Áp dụng ở |
+- [ ] Uses the exact tokens in section 2.3; no colors outside the table.
+- [ ] Every text–background pair has been checked for contrast.
+- [ ] Every status has a color, an icon and a text label.
+- [ ] Stones, crystals and gemstones are used as defined in section 5.1; gemstones are used only for ideas.
+- [ ] Only one primary button per screen.
+- [ ] Typography follows section 3; no fourth font family.
+- [ ] The screen works from 360px and text is not clipped.
+- [ ] Loading, empty, error and no-permission states exist.
+- [ ] BA/QA cannot see diffs or source code.
+- [ ] No individual rankings or personal metrics.
+- [ ] Both light and dark versions exist.
+
+---
+
+## 10. Decisions finalized
+
+| ID | Question | Decision (2026-11-03) | Applies to |
 |---|---|---|---|
-| UX-Q1 | Màn hình mở đầu mặc định | Trang chủ theo vai trò | Mục 1 (U7) |
-| UX-Q2 | Ngôn ngữ mặc định | Tiếng Anh, có chuyển sang tiếng Việt | Mục 7, 8 |
-| UX-Q3 | Giữ hay làm lại thương hiệu thị giác | Giữ bảng màu đất và phông trong tài liệu này | Mục 2, 3 |
-| UX-Q4 | Mức hỗ trợ mobile | Chỉ đọc và xem; thao tác trên desktop | Mục 4 |
-| UX-Q5 | Chuyển các SVG trong `assets/` sang token mới | Có, sau khi chốt bảng token | Mục 2.5; đã áp dụng cho 3 SVG trong `assets/` |
+| UX-Q1 | Default opening screen | Role-based Home page | Section 1 (U7) |
+| UX-Q2 | Default language | English, with a switch to Vietnamese | Sections 7, 8 |
+| UX-Q3 | Keep or redo the visual brand | Keep the earth-tone palette and typography in this document | Sections 2, 3 |
+| UX-Q4 | Mobile support level | Read-only viewing; actions on desktop | Section 4 |
+| UX-Q5 | Move the SVGs in `assets/` to the new tokens | Yes, after the token table is finalized | Section 2.5; applied to the 3 SVGs in `assets/` |
 
 ---
 
-## Tài liệu liên quan
+## Related documents
 
-- [README](../../README.md) mục 4 (nguyên tắc UI/UX ban đầu, sitemap, wireframe)
-- [PRD](../product/PRD_Strata_MVP.md) mục 4 (persona), mục 6 (yêu cầu tính năng)
-- [CLAUDE.md](../../CLAUDE.md) (hướng dẫn cho trợ lý AI trong repo)
+- [README](../../README.md) section 4 (initial UI/UX principles, sitemap, wireframes)
+- [PRD](../product/PRD_Strata_MVP.md) section 4 (personas), section 6 (feature requirements)
+- [CLAUDE.md](../../CLAUDE.md) (instructions for the AI assistant in the repo)
 - Skill: `.claude/skills/strata-ui-design/SKILL.md`
